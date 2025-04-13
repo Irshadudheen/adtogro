@@ -6,6 +6,11 @@ import { errorhandler } from './middlewares/error-handler'
 import cors from 'cors'
 import { NotFoundError } from './errors/not-found-error'
 import { signUpRouter } from './routes/user/signUp'
+import { loginRouter } from './routes/user/login'
+import { logoutRouter } from './routes/user/logout'
+import { updateClicksRouter } from './routes/advertise/updateClicks'
+import { getAdvertiseRouter } from './routes/advertise/getAdvertise'
+import { updateAdvertiseRouter } from './routes/advertise/updateAdvertise'
 
 
 const app = express()
@@ -18,16 +23,13 @@ app.use(urlencoded({extended:true}))
 app.use(cors())
 //routes
 app.use(signUpRouter)
+
+app.use(loginRouter)
+app.use(logoutRouter)
 app.use(createAdvertiseRouter)
-// app.use(googleAuthRouter)
-// app.use(currentUserRouter)
-// app.use(singoutRouter)
-// app.use(createUrlRouter)
-// app.use(redirectUrlRouter)
-// app.use(getURLAnalyticsRouter)
-// app.use(getOverallAnalyticsRouter)
-// app.use(topicAnalyticsRouter)
-// app.use(createQrRouter)
+app.use(updateClicksRouter)
+app.use(getAdvertiseRouter)
+app.use(updateAdvertiseRouter)
 //not found route
 app.all('*',async()=>{
     throw new NotFoundError();

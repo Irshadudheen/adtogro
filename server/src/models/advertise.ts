@@ -50,6 +50,19 @@ const advertiseSchema = new Schema({
     createdAt:{
         type:Date,
         required:true
+    },
+    expiresAt: {
+        type: Date,
+        required: true,
+        default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+    },
+    isExpired: {
+        type: Boolean,
+        default: false
+    },
+    block:{
+        type:Boolean,
+        default:false
     }
 },{toJSON:{transform(doc,ret){
     ret.id=ret._id;
@@ -61,6 +74,6 @@ advertiseSchema.statics.build = (attrs:AdvertiseAttras)=>{
 return new Advertise(attrs);
 }
 
-const Advertise = model<AdvertiseDoc,AdvertiseModel>('advertise',advertiseSchema);
+const Advertise = model<AdvertiseDoc,AdvertiseModel>('Advertise',advertiseSchema);
 
 export { Advertise };

@@ -11,7 +11,9 @@ export interface AdvertiseAttras{
     targetAudience:string,
     advertisPlan:string,
     clicks:number,
-    createdAt:Date
+    createdAt:Date,
+    expiresAt:Date,
+ 
 }
 
 export interface AdvertiseDoc extends Document{
@@ -26,7 +28,9 @@ export interface AdvertiseDoc extends Document{
     targetAudience:string,
     advertisPlan:string,
     clicks:number,
-    createdAt:Date   
+    createdAt:Date,
+    expiresAt:Date,
+    
 }
 export interface AdvertiseModel extends Model<AdvertiseDoc>{
     build(attrs:AdvertiseAttras):AdvertiseDoc;

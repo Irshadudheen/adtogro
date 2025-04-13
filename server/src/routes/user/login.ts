@@ -1,13 +1,36 @@
 import { Request, Response, Router } from "express";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { body } from "express-validator";
+import { Password } from "../../service/password";
+import { User } from "../../models/user";
+import jwt from 'jsonwebtoken'
+import { BadRequestError } from "../../errors/bad-request-error";
 
 const router = Router();
 router.post("/api/user/login",[body("password").trim().isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
     body("email").trim().isEmail().withMessage("Email must be valid"),
 ] ,validateRequest,
-    (req:Request, res:Response) => {
+   async (req:Request, res:Response) => {
   const { email, password } = req.body;
+  const existingUser = await User.findOne({ email })
+    if (!existingUser) {
+        throw new BadRequestError('Email not found');
+    }
+    const passwordsMatch= await Password.compare(
+        existingUser.password,
+        password
+    )
+    if (!passwordsMatch) {
+        throw new BadRequestError('password not match')
+    }
+    const userJWT = jwt.sign({
+        id: existingUser.id,
+        email: existingUser.email
+    }, process.env.JWT_KEY!)
+   
+   
+    
+    res.status(200).send({userData:existingUser,token:userJWT});
   
-  res.status(200).send({ message: "Login successful" });
 });
+export { router as loginRouter };
