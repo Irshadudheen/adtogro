@@ -11,6 +11,7 @@ import { logoutRouter } from './routes/user/logout'
 import { updateClicksRouter } from './routes/advertise/updateClicks'
 import { getAdvertiseRouter } from './routes/advertise/getAdvertise'
 import { updateAdvertiseRouter } from './routes/advertise/updateAdvertise'
+import { verifyEmailRouter } from './routes/user/verify-email'
 
 
 const app = express()
@@ -23,7 +24,7 @@ app.use(urlencoded({extended:true}))
 app.use(cors())
 //routes
 app.use(signUpRouter)
-
+app.use(verifyEmailRouter)
 app.use(loginRouter)
 app.use(logoutRouter)
 app.use(createAdvertiseRouter)

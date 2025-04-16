@@ -6,10 +6,10 @@ const userRoutes={
     googleLogin:'/user/googleLogin',
     logout:'/user/logout',
     newPassword:'/user/newPassword',
-    verifyEmail:'/user/createNewPassword',
+    verifyEmail:'/user/verify-email',
     updateProfile:'/user/updateProfile',
     updateActive:'/user/activeDaysUpdate',
-    findActive:'/user/findActiveDays'
+   
    
 }
 

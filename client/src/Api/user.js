@@ -51,6 +51,13 @@ export const logout = async ()=>{
         throw error
     }
 }
-
+export const verifyEmailApi = async (userId)=>{
+    try {
+        const response = await Api.post(`${userRoutes.verifyEmail}/${userId}`)
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
 
 
