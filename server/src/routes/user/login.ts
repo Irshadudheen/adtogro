@@ -5,6 +5,7 @@ import { Password } from "../../service/password";
 import { User } from "../../models/user";
 import jwt from 'jsonwebtoken'
 import { BadRequestError } from "../../errors/bad-request-error";
+import sendMail from "../../service/mail";
 
 const router = Router();
 router.post("/api/user/login",[body("password").trim().isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
@@ -12,10 +13,15 @@ router.post("/api/user/login",[body("password").trim().isLength({ min: 6 }).with
 ] ,validateRequest,
    async (req:Request, res:Response) => {
   const { email, password } = req.body;
-  const existingUser = await User.findOne({ email })
+  const existingUser = await User.findOne({ email });
     if (!existingUser) {
         throw new BadRequestError('Email not found');
     }
+    if (!existingUser.is_verified) {
+         sendMail({to:existingUser.email,type:'VERIFY_EMAIL',data:{name:existingUser.name,userId:existingUser._id}})
+        throw new BadRequestError('Email not verified now please check in your email and verify it')
+    }
+    
     const passwordsMatch= await Password.compare(
         existingUser.password,
         password

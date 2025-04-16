@@ -3,7 +3,8 @@ import { validateRequest } from "../../middlewares/validateRequest";
 import { body } from "express-validator";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { User } from "../../models/user";
-import jwt from 'jsonwebtoken'
+
+import sendMail from "../../service/mail";
 const router = Router();
 router.post("/api/user/signup",[
     body('email').trim().isEmail().withMessage('Email must be valid'),
@@ -11,23 +12,23 @@ router.post("/api/user/signup",[
 
 ],validateRequest,
     async (req:Request, res:Response) => {
-        const { email, password } = req.body;
+        const { email, password,name } = req.body;
     const existingUser = await User.findOne({email});
+        if(existingUser && existingUser.is_verified){
+            throw new BadRequestError('Email already in use')
+        }
+        if(existingUser && !existingUser.is_verified){
+            sendMail({to:existingUser.email,type:'VERIFY_EMAIL',data:{name:existingUser.name,userId:existingUser._id}})
+            throw new BadRequestError('Email already in use and please verify your email')
+        }
 
-    if(existingUser){
-       throw new BadRequestError('Email in use')
-
-    }
-    const user = User.build({email,password})
+    const user = User.build({email,password,name})
     await user.save()
   
-    const userJwt =jwt.sign({
-        id:user._id,
-        email:user.email
-    },process.env.JWT_KEY!)
+   
 
-    
+    sendMail({to:user.email,type:'VERIFY_EMAIL',data:{name:user.name,userId:user._id}})
   
-     res.status(201).send({user,    token:userJwt}); 
+     res.status(201).send({user}); 
 })
 export { router as signUpRouter };

@@ -9,7 +9,7 @@ function PricingCard({ plan }) {
       flexDirection: 'column',
       padding: '1.5rem',
       backgroundColor: plan.featured ? '#eff6ff' : 'white',
-      border: plan.featured ? '2px solid #3b82f6' : 'none',
+      border: plan.featured ? '2px solid black' : 'none',
       borderRadius: '0.5rem',
       boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
     }}>
@@ -74,9 +74,9 @@ function PricingCard({ plan }) {
           borderRadius: '0.5rem',
           textAlign: 'center',
           fontWeight: '500',
-          backgroundColor: plan.featured ? '#3b82f6' : 'white',
-          color: plan.featured ? 'white' : '#3b82f6',
-          border: plan.featured ? 'none' : '1px solid #3b82f6',
+          backgroundColor: plan.featured ? 'black' : 'white',
+          color: plan.featured ? 'white' : 'black',
+          border: plan.featured ? 'none' : '1px solid black',
           textDecoration: 'none',
           transition: 'background-color 0.2s'
         }}

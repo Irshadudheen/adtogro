@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Layout from '../components/Layout';
+import razorpayPayment from '../utils/razorpay';
 
 function AdvertisePage() {
   const location = useLocation();
@@ -50,15 +51,29 @@ function AdvertisePage() {
     
     try {
       // This would be connected to your API
-      const response = await fetch('/api/advertise-applications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
+      razorpayPayment({
+        "amount": 400000,
+        "amount_due": 400000,
+        "amount_paid": 0,
+        "attempts": 0,
+        "created_at": 1744537472,
+        "currency": "INR",
+        "entity": "order",
+        "id": "order_QIUrjCXNdcOEMp",
+        "notes": [],
+        "offer_id": null,
+        "receipt": "67fb877fa72c63bd1b089fc1",
+        "status": "created"
+    })
+      // const response = await fetch('/api/advertise-applications', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(formData)
+      // });
       
-      if (!response.ok) {
-        throw new Error('Failed to submit application');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to submit application');
+      // }
       
       setSuccess(true);
       setFormData({
@@ -388,7 +403,7 @@ function AdvertisePage() {
                 style={{
                   width: '100%',
                   padding: '0.75rem',
-                  backgroundColor: isSubmitting ? '#93c5fd' : '#3b82f6',
+                  backgroundColor: isSubmitting ? '#93c5fd' : 'black',
                   color: 'white',
                   borderRadius: '0.375rem',
                   fontWeight: '500',

@@ -6,7 +6,10 @@ import { Password } from '../service/password';
 
 
 const userSchema = new Schema({
-  
+    name:{
+        type:String,
+        required:true
+    },
     email:{
         type:String,
         required:true,
@@ -16,7 +19,11 @@ const userSchema = new Schema({
    password:{
         type:String,
         required:true
-    }
+    },
+    is_verified:{
+        type:Boolean,
+        default:false
+    },   
    
 },{toJSON:{
     transform(doc,ret){

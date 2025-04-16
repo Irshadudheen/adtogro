@@ -3,7 +3,7 @@ function razorpayPayment(order){
             key:"rzp_test_E5WE0z0SgB6EwW",
             amount: order.amount*100,
             currency: order.currency,
-            name: 'molla',
+            name: 'adMetrix',
             description: 'Purchase Description',
             order_id: order.id,
             handler: function(response) {

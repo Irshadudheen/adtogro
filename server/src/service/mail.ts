@@ -29,7 +29,7 @@ const sendMail = async ({ to, type, data }: MailOptions) => {
     switch (type) {
       case 'VERIFY_EMAIL':
         subject = 'Verify Your Email';
-        const verifyLink = `${process.env.CLIENT_URL}/verify-email?token=${data.token}`;
+        const verifyLink = `${process.env.CLIENT_URL}/verify-email?userId=${data.userId}`;
         html = `
           <div style="${baseStyle}">
             <h2>Welcome, ${data.name}!</h2>

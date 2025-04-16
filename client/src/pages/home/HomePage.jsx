@@ -38,7 +38,7 @@ function HomePage() {
             }}>Connect with thousands of potential customers through our platform</p>
             <Link to="/advertise" style={{
               padding: '0.75rem 2rem',
-              backgroundColor: '#3b82f6',
+              backgroundColor: 'black',
               color: 'white',
               borderRadius: '0.5rem',
               fontWeight: '600',
@@ -115,8 +115,8 @@ function HomePage() {
               <Link to="/pricing" style={{
                 padding: '0.5rem 1.5rem',
                 backgroundColor: 'white',
-                color: '#3b82f6',
-                border: '1px solid #3b82f6',
+                color: 'black',
+                border: '1px solid black',
                 borderRadius: '0.5rem',
                 fontWeight: '600',
                 textDecoration: 'none',
@@ -126,7 +126,7 @@ function HomePage() {
               </Link>
               <Link to="/advertise" style={{
                 padding: '0.5rem 1.5rem',
-                backgroundColor: '#3b82f6',
+                backgroundColor: 'black',
                 color: 'white',
                 borderRadius: '0.5rem',
                 fontWeight: '600',

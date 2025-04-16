@@ -7,18 +7,13 @@ import { BadRequestError } from '../../errors/bad-request-error'
 import { instance } from '../../payment_gateway/razorpay'
 import { Order } from '../../models/order'
 const router =Router()
-router.post('/api/advertise',createAdValidate,validateRequest,
+router.post('/api/order',createAdValidate,validateRequest,
     async (req:Request,res:Response)=>{
-        const {userId,
-        companyName,
-        companyWebsite,
-        contactName,contactEmail,
-        contactPhone,adDescription,adImage,
-        targetAudience,advertisPlan} = req.body
-        // const existingAdvertiseCount = await Advertise.countDocuments(); 
-        // if(existingAdvertiseCount >100) {
-        //    throw new BadRequestError('Advertise limit reached')
-        // }
+        const {userId} = req.body
+        const existingAdvertiseCount = await Advertise.countDocuments(); 
+        if(existingAdvertiseCount >100) {
+           throw new BadRequestError('Advertise limit reached')
+        }
         const order = Order.build({userId,orderData:req.body,totalPrice:4000,createAt:new Date,status:'pending'})
         await order.save()
         // const advertise = Advertise.build({
@@ -43,7 +38,7 @@ router.post('/api/advertise',createAdValidate,validateRequest,
             currency:"INR",
             receipt:order.id
         })
-        res.status(201).send(razorpayOrder)
+        res.status(201).send({razorpayOrder,order})
     }
 )
 export { router as createAdvertiseRouter}

@@ -117,7 +117,7 @@ function PricingPage() {
             style={{
               display: 'inline-block',
               padding: '0.5rem 1.5rem',
-              backgroundColor: '#3b82f6',
+              backgroundColor: 'black',
               color: 'white',
               borderRadius: '0.5rem',
               fontWeight: '500',
