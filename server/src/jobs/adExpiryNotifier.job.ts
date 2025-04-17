@@ -11,7 +11,7 @@ cron.schedule('0 9 * * *', async () => {
     const now = new Date();
     const targetDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000); // 2 days ahead
 
-    const expiringAds = await Advertise.find({
+    const expiringAds = await Advertise.find({ 
       isExpired: false,
       expiresAt: {
         $gte: new Date(targetDate.setHours(0, 0, 0, 0)),

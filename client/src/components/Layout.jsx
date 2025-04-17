@@ -1,14 +1,17 @@
 // src/components/Layout.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import useGetUserData from '../hooks/useGetUser';
 
 
 function Layout({ children }) {
+  const user=useGetUserData()
+  console.log('user',user)
   // State to track if mobile menu is open or closed
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // State to track if login modal is open or closed
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
+  
   // Toggle mobile menu function
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -27,10 +30,10 @@ function Layout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header/Navigation */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
+      <header className="bg-white shadow-sm sticky top-0 z-10 h-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6  flex justify-between items-center">
           <Link to="/" className="text-decoration-none">
-            <img src="/logo/A-unscreen.gif" className="w-20 md:w-20" alt="AdMetrix Logo" />
+            <img src="/logo/A-unscreen.gif" className="w-16 md:w-16" alt="AdMetrix Logo" />
           </Link>
           
           {/* Mobile menu button (hidden on larger screens) */}
@@ -78,10 +81,10 @@ function Layout({ children }) {
               <li>
                 {/* Changed from Link to button to trigger modal */}
                 <Link
-                  to='/login'
-                  className="px-4 py-2 bg-black text-white rounded-md font-medium hover:bg-gray-800"
+                  to={user?.name?'/profile':'/login'}
+                  className="px-4 py-1 bg-black text-white rounded-md font-medium hover:bg-gray-800"
                 >
-                  Log In
+                  {user?.name?` ${user.name}`:'Log In'}
                 </Link>
               </li>
             </ul>

@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import Layout from '../../components/Layout';
 import { login, signup } from '../../Api/user';
 import toast from 'react-hot-toast';
-
+import { useDispatch } from "react-redux";
+import {setUser} from '../../redux/userSlice'
 function LoginPage() {
   const [activeTab, setActiveTab] = useState('login');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+  const navigate =useNavigate()
+  const dispatch = useDispatch();
+
   // Form states
   const [formData, setFormData] = useState({
     login: { email: '', password: '', rememberMe: false },
@@ -39,9 +42,17 @@ function LoginPage() {
         setIsLoading(false);
         return;
       }
-     const res= await login(data)
-     Navigate('/')
-     console.log(res,'login response')
+     const response= await login(data)
+     console.log(response,'login response')
+     dispatch(setUser({
+      name: response.user.name,
+      email:response.user.email,
+      id: response.user.id,
+      token:response.token
+  }))
+     toast.success('Login successful!')
+     navigate('/')
+   
      
     } else {
       // Signup validation
@@ -73,13 +84,17 @@ function LoginPage() {
       console.log(`${activeTab === 'login' ? 'Login' : 'Signup'} successful`);
    
   } catch (error) {
-      console.log(error.response?.data.errors[0].message||error.message)
+    console.log(error.message)
+      console.log(error?.response?.data.errors[0].message||error.message)
    
-      toast.error(error.response?.data.errors[0].message||error.message)
+      toast.error(error?.response?.data.errors[0].message||error.message)
+      if(error.response?.data.errors[0].message=='Email not found') {
+        setActiveTab('signup')
+      }
       setIsLoading(false);
-  }
+ 
   };
-
+}
   // Form fields configuration
   const formFields = {
     login: [
@@ -105,9 +120,32 @@ function LoginPage() {
   };
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4 md:p-8">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+
+      
+      <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      {/* Image Side */}
+      <div className="hidden md:flex md:w-1/2 bg-black items-center justify-center p-12">
+        <div className="max-w-md ">
+          <img 
+            src="/login_.jpg" 
+            alt="Email verification illustration" 
+            className="w-full rounded-lg shadow-xl"
+          />
+          <div className="mt-8 text-white">
+            <h3 className="text-2xl font-bold mb-3">Welcome to Our Platform</h3>
+            <p className="opacity-90">
+            Thank you for signing up! Please verify your email to access all features and receive important updates about your account and activity.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Content Side */}
+      <div className="flex-1 flex items-center justify-center p-6 md:p-12">
+        <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+          <div className="flex justify-center mb-6">
+            <img src="/emailPhoto/email.jpg" alt="Email icon" className="h-16 md:hidden" />
+          </div>
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-800">
               {activeTab === 'login' ? 'Welcome Back' : 'Create Account'}
@@ -118,7 +156,7 @@ function LoginPage() {
                 : 'Sign up to start creating your advertising campaigns'}
             </p>
           </div>
-          
+
           <div className="flex mb-8 border-b border-gray-200">
             <div 
               className={`flex-1 py-3 text-center cursor-pointer transition-all ${
@@ -210,10 +248,14 @@ function LoginPage() {
               ← Back to Home
             </Link>
           </div>
+        
+          {/* {renderStatusContent()} */}
         </div>
       </div>
-    </Layout>
+    </div>
+   
   );
 }
+
 
 export default LoginPage;

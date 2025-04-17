@@ -36,7 +36,7 @@ router.post("/api/user/login",[body("password").trim().isLength({ min: 6 }).with
    
    
     
-    res.status(200).send({userData:existingUser,token:userJWT});
+    res.status(200).send({user:existingUser,token:userJWT});
   
 });
 export { router as loginRouter };
