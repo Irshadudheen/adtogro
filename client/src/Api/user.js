@@ -26,10 +26,10 @@ export const login = async (loginData)=>{
         throw error
     }
 }
-export const forgotPassword = async(email)=>{
+export const forgotPassword = async(data)=>{
     try {
-        
-        const response = await Api.post(userRoutes.forgotPassword,{email})
+        console.log(data)
+        const response = await Api.post(userRoutes.forgotPassword,data)
         return response.data
     } catch (error) {
         throw error
@@ -61,3 +61,11 @@ export const verifyEmailApi = async (userId)=>{
 }
 
 
+ export const newPassword = async (token,password)=>{
+    try {
+        const response = await Api.patch(userRoutes.newPassword, {token, password})
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}

@@ -4,7 +4,7 @@ import { baseStyle, buttonStyle, footer } from "../mail/components";
 
 interface MailOptions {
   to: string;
-  type: 'VERIFY_EMAIL' | 'PAYMENT_SUCCESS' | 'AD_CREATED' | 'AD_EXPIRING_SOON';
+  type: 'VERIFY_EMAIL' | 'PAYMENT_SUCCESS' | 'AD_CREATED' | 'AD_EXPIRING_SOON'|'RESET PASSWORD';
   data: any;
 }
 
@@ -56,11 +56,11 @@ const sendMail = async ({ to, type, data }: MailOptions) => {
           
 
       case 'AD_CREATED':
-        subject = 'Ad Created Successfully';
+        subject = 'Spot Created Successfully';
         html = `
           <div style="${baseStyle}">
             <h2>Hi ${data.name},</h2>
-            <p>Your ad "<strong>${data.adTitle}</strong>" has been created and is now live!</p>
+            <p>The Spot for your logo "<strong>${data.adTitile}</strong>"is now yours and live!</p>
             <p>You can track its performance in your dashboard.</p>
             ${footer}
           </div>
@@ -82,7 +82,18 @@ const sendMail = async ({ to, type, data }: MailOptions) => {
           </div>
         `;
         break;
-
+      case 'RESET PASSWORD':
+        subject = 'Reset Your Password';
+        const resetLink = `${process.env.CLIENT_URL}/reset-password/${data.token}`;
+        html = `
+          <div style="${baseStyle}">
+            <h2>Hello ${data.name},</h2>
+            <p>We received a request to reset your password. Click the button below to set a new password:</p>
+            <a href="${resetLink}" style="${buttonStyle}">New Password</a>
+            ${footer}
+          </div>
+        `;
+        break;
       default:
         throw new BadRequestError("Invalid email type");
     }

@@ -9,6 +9,7 @@ const userRoutes={
     verifyEmail:'/user/verify-email',
     updateProfile:'/user/updateProfile',
     updateActive:'/user/activeDaysUpdate',
+    newPassword:'/user/newPassword'
    
    
 }

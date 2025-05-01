@@ -3,7 +3,7 @@ import {store} from '../redux/storage'
 export const getData =()=>{
     const state = store.getState()
 
-    return state.token;
+    return state.id;
 }
  const useGetUserData = () => {
     return useSelector((state) => state)

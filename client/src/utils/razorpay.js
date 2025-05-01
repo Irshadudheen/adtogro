@@ -1,26 +1,27 @@
-function razorpayPayment(order){
-    const option = {
-            key:"rzp_test_E5WE0z0SgB6EwW",
-            amount: order.amount*100,
-            currency: order.currency,
-            name: 'adMetrix',
+import { creatAdvertise } from "../Api/advertise";
+
+function razorpayPayment({order,razorpayOrder}) {
+    return new Promise((resolve, reject) => {
+        const options = {
+            key: "rzp_test_E5WE0z0SgB6EwW",
+            amount: razorpayOrder.amount * 100,
+            currency: razorpayOrder.currency,
+            name: 'ad 2 gro',
             description: 'Purchase Description',
-            order_id: order.id,
-            handler: function(response) {
-                // Handle the success response here
+            order_id: razorpayOrder.id,
+            handler: async function (response) {
                 console.log('Payment successful:', response);
-           
-                // verifyPayment(response,order)
-                // Redirect or show success message
-                fetch('/succesPayment',{
-                    method:'POST',
-                   
-                })
+
+                // Call your API after successful payment
+                await creatAdvertise(order.id);
+
+                // Resolve promise after payment success
+                resolve(response);
             },
             prefill: {
-                name: 'Customer Name',
-                email: 'customer@example.com',
-                contact: '9999999999'
+                name: order.orderData.contactName,
+                email: order.orderData.contactEmail,
+                contact: order.orderData.contactPhone
             },
             notes: {
                 address: 'Customer Address'
@@ -29,7 +30,16 @@ function razorpayPayment(order){
                 color: '#3399cc'
             }
         };
-        const rzp1 = new  Razorpay(option);
-        rzp1.open()
-    }
-    export default razorpayPayment
+
+        const rzp1 = new window.Razorpay(options);
+
+        rzp1.on('payment.failed', function (response) {
+            console.error('Payment failed:', response.error);
+            reject(response.error); // If payment failed
+        });
+
+        rzp1.open();
+    });
+}
+
+export default razorpayPayment;

@@ -1,5 +1,6 @@
 import axios from 'axios'
-
+import { store } from "../redux/storage";
+import  { getData } from '../hooks/useGetUser';
 const Api = axios.create({
     baseURL:'http://localhost:3000/api',
     headers:{
@@ -9,23 +10,14 @@ const Api = axios.create({
 })
 Api.interceptors.request.use(
     (config) => {
-     
+        const token = getData();
+        if (token) {
+          config.headers["Authorization"] = token;
+        }
       
    
         
-        // if (accessToken) {
-        //     config.headers['Authorization'] = `Bearer ${accessToken}`;
-        // }
-        // if (refreshToken) {
-        //     config.headers['x-refresh-token'] = refreshToken;
-        // }
-        // if (role) {
-        //     config.headers['x-user-role'] = role;
-        // }
-        // if(verifyToken){
-        //     config.headers['x-verify-token']= verifyToken;
-        // }
-        
+       
         return config;
     },
     (error) => {
@@ -39,6 +31,11 @@ Api.interceptors.response.use(
         return response;
     },
     (error) => {
+        console.log(error)
+        if( error.status === 403) {
+      
+            store.dispatch(removeUser())
+        }
         if (error.response) {
             const { data } = error.response;
             console.log(data.message);

@@ -1,26 +1,28 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from 'jsonwebtoken'
-interface UserPayload{
-    id:string;
-    email:string;
 
-}
+
+import { NotAuthorizedError } from "../errors/not-authorized-error";
+import { userData } from "../interface/userInterface";
+import { verifyToken } from "../service/jwt";
+
 declare global {
     namespace Express{
         interface Request{
-            currentUser?:UserPayload;
+            currentUser?:userData;
         }
     }
 }
 export const currentUser = (req:Request,res:Response,next:NextFunction)=>{
-    if(!req.cookies?.jwt){
-      return  next()
+    if(!req.headers?.authorization){
+      throw new NotAuthorizedError()
     }
     try {
-        const payload = jwt.verify(req.cookies.jwt,process.env.JWT_KEY!) as UserPayload;
+        const payload = verifyToken(req.headers.authorization) ;
         req.currentUser = payload;
-    } catch (error) {
         
+    } catch (error) {
+
+    throw new NotAuthorizedError()
     }
     next()
 }

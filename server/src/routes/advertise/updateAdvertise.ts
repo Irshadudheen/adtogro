@@ -1,9 +1,12 @@
 import { Router } from "express";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { Advertise } from "../../models/advertise";
+import { currentUser } from "../../middlewares/current-user";
 
 const router = Router();
-router.put('/api/advertise/:id',async(req,res)=>{
+router.put('/api/advertise/:id',
+    currentUser,
+    async(req,res)=>{
     const {id}=req.params;
     const {companyName,companyWebsite,contactName,contactEmail,contactPhone,adDescription,adImage,targetAudience,advertisPlan}=req.body;
     const advertise=await Advertise.findById(id);

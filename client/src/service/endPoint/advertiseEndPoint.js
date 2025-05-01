@@ -1,0 +1,5 @@
+export const advertiseRoutes={
+    createAdvertise:'/advertise',
+    getLogo :'/advertise',
+    updateClick:'/advertise/'
+}

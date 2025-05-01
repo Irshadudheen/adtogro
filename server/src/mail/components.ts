@@ -30,9 +30,9 @@ const footer = `
   </div>
   <p style="margin-top: 15px;">
     <img src="https://cdn-icons-png.flaticon.com/24/1179/1179069.png" alt="logo" />
-    <strong style="margin-left: 5px;">adMetrix</strong>
+    <strong style="margin-left: 5px;">Ad2gro</strong>
   </p>
-  <p>&copy; ${new Date().getFullYear()} adMetrix. All rights reserved.</p>
+  <p>&copy; ${new Date().getFullYear()} ad2gro. All rights reserved.</p>
 </div>
 `;
 export {footer,baseStyle,buttonStyle}

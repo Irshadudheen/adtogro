@@ -12,6 +12,9 @@ import { updateClicksRouter } from './routes/advertise/updateClicks'
 import { getAdvertiseRouter } from './routes/advertise/getAdvertise'
 import { updateAdvertiseRouter } from './routes/advertise/updateAdvertise'
 import { verifyEmailRouter } from './routes/user/verify-email'
+import { createOrderRouter } from './routes/order/createOrder'
+import { forgotPasswordRouter } from './routes/user/forgotPassword'
+import { newPasswordRouter } from './routes/user/newPassword'
 
 
 const app = express()
@@ -31,6 +34,9 @@ app.use(createAdvertiseRouter)
 app.use(updateClicksRouter)
 app.use(getAdvertiseRouter)
 app.use(updateAdvertiseRouter)
+app.use(createOrderRouter)
+app.use(forgotPasswordRouter)
+app.use(newPasswordRouter)
 //not found route
 app.all('*',async()=>{
     throw new NotFoundError();

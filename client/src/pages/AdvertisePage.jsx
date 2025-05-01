@@ -3,8 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Layout from '../components/Layout';
 import razorpayPayment from '../utils/razorpay';
-import ReactCrop from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
+
+import 'react-image-crop/dist/ReactCrop.css'
+import ImageCropper from '../components/imageCropper';
+import toast from 'react-hot-toast';
+import { createOrder } from '../Api/order';
 
 function AdvertisePage() {
   const location = useLocation();
@@ -14,28 +17,23 @@ function AdvertisePage() {
   
   const [formData, setFormData] = useState({
     companyName: '',
-    website: '',
+    companyWebsite: '',
     contactName: '',
-    email: '',
-    phone: '',
+    contactEmail: '',
+    contactPhone: '',
     adDescription: '',
     targetAudience: '',
-    plan: planFromQuery || 'basic',
+    advertisPlan: planFromQuery || 'basic',
     agreeToTerms: false
   });
   
   // Image handling states
   const [adImage, setAdImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const [crop, setCrop] = useState({unit: '%', 
-    width: 80, 
-    height: 80,  // Same as width for 1:1 ratio
-    x: 10,       
-    y: 10   });
-  const [completedCrop, setCompletedCrop] = useState(null);
-  const [showCropModal, setShowCropModal] = useState(false);
-  const imageRef = useRef(null);
-  const previewCanvasRef = useRef(null);
+
+const handleImage=(adImage)=>{
+  setPreviewImage(adImage)
+}
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -59,78 +57,23 @@ function AdvertisePage() {
     }));
   };
   
-  // Handle image upload
-  const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      
-      reader.onload = () => {
-        setAdImage(reader.result);
-        setShowCropModal(true);
-      };
-      
-      reader.readAsDataURL(file);
-    }
-  };
-  
-  // Generate cropped image
-  const getCroppedImage = () => {
-    if (!imageRef.current || !completedCrop) {
-      return null;
-    }
-    
-    const image = imageRef.current;
-    const canvas = document.createElement('canvas');
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    
-    canvas.width = completedCrop.width;
-    canvas.height = completedCrop.height;
-    
-    const ctx = canvas.getContext('2d');
-    
-    ctx.drawImage(
-      image,
-      completedCrop.x * scaleX,
-      completedCrop.y * scaleY,
-      completedCrop.width * scaleX,
-      completedCrop.height * scaleY,
-      0,
-      0,
-      completedCrop.width,
-      completedCrop.height
-    );
-    
-    return canvas.toDataURL('image/jpeg');
-  };
-  
-  // Save cropped image
-  const saveCroppedImage = () => {
-    if (imageRef.current && completedCrop?.width && completedCrop?.height) {
-      const croppedImg = getCroppedImage();
-      setPreviewImage(croppedImg);
-      setShowCropModal(false);
-    }
-  };
-  
-  // Cancel cropping
-  const cancelCropping = () => {
-    setAdImage(null);
-    setShowCropModal(false);
-  };
+
+
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Check if an image is uploaded
-    if (!previewImage) {
-      setError('Please upload and crop an advertisement image.');
-      return;
-    }
+    
     
     setIsSubmitting(true);
     setError('');
+    if(!previewImage){
+      toast.error('Image not found')
+    setError('Image not found')
+    setIsSubmitting(false)
+    return
+    }
     
     try {
       // Create form data for submission including the image
@@ -139,134 +82,34 @@ function AdvertisePage() {
         adImage: previewImage
       };
       
-      // This would be connected to your API
-      razorpayPayment({
-        "amount": 400000,
-        "amount_due": 400000,
-        "amount_paid": 0,
-        "attempts": 0,
-        "created_at": 1744537472,
-        "currency": "INR",
-        "entity": "order",
-        "id": "order_QIUrjCXNdcOEMp",
-        "notes": [],
-        "offer_id": null,
-        "receipt": "67fb877fa72c63bd1b089fc1",
-        "status": "created"
-      });
       
-      // const response = await fetch('/api/advertise-applications', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(submissionData)
-      // });
-      
-      // if (!response.ok) {
-      //   throw new Error('Failed to submit application');
-      // }
-      
+ 
+      const response = await createOrder(submissionData)
+   
+    const data= await razorpayPayment(response)
+    
       setSuccess(true);
       setFormData({
         companyName: '',
-        website: '',
+        companyWebsite: '',
         contactName: '',
-        email: '',
-        phone: '',
+        contactEmail: '',
+        contactPhone: '',
         adDescription: '',
         targetAudience: '',
-        plan: planFromQuery || 'basic',
+        advertisPlan: planFromQuery || 'basic',
         agreeToTerms: false
       });
-      setPreviewImage(null);
+     
     } catch (err) {
-      setError(err.message);
+      
     } finally {
       setIsSubmitting(false);
     }
   };
   
   // Crop Modal Component
-  const CropModal = () => {
-    if (!showCropModal) return null;
-    
-    return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000
-      }}>
-        <div style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          maxWidth: '90%',
-          maxHeight: '90%',
-          overflow: 'auto'
-        }}>
-          <h3 style={{ marginBottom: '16px', fontWeight: '600' }}>Crop Your Advertisement Image</h3>
-          <p style={{ marginBottom: '12px', fontSize: '14px', color: '#6b7280' }}>
-            Drag to adjust the crop area. Recommended aspect ratio is 1:1.
-          </p>
-          <div style={{ maxHeight: '70vh', overflow: 'auto' }}>
-            <ReactCrop
-              src={adImage}
-              onImageLoaded={(img) => {
-                imageRef.current = img;
-                const width = 80; // Default width percentage
-                const height = width; // Equal height for 1:1 ratio
-                setCrop({ unit: '%', width, height, x: (100-width)/2, y: (100-height)/2 });
-                return false;
-              
-              }}
-              crop={crop}
-              onChange={(c) => setCrop(c)}
-              onComplete={(c) => setCompletedCrop(c)}
-              aspect={1/1}
-            />
-          </div>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'flex-end',
-            marginTop: '16px',
-            gap: '10px'
-          }}>
-            <button
-              onClick={cancelCropping}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#f3f4f6',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={saveCroppedImage}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Save Crop
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  
   
   return (
     <Layout>
@@ -379,8 +222,8 @@ function AdvertisePage() {
                     }}>Website URL *</label>
                     <input
                       type="url"
-                      name="website"
-                      value={formData.website}
+                      name="companyWebsite"
+                      value={formData.companyWebsite}
                       onChange={handleChange}
                       style={{
                         width: '100%',
@@ -436,8 +279,8 @@ function AdvertisePage() {
                     }}>Email Address *</label>
                     <input
                       type="email"
-                      name="email"
-                      value={formData.email}
+                      name="contactEmail"
+                      value={formData.contactEmail}
                       onChange={handleChange}
                       style={{
                         width: '100%',
@@ -458,8 +301,8 @@ function AdvertisePage() {
                   }}>Phone Number</label>
                   <input
                     type="tel"
-                    name="phone"
-                    value={formData.phone}
+                    name="contactPhone"
+                    value={formData.contactPhone}
                     onChange={handleChange}
                     style={{
                       width: '100%',
@@ -503,102 +346,7 @@ function AdvertisePage() {
                 
                 {/* Image Upload Section */}
                 <div style={{ marginBottom: '1.5rem' }}>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '0.25rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500'
-                  }}>
-                    Advertisement Image *
-                  </label>
-                  
-                  {/* File Input */}
-                  <div style={{
-                    border: '1px dashed #d1d5db',
-                    borderRadius: '0.375rem',
-                    padding: '1rem',
-                    marginBottom: '1rem',
-                    backgroundColor: '#f9fafb'
-                  }}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      style={{
-                        width: '100%'
-                      }}
-                    />
-                    <p style={{
-                      fontSize: '0.75rem',
-                      color: '#6b7280',
-                      marginTop: '0.5rem'
-                    }}>
-                      Recommended size: 1200×1200 pixels (1:1 ratio). Click to browse or drag and drop.
-                    </p>
-                  </div>
-                  
-                  {/* Image Preview */}
-                  {previewImage && (
-                    <div style={{
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      padding: '1rem',
-                      backgroundColor: '#f9fafb'
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '0.5rem'
-                      }}>
-                        <span style={{
-                          fontSize: '0.875rem',
-                          fontWeight: '500'
-                        }}>
-                          Image Preview
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPreviewImage(null);
-                            setAdImage(null);
-                          }}
-                          style={{
-                            backgroundColor: '#ef4444',
-                            color: 'white',
-                            borderRadius: '0.375rem',
-                            padding: '0.25rem 0.5rem',
-                            fontSize: '0.75rem',
-                            fontWeight: '500',
-                            border: 'none',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        marginTop: '0.5rem',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '0.25rem',
-                        padding: '0.5rem',
-                        backgroundColor: 'white'
-                      }}>
-                        <img
-                          src={previewImage}
-                          alt="Advertisement Preview"
-                          style={{
-                            maxWidth: '100%',
-                            maxHeight: '200px',
-                            objectFit: 'contain'
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
+                <ImageCropper updateAvatarCallback={handleImage}/>
                 </div>
                 
                 <div style={{ marginBottom: '1rem' }}>
@@ -630,8 +378,8 @@ function AdvertisePage() {
                     fontWeight: '500'
                   }}>Advertising Plan *</label>
                   <select
-                    name="plan"
-                    value={formData.plan}
+                    name="plaadvertisPlann"
+                    value={formData.advertisPlan}
                     onChange={handleChange}
                     style={{
                       width: '100%',
@@ -692,8 +440,8 @@ function AdvertisePage() {
             </form>
           )}
           
-          {/* Crop Modal */}
-          <CropModal />
+         
+          
         </div>
       </div>
     </Layout>

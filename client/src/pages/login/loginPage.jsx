@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import Layout from '../../components/Layout';
+
 import { login, signup } from '../../Api/user';
 import toast from 'react-hot-toast';
 import { useDispatch } from "react-redux";

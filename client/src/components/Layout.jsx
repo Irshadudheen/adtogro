@@ -1,139 +1,239 @@
 // src/components/Layout.js
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useGetUserData from '../hooks/useGetUser';
+import { removeUser } from '../redux/userSlice';
+import { useDispatch } from 'react-redux';
+import { logout } from '../Api/user';
 
 
 function Layout({ children }) {
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dispatch = useDispatch()
+  const dropdownRef = useRef(null);
+
+
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   const user=useGetUserData()
-  console.log('user',user)
+
   // State to track if mobile menu is open or closed
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // State to track if login modal is open or closed
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
   
   // Toggle mobile menu function
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
   
-  // Open login modal function
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true);
-  };
-  
-  // Close login modal function
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
-  };
+ const handleLogout = async() =>{
+  await logout()
+  dispatch(removeUser())
+ }
   
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header/Navigation */}
       <header className="bg-white shadow-sm sticky top-0 z-10 h-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6  flex justify-between items-center">
-          <Link to="/" className="text-decoration-none">
-            <img src="/logo/A-unscreen.gif" className="w-16 md:w-16" alt="AdMetrix Logo" />
-          </Link>
-          
-          {/* Mobile menu button (hidden on larger screens) */}
-          <button 
-            className="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
-            onClick={toggleMobileMenu}
-            aria-label="Toggle mobile menu"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth="2" 
-                d={isMobileMenuOpen 
-                  ? "M6 18L18 6M6 6l12 12" // X icon when menu is open
-                  : "M4 6h16M4 12h16M4 18h16" // Hamburger icon when menu is closed
-                } 
-              />
-            </svg>
-          </button>
-          
-          {/* Desktop Navigation */}
-          <nav className="hidden md:block">
-            <ul className="flex space-x-6 items-center">
-              <li>
-                <Link to="/advertisers" className="text-gray-700 font-medium hover:text-gray-800">
-                  For Advertisers
-                </Link>
-              </li>
-              <li>
-                <Link to="/publishers" className="text-gray-700 font-medium hover:text-gray-800">
-                  For Publishers
-                </Link>
-              </li>
-              <li>
-                <Link to="/pricing" className="text-gray-700 font-medium hover:text-gray-800">
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-gray-700 font-medium hover:text-gray-800">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                {/* Changed from Link to button to trigger modal */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
+        <Link to="/" className="text-decoration-none">
+          <img src="/logo/A-unscreen.gif" className="w-16 md:w-16" alt="AdMetrix Logo" />
+        </Link>
+        
+        {/* Mobile menu button (hidden on larger screens) */}
+        <button 
+          className="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle mobile menu"
+        >
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth="2" 
+              d={isMobileMenuOpen 
+                ? "M6 18L18 6M6 6l12 12" // X icon when menu is open
+                : "M4 6h16M4 12h16M4 18h16" // Hamburger icon when menu is closed
+              } 
+            />
+          </svg>
+        </button>
+        
+        {/* Desktop Navigation */}
+        <nav className="hidden md:block">
+          <ul className="flex space-x-6 items-center">
+            <li>
+              <Link to="/advertisers" className="text-gray-700 font-medium hover:text-gray-800">
+                For Advertisers
+              </Link>
+            </li>
+            <li>
+              <Link to="/publishers" className="text-gray-700 font-medium hover:text-gray-800">
+                For Publishers
+              </Link>
+            </li>
+            <li>
+              <Link to="/pricing" className="text-gray-700 font-medium hover:text-gray-800">
+                Pricing
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact" className="text-gray-700 font-medium hover:text-gray-800">
+                Contact
+              </Link>
+            </li>
+            <li>
+              {user?.name ? (
+                <div className="relative" ref={dropdownRef}
+                onMouseEnter={() => setIsDropdownOpen(true)}
+                    onMouseLeave={() => setIsDropdownOpen(false)}>
+                  <button
+                    className="px-4 py-1 bg-black text-white rounded-md font-medium hover:bg-gray-800 flex items-center"
+                    
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    {user.name.charAt(0).toUpperCase()+user.name.slice(1)}
+                    <svg 
+                      className="ml-1 h-4 w-4" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M19 9l-7 7-7-7" 
+                      />
+                    </svg>
+                  </button>
+                  
+                  {/* Dropdown menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
+                      <Link 
+                        to="/profile" 
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link 
+                        to="/advertiser-dashboard" 
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        Your Advertiser Dashboard
+                      </Link>
+                      <button 
+                        
+                        className="block px-4 w-full py-2 text-sm  text-red-700 hover:bg-red-100 text-left"
+                        onClick={() =>{ setIsDropdownOpen(false)
+                          handleLogout()
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
                 <Link
-                  to={user?.name?'/profile':'/login'}
+                  to="/login"
                   className="px-4 py-1 bg-black text-white rounded-md font-medium hover:bg-gray-800"
                 >
-                  {user?.name?` ${user.name}`:'Log In'}
+                  Log In
                 </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        
-        {/* Mobile Navigation - shown/hidden based on state */}
-        <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link 
-              to="/advertisers" 
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              For Advertisers
-            </Link>
-            <Link 
-              to="/publishers" 
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              For Publishers
-            </Link>
-            <Link 
-              to="/pricing" 
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Pricing
-            </Link>
-            <Link 
-              to="/contact" 
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Contact
-            </Link>
-            {/* Changed from Link to button to trigger modal */}
+              )}
+            </li>
+          </ul>
+        </nav>
+      </div>
+      
+      {/* Mobile Navigation - shown/hidden based on state */}
+      <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-md">
+          <Link 
+            to="/advertisers" 
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            For Advertisers
+          </Link>
+          <Link 
+            to="/publishers" 
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            For Publishers
+          </Link>
+          <Link 
+            to="/pricing" 
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Pricing
+          </Link>
+          <Link 
+            to="/contact" 
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Contact
+          </Link>
+          
+          {user?.name ? (
+            <>
+              <Link 
+                to="/profile" 
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Profile
+              </Link>
+              <Link 
+                to="/advertiser-dashboard" 
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Your Advertiser Dashboard
+              </Link>
+              <button 
+           
+                className="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-500 hover:bg-gray-50"
+                onClick={() =>{ setIsMobileMenuOpen(false)
+                  handleLogout()
+                }
+                }
+              >
+                Logout
+              </button>
+            </>
+          ) : (
             <Link
-              to='/login'
+              to="/login"
               className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:cursor-pointer text-white bg-blue-500 hover:bg-blue-600"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Log In
             </Link>
-          </div>
+          )}
         </div>
-      </header>
-      
+      </div>
+    </header>
       {/* Main Content */}
       <main className="flex-grow">
         {children}
