@@ -1,13 +1,13 @@
 // src/pages/AdvertisePage.js
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import Layout from '../components/Layout';
-import razorpayPayment from '../utils/razorpay';
+import Layout from '@/components/Layout';
+import razorpayPayment from '@/utils/razorpay';
 
 import 'react-image-crop/dist/ReactCrop.css'
-import ImageCropper from '../components/imageCropper';
+import ImageCropper from '@/components/imageCropper';
 import toast from 'react-hot-toast';
-import { createOrder } from '../Api/order';
+import { createOrder } from '@/Api/order';
 
 function AdvertisePage() {
   const location = useLocation();

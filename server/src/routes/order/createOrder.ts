@@ -9,7 +9,7 @@ import { Order } from '../../models/order'
 import { currentUser } from '../../middlewares/current-user'
 const router =Router()
 router.post('/api/order',createAdValidate,validateRequest,
-    currentUser,
+    currentUserZX,
     async (req:Request,res:Response)=>{
         console.log('the order create')
         const userId = req.headers.authorization 

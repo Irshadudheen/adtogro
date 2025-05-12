@@ -1,4 +1,5 @@
 
+import axios from "axios";
 import Api from "../service/axios";
 import userRoutes from "../service/endPoint/userEndPoint";
 
@@ -37,6 +38,7 @@ export const forgotPassword = async(data)=>{
 }
 export const userGoogleLogin = async (loginData)=>{
     try {
+        console.log(loginData,'this is the login data')
         const response = await Api.post(userRoutes.googleLogin,loginData)
         return response.data
     } catch (error) {
@@ -67,5 +69,52 @@ export const verifyEmailApi = async (userId)=>{
         return response.data
     } catch (error) {
         throw error
+    }
+}
+
+export const createRoom = async (roomData)=>{
+    try {
+        const {data} = await Api.post(userRoutes.createRoom, roomData)
+        return data
+    } catch (error) {
+        throw error
+    }
+}
+export const roomDetailsApi = async (roomId) =>{
+    try {
+        const {data} = await Api.get(`${userRoutes.roomDetails}/${roomId}`)
+        return data
+    } catch (error) {
+        throw error 
+    }
+}
+export const roomsDetails = async () =>{
+    try {
+        const {data}  = await Api.get(userRoutes.rooms)
+        return data
+    } catch (error) {
+        
+    }
+}
+
+export const commmunityCount = async ( )=>{
+    try {
+  const {data} = await Api.get(userRoutes.communityCount)
+  return data      
+    } catch (error) {
+        throw error
+    }
+}
+export const decodedToken = async (token)  =>{
+    try {
+        const {data} = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: {
+                Authorization:'Bearer ' + token
+            }}
+        )
+      const userData=  await userGoogleLogin(data)
+       return userData
+    } catch (error) {
+        throw error 
     }
 }

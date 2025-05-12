@@ -1,7 +1,7 @@
 import { useEffect, useState,useRef } from "react";
 
 export default function DraggableLiveCount({ liveCount }) {
-    const [position, setPosition] = useState({ x: 20, y: 20 });
+    const [position, setPosition] = useState({ x: 1150, y: 70 });
     const [isDragging, setIsDragging] = useState(false);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const elementRef = useRef(null);

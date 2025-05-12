@@ -1,19 +1,49 @@
 // src/components/Layout.js
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useGetUserData from '../hooks/useGetUser';
-import { removeUser } from '../redux/userSlice';
+import { removeUser, setUser } from '../redux/userSlice';
 import { useDispatch } from 'react-redux';
 import { logout } from '../Api/user';
 
+import {  useGoogleLogin } from '@react-oauth/google';
+import { decodedToken } from '../Api/user';
+import LoginModal from './loginModal';
+import { useLoginModal } from '../context/LoginModalContext';
+import toast from 'react-hot-toast';
+ 
 
 function Layout({ children }) {
-
+const { isLoginModalOpen, setIsLoginModalOpen} = useLoginModal()
+const dispatch = useDispatch()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dispatch = useDispatch()
+
   const dropdownRef = useRef(null);
 
-
+const googlelogin = useGoogleLogin({
+    onSuccess:async (tokenResponse) => {
+      try {
+        console.log(tokenResponse);
+    const userData = await decodedToken(tokenResponse.access_token)
+console.log(userData,'userData')
+       dispatch(setUser({
+             name: userData.user.name,
+             email:userData.user.email,
+             id: userData.user.id,
+             profileImage: userData.user.profileImage,
+             token:userData.token
+         }))
+         setIsDropdownOpen(false)
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+      
+    },
+    onError: () => {
+      toast.error('Login Failed')
+      console.log('Login Failed');
+    },
+  });
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -32,7 +62,9 @@ function Layout({ children }) {
 
   // State to track if mobile menu is open or closed
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+const handleModalClose = ()=>{
+  setIsLoginModalOpen(false)
+}
   
   // Toggle mobile menu function
   const toggleMobileMenu = () => {
@@ -40,8 +72,10 @@ function Layout({ children }) {
   };
   
  const handleLogout = async() =>{
+ 
   await logout()
   dispatch(removeUser())
+  
  }
   
   return (
@@ -76,8 +110,8 @@ function Layout({ children }) {
         <nav className="hidden md:block">
           <ul className="flex space-x-6 items-center">
             <li>
-              <Link to="/advertisers" className="text-gray-700 font-medium hover:text-gray-800">
-                For Advertisers
+              <Link to="/TalkSpace" className="text-gray-700 font-medium hover:text-gray-800">
+              TalkSpace
               </Link>
             </li>
             <li>
@@ -98,39 +132,37 @@ function Layout({ children }) {
             <li>
               {user?.name ? (
                 <div className="relative" ref={dropdownRef}
-                onMouseEnter={() => setIsDropdownOpen(true)}
-                    onMouseLeave={() => setIsDropdownOpen(false)}>
-                  <button
-                    className="px-4 py-1 bg-black text-white rounded-md font-medium hover:bg-gray-800 flex items-center"
-                    
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onClick={() => setIsDropdownOpen(true)}
                   >
-                    {user.name.charAt(0).toUpperCase()+user.name.slice(1)}
-                    <svg 
-                      className="ml-1 h-4 w-4" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor"
-                    >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth="2" 
-                        d="M19 9l-7 7-7-7" 
-                      />
-                    </svg>
-                  </button>
+                  <div
+              className="flex items-center gap-2 px-4 py-1 border border-black rounded-full text-white bg-black hover:bg-gray-800 cursor-pointer transition-all duration-300"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <img
+                src={user.profileImage}
+                alt="Profile"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+              <span className="font-medium">{user.name}</span>
+              <svg
+                className="w-4 h-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
                   
                   {/* Dropdown menu */}
                   {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
-                      <Link 
-                        to="/profile" 
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        Profile
-                      </Link>
+                      
                       <Link 
                         to="/advertiser-dashboard" 
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -151,12 +183,12 @@ function Layout({ children }) {
                   )}
                 </div>
               ) : (
-                <Link
-                  to="/login"
+                <button
+                 onClick={() => googlelogin()}
                   className="px-4 py-1 bg-black text-white rounded-md font-medium hover:bg-gray-800"
                 >
                   Log In
-                </Link>
+                </button>
               )}
             </li>
           </ul>
@@ -234,6 +266,7 @@ function Layout({ children }) {
         </div>
       </div>
     </header>
+    {isLoginModalOpen&&<LoginModal onClose={handleModalClose}/>}
       {/* Main Content */}
       <main className="flex-grow">
         {children}

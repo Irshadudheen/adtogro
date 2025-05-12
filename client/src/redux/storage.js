@@ -5,7 +5,7 @@ import storage from "redux-persist/lib/storage";
 import userReducer from "./userSlice"; 
 
 const persistConfig = {
-    key: "root",
+    key: "root1",
     version:1,
     storage,
   };

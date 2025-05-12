@@ -13,19 +13,16 @@ const timeDurations = [
 ];
 
 
-export const initializeSocket = (server: HttpServer): Server => {
-    io = new Server(server, {
-        cors: {
-            origin: '*',
-            methods: ['GET', 'POST', 'PUT'],
-        },
-    });
+export const initializeSocket = (io: Server) => {
+   if(!io){
+    throw new SocketNotInitializedError()
+   }
 
     let onlineUsers: number = 0;
 
     io.on('connection', (socket: Socket) => {
         const peakCounts = getPeakUserCounts();
-console.log('Peak user counts for each time duration:', peakCounts);
+// console.log('Peak user counts for each time duration:', peakCounts);
         onlineUsers++;
         console.log('A user connected:', socket.id);
         io?.emit('userCount', onlineUsers);

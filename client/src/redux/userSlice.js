@@ -7,7 +7,8 @@ const initialState ={
     email: '',
     role: '',
     blocked:false,
-    user:undefined
+    user:undefined,
+    profileImage:''
 
 }
 const userSlice = createSlice({
@@ -21,13 +22,15 @@ const userSlice = createSlice({
             state.role=''
         },
         setUser:(state,action)=>{
-            const {role,name,email,id,blocked}=action.payload;
+            const {role,name,email,id,blocked,profileImage,token}=action.payload;
             console.log(action.payload,'action paylaod')
             state.role=role
             state.name=name
             state.email=email
             state.id=id
             state.blocked=blocked
+            state.profileImage=profileImage
+            state.token =token
 
 
         },
@@ -37,6 +40,7 @@ const userSlice = createSlice({
             state.email='';
             state.id="";
             state.name="";
+            state.profileImage="";
         }
     }
 

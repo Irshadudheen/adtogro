@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@layer utilities {
+    .font-poppins {
+      font-family: 'Poppins', sans-serif;
+    }
+  }
+

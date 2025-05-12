@@ -7,4 +7,4 @@ const socket = io('http://localhost:3000', {
   reconnectionDelay: 1000,   // Delay between reconnection attempts
 });
 
-export default socket;socket
+export default socket;

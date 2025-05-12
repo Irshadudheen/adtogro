@@ -5,11 +5,19 @@ import {app} from './app'
 import connectDB from './config/mongodb'
 import { createServer } from "http";
 import { startAdExpiryReminder } from './jobs/adExpiryNotifier.job'
-import { getPeakUserCounts, initializeSocket } from "./socketJobs/liveUserCount";
+import {  initializeSocket } from "./socketJobs/liveUserCount";
+import { initializeGroupVideoCallSocket } from './socketJobs/group_video_call';
+import { Server } from 'socket.io';
 const server = createServer(app);
-initializeSocket(server);
-const peakCounts = getPeakUserCounts();
-console.log('Peak user counts for each time duration:', peakCounts);
+const io = new Server(server, {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT'],
+    },
+  });
+initializeSocket(io);
+initializeGroupVideoCallSocket(io);
+
 const port = 3000
 const start = async()=>{
     if(!process.env.emailId){

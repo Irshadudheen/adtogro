@@ -1,8 +1,8 @@
 // src/pages/PricingPage.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Layout from '../components/Layout';
-import PricingCard from '../components/PricingCard';
+import Layout from '@/components/Layout';
+import PricingCard from '@/components/PricingCard';
 
 function PricingPage() {
   const pricingPlans = [

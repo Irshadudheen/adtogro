@@ -39,7 +39,7 @@ const handleClick = async(id,url)=>{
         cells.push(
           <div 
             key={`cell-${i}-${j}`}
-            className="relative border border-gray-400 overflow-hidden group cursor-pointer"
+            className="relative border border-gray-400 overflow-hidden group "
           >
             {ad && (
               <>
@@ -47,7 +47,7 @@ const handleClick = async(id,url)=>{
                   <img 
                     src={ad.adImage} 
                     alt={ad.companyName}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     {ad.companyName}
