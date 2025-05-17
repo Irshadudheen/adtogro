@@ -1,23 +1,25 @@
 // src/components/RoomPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useBeforeUnload } from 'react-router-dom';
-import { Video, Mic, MicOff, Monitor, VideoOff, X, MessageSquare, Send } from 'lucide-react';
+import { Video, Mic, MicOff, Monitor, VideoOff, X, MessageSquare, Send, Users, } from 'lucide-react';
 import socket from '@/utils/socket';
 import RemoteVideo from './RemoteVideo';
 import toast from 'react-hot-toast';
 import useGetUserData from '@/hooks/useGetUser';
 import { roomDetailsApi } from '../../Api/user';
+import { notifyTheuser } from '../../utils/copyRoomUrl';
 
 const RoomPage = () => {
+  const [userMap, setUserMap] = useState({});
   const { roomId } = useParams();
   const navigate = useNavigate();
   const userData = useGetUserData()
   const [socketId, setSocketId] = useState('');
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const [isAudioMuted,setIsAudioMuted]= useState(false)
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [usersInRoom, setUsersInRoom] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('ddd');
+  const [errorMessage, setErrorMessage] = useState('');
   const [remoteStreams, setRemoteStreams] = useState({});
   const [roomDetails, setRoomDetails]= useState({})
   // Chat feature states
@@ -76,6 +78,14 @@ const RoomPage = () => {
     };
   }, []);
 
+  useEffect(()=>{
+    setTimeout(()=>{
+  notifyTheuser(usersInRoom,roomId)
+    },4000)
+    
+  },[usersInRoom])
+  
+
   useEffect(() => {
     // Connect to the signaling server
     socketRef.current = socket;
@@ -87,8 +97,8 @@ const RoomPage = () => {
     });
     socketRef.current.on('room_not_found',()=>{
      
-      navigate('/TalkSpace'); // Go back to join page
       toast.error('Room not found. Please check the room ID or create a new room.');
+      navigate('/TalkSpace'); // Go back to join page
     })
     // Handle room full error
     socketRef.current.on('room_full', () => {
@@ -99,6 +109,9 @@ const RoomPage = () => {
     // Handle user list updates
     socketRef.current.on('users_in_room', (users) => {
       setUsersInRoom(users);
+      const map = {};
+    users.forEach(u => { map[u.socketId] = u; });
+    setUserMap(map);
     });
 
     // Handle offer request
@@ -144,7 +157,7 @@ const RoomPage = () => {
     });
 
     // Handle user left
-    socketRef.current.on('user_left', (id) => {
+    socketRef.current.on('user_left', (id,name) => {
       try {
         if (peerConnectionsRef.current[id]) {
           peerConnectionsRef.current[id].close();
@@ -162,7 +175,7 @@ const RoomPage = () => {
           ...prev,
           { 
             type: 'system', 
-            content: `User ${id.substring(0, 5)} left the room`,
+            content: ` ${name} left the room`,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }
         ]);
@@ -172,10 +185,11 @@ const RoomPage = () => {
     });
 
     // Handle chat messages
-    socketRef.current.on('chat_message', ({ from, message }) => {
+    socketRef.current.on('chat_message', ({ from, message,userData }) => {
       const newMessage = {
         type: 'remote',
-        sender: from.substring(0, 5),
+        sender: userData.name,
+       
         content: message,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -237,7 +251,7 @@ const RoomPage = () => {
       }, 100);
       
       // Join a room
-      socketRef.current.emit('join_room', roomId, userData.name);
+      socketRef.current.emit('join_room', roomId, userData.token);
       
       // Add system message for joining
       setMessages([{ 
@@ -396,8 +410,14 @@ const RoomPage = () => {
       if (audioTracks.length > 0) {
         audioTracks[0].enabled = isAudioMuted;
         setIsAudioMuted(!isAudioMuted);
-        const audio = new Audio('/aud/mute_and_unmute.mp3');
+        if(!isAudioMuted){
+          const audio = new Audio('/aud/mute_and_unmute.mp3');
       audio.play().catch(err => console.log('Audio play failed:', err));
+        }else{
+           const audio = new Audio('/aud/unmute.mp3');
+      audio.play().catch(err => console.log('Audio play failed:', err));
+        }
+        
       }
     }
   };
@@ -408,8 +428,14 @@ const RoomPage = () => {
       if (videoTracks.length > 0) {
         videoTracks[0].enabled = isVideoOff;
         setIsVideoOff(!isVideoOff);
-         const audio = new Audio('/aud/mute_and_unmute.mp3');
+        if(!isVideoOff){
+            const audio = new Audio('/aud/mute_and_unmute.mp3');
       audio.play().catch(err => console.log('Audio play failed:', err));
+        }else{
+             const audio = new Audio('/aud/unmute.mp3');
+      audio.play().catch(err => console.log('Audio play failed:', err));
+        }
+       
       }
     }
   };
@@ -536,16 +562,11 @@ const RoomPage = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      <div className="bg-gray-100 p-4 flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Group: {roomDetails&&roomDetails.roomName||'Group name'}</h2>
-        <div className="text-sm">Connected Users: {usersInRoom.length}/3</div>
-        <button 
-          onClick={leaveRoom}
-          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded flex items-center"
-        >
-          <X size={16} className="mr-1" /> Leave    
-        </button>
+    <div className="flex flex-col h-screen bg-gray-800">
+      <div className="bg-gray-700  p-4 flex justify-between items-center">
+        <h2 className="text-xl text-white font-semibold">Group: {roomDetails&&roomDetails.roomName||'Group name'}</h2>
+        <div className="flex items-center text-sm text-gray-300 bg-gray-800 px-3 py-1 rounded-full shadow-sm">Connected Users:  <Users size={14} className="mr-2 text-blue-400" /> {usersInRoom.length}/3</div>
+        
       </div>
       
       <div className="flex-1 flex overflow-hidden">
@@ -553,24 +574,46 @@ const RoomPage = () => {
         <div className={`flex-1 flex flex-wrap p-4 gap-4 overflow-auto ${isChatOpen ? 'w-3/4' : 'w-full'}`}>
           {/* Local Video */}
           <div className="relative bg-gray-200 rounded-lg overflow-hidden w-full md:w-80 h-60">
+            
             <video 
               ref={userVideoRef} 
               autoPlay 
               muted 
               playsInline 
-              className="w-full h-full object-cover" 
+              className={`w-full h-full object-cover  ${isVideoOff ? 'hidden' : ''}` }
             />
+             {isVideoOff && (
+              <div className="w-full h-full object-cover ">
+    <img 
+      src={userData.profileImage} 
+      alt="User Profile" 
+      className="w-full h-full object-cover blur-sm" 
+    />
+      <div className="absolute inset-0 flex items-center justify-center">
+      <img 
+        src={userData.profileImage} 
+        alt="User Avatar" 
+        className="w-20 h-20 rounded-full border-2 border-white shadow-lg object-cover" 
+      />
+    </div>
+    </div>
+  )}
             <div className="absolute bottom-2 left-2 bg-gray-800 bg-opacity-60 text-white text-sm px-2 py-1 rounded">
               You {isScreenSharing ? '(Screen)' : ''}
             </div>
+
           </div>
           
           {/* Remote Videos */}
           {Object.keys(remoteStreams).map(peerId => (
             <div key={peerId} className="relative bg-gray-200 rounded-lg overflow-hidden w-full md:w-80 h-60">
-              <RemoteVideo stream={remoteStreams[peerId]} />
+              <RemoteVideo stream={remoteStreams[peerId]} 
+               user={userMap[peerId]}
+             
+      
+              />
               <div className="absolute bottom-2 left-2 bg-gray-800 bg-opacity-60 text-white text-sm px-2 py-1 rounded">
-                User {peerId.substring(0, 5)}
+                {userMap[peerId]?.name ? userMap[peerId].name : `User ${peerId.substring(0, 5)}`}
               </div>
             </div>
           ))}
@@ -578,7 +621,7 @@ const RoomPage = () => {
         
         {/* Chat panel */}
         {isChatOpen && (
-          <div className="w-1/4 min-w-64 border-l border-gray-300 flex flex-col bg-white">
+          <div className=" w-1/4 min-w-64 border-l border-gray-300 flex flex-col bg-white">
             <div className="p-3 bg-gray-100 border-b border-gray-300 font-medium flex justify-between items-center">
               <span>Chat</span>
               <button onClick={toggleChat} className="text-gray-500 hover:text-gray-700">
@@ -601,7 +644,7 @@ const RoomPage = () => {
                     <div className={`p-3 rounded-lg ${msg.type === 'local' ? 'bg-black text-white' : 'bg-gray-200'}`}>
                       {msg.type === 'remote' && (
                         <div className="text-xs font-medium text-gray-700 mb-1">
-                          User {msg.sender}
+                           {msg.sender}
                         </div>
                       )}
                       <div>{msg.content}</div>
@@ -641,7 +684,7 @@ const RoomPage = () => {
         )}
       </div>
       
-      <div className="bg-gray-100 p-4 flex justify-center space-x-4">
+      <div className="bg-gray-700 p-4 flex justify-center space-x-4">
         <button 
           onClick={toggleAudio}
           className={`p-3 rounded-full ${isAudioMuted ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-200 hover:bg-gray-300'}`}
@@ -658,7 +701,7 @@ const RoomPage = () => {
         </button>
         <button 
           onClick={shareScreen}
-          className={`p-3 rounded-full ${isScreenSharing ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+          className={`p-3 rounded-full ${isScreenSharing ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'} hidden md:inline-flex`}
           title={isScreenSharing ? "Stop screen sharing" : "Share screen"}
         >
           <Monitor size={24} />
@@ -674,6 +717,15 @@ const RoomPage = () => {
               {unreadMessages}
             </span>
           )}
+        </button>
+         <button 
+          onClick={leaveRoom}
+          className={`p-3 px-5 rounded-full  bg-red-500 hover:bg-red-600`}
+          title={isScreenSharing ? "Stop screen sharing" : "Share screen"}
+        >
+          <span class="material-symbols-outlined">
+call_end
+</span>
         </button>
       </div>
     </div>

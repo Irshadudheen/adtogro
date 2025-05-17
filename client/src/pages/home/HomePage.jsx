@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <Layout>
       
-      <div className="bg-[url('/bground_talkspace.jpg')] bg-cover bg-center min-h-screen py-8 px-4">
+      <div className="bg-[url('/bground_talkspace.jpg')] bg-cover bg-center bg-fixed min-h-screen py-8 px-4">
         <div className="max-w-6xl mx-auto p-4">
           {/* Main content area with full-screen ad display */}
           <div className="mb-8 ">

@@ -1,0 +1,37 @@
+room change to group ✔
+correct user name in group ✔
+leave room icon ✔
+room bg-color ✔
+room partcipant icone ✔
+mute video display profile own ✔
+404 page ✔
+hide screen share in small screen ✔
+room need responsive ✔
+room creater need to display pop url ✔
+remove big footer in talkspace ✔
+mute video display other profile 
+create db for group and give ttl
+feedback 
+live make 1K 1M 
+live update list room
+infinty scroll 
+search room
+create better loader
+analaytics of clicks device used check with useragent
+pravicy and policy
+give simple admin panel
+block user and advertise
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+

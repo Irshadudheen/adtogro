@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { PlusCircle, Globe, MessageCircle, Users, Search, TrendingUp, Star, Clock, Link } from 'lucide-react';
 import Layout from '@/components/Layout';
 import {createRoom} from '@/Api/user';
@@ -8,164 +8,158 @@ import toast from 'react-hot-toast';
 import { LiveCountContext } from '@/context/LiveCountContext';
 import useGetUserData from '../../hooks/useGetUser';
 import { useLoginModal } from '../../context/LoginModalContext';
+
 export default function Talkspace() {
   const { setIsLoginModalOpen} = useLoginModal()
-   const {email}=useGetUserData()
+  const {email}=useGetUserData()
   const [CommunityCount, setCommunityCount] = useState(0);
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [rooms, setRooms]  = useState([])
-  const [roomData, setRoomData]= useState({roomName:'',roomDescription:'',roomLanguage:'English',roomLevel:'Any Level'})
-  const handleChange = (e) => {
+  const [allRooms, setAllRooms] = useState([]);
+  const [displayedRooms, setDisplayedRooms] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const [roomData, setRoomData] = useState({roomName:'',roomDescription:'',roomLanguage:'English',roomLevel:'Any Level'});
+  const ITEMS_PER_PAGE = 6; // Number of rooms to load per "page"
   
-    const {name,value} = e.target;
+  const observer = useRef();
+  const lastRoomElementRef = useCallback(node => {
+    if (isLoading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        loadMoreRooms();
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [isLoading, hasMore]);
 
+  const handleChange = (e) => {
+    const {name,value} = e.target;
     setRoomData(prev => ({
       ...prev,
       [name]:value
     }));
- 
   };
-  const navigate = useNavigate()
-  const handleCreateRoom =async ()=>{
+
+  const navigate = useNavigate();
+
+  const handleCreateRoom = async () => {
     try {
-    if(!email){
-      setIsLoginModalOpen(true)
-      return
-    }
-      console.log(roomData,'room data')
-      const data= await createRoom(roomData)
-      // console.log(roomId,'room id')
-        navigate(`/talkspaceroom/${data.roomId}`)
+      if(!email){
+        setIsLoginModalOpen(true)
+        return
+      }
+      const data = await createRoom(roomData)
+      navigate(`/talkspaceroom/${data.roomId}`)
     } catch (error) {
       console.log(error.response)
-      toast.error(error.response.data.errors[0].message||'somthing went wrong.')
+      toast.error(error.response.data.errors[0].message||'something went wrong.')
       throw error
-      
     }
- 
-
   }
-const handleNavigate = (roomId ,participants) =>{
-  return () => {
-    if(!email){
-      setIsLoginModalOpen(true)
-      return
-    }
-    if(participants < 3){
-    navigate(`/talkspaceroom/${roomId}`)
-  }else{
-    toast.error('Room is full you can create a new room or join another room')
-  }
-  }}
-  // Simulate loading effect
-   const fetchRoomDetails = async ()=>{
-      try {
-        const data = await roomsDetails()
-        console.log(data,'rooms')
-   
-        setRooms(data)
 
-      } catch (error) {
-        throw error
+  const handleNavigate = (roomId, participants) => {
+    return () => {
+      if(!email){
+        setIsLoginModalOpen(true)
+        return
+      }
+      if(participants < 3){
+        navigate(`/talkspaceroom/${roomId}`)
+      } else {
+        toast.error('Room is full you can create a new room or join another room')
       }
     }
-    const fetchCommunityCount = async () => {
-      try {
-        const {communityCount} = await commmunityCount();
-        setCommunityCount(communityCount)
-      } catch (error) {
-        throw error 
-      }
-    }
-  useEffect(() => {
-   fetchCommunityCount()
-    fetchRoomDetails()
-    const timer = setTimeout(() => {
+  }
+
+  const fetchRoomDetails = async () => {
+    try {
+      setIsLoading(true);
+      const data = await roomsDetails();
+      setAllRooms(data.rooms);
       setIsLoading(false);
-    }, 1000);
+    } catch (error) {
+      setIsLoading(false);
+      throw error;
+    }
+  }
+
+  const fetchCommunityCount = async ( ) => {
+    try {
+      const {communityCount} = await commmunityCount();
+      setCommunityCount(communityCount);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Apply filters to rooms
+  const filterRooms = useCallback(() => {
+    const filtered = allRooms.filter(room => {
+      const matchesSearch = room.roomLanguage.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          room.roomDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          room.roomLevel.toLowerCase().includes(searchQuery.toLowerCase());
+                          
+      if (activeFilter === 'all') return matchesSearch;
+      if (activeFilter === 'trending') return room.trending && matchesSearch;
+      if (activeFilter === 'active') return room.active && matchesSearch;
+      
+      return matchesSearch;
+    });
+
+    // Initialize with first page of results
+    setDisplayedRooms(filtered.slice(0, ITEMS_PER_PAGE));
+    setPage(1);
+    setHasMore(filtered.length > ITEMS_PER_PAGE);
+  }, [allRooms, searchQuery, activeFilter]);
+
+  // Load more rooms when scrolling
+  const loadMoreRooms = () => {
+    const filteredRooms = allRooms.filter(room => {
+      const matchesSearch = room.roomLanguage.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          room.roomDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          room.roomLevel.toLowerCase().includes(searchQuery.toLowerCase());
+                          
+      if (activeFilter === 'all') return matchesSearch;
+      if (activeFilter === 'trending') return room.trending && matchesSearch;
+      if (activeFilter === 'active') return room.active && matchesSearch;
+      
+      return matchesSearch;
+    });
+
+    const nextPage = page + 1;
+    const startIndex = (nextPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
     
-    return () => clearTimeout(timer);
+    const newRooms = filteredRooms.slice(startIndex, endIndex);
+    
+    if (newRooms.length > 0) {
+      setDisplayedRooms(prev => [...prev, ...newRooms]);
+      setPage(nextPage);
+      setHasMore(endIndex < filteredRooms.length);
+    } else {
+      setHasMore(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommunityCount();
+    fetchRoomDetails();
   }, []);
+
+  useEffect(() => {
+    filterRooms();
+  }, [filterRooms, allRooms, searchQuery, activeFilter]);
+
   const liveCount = useContext(LiveCountContext);
-  
-  // Example room data
-  // const rooms = [
-  //   { 
-  //     id: 1, 
-  //     language: 'English', 
-  //     level: 'Any Level', 
-  //     title: 'Business conversation practice',
-  //     participants: 12,
-  //     active: true,
-  //     trending: true
-  //   },
-  //   { 
-  //     id: 2, 
-  //     language: 'Spanish', 
-  //     level: 'Intermediate', 
-  //     title: 'Daily conversation practice',
-  //     participants: 8,
-  //     active: true,
-  //     trending: false
-  //   },
-  //   { 
-  //     id: 3, 
-  //     language: 'Japanese', 
-  //     level: 'Beginner', 
-  //     title: 'Learn basics together',
-  //     participants: 5,
-  //     active: true,
-  //     trending: true
-  //   },
-  //   { 
-  //     id: 4, 
-  //     language: 'French', 
-  //     level: 'Advanced', 
-  //     title: 'Literature discussion group',
-  //     participants: 6,
-  //     active: true,
-  //     trending: false
-  //   },
-  //   { 
-  //     id: 5, 
-  //     language: 'German', 
-  //     level: 'Upper Intermediate', 
-  //     title: 'Travel vocabulary practice',
-  //     participants: 4,
-  //     active: false,
-  //     trending: false
-  //   },
-  //   { 
-  //     id: 6, 
-  //     language: 'Vietnamese', 
-  //     level: 'Beginner', 
-  //     title: 'Cultural exchange',
-  //     participants: 7,
-  //     active: true,
-  //     trending: false
-  //   }
-  // ];
-  
-  // Filter rooms based on active filter and search query
-  const filteredRooms = rooms&& rooms.filter(room => {
-    const matchesSearch = room.roomLanguage.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         room.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        room.roomLevel.toLowerCase().includes(searchQuery.toLowerCase());
-                         
-    if (activeFilter === 'all') return matchesSearch;
-    if (activeFilter === 'trending') return room.trending && matchesSearch;
-    if (activeFilter === 'active') return room.active && matchesSearch;
-    
-    return matchesSearch;
-  });
   
   return (
     <Layout>
-    <div className="bg-[url('/bground_talkspace.jpg')] bg-cover bg-center min-h-screen py-8 px-4">
-      <div className=" w-full  rounded-xl p-6 max-w-5xl mx-auto ">
+    <div className="bg-[url('/bground_talkspace.jpg')] bg-cover bg-fixed bg-center min-h-screen py-8 px-4">
+      <div className="w-full rounded-xl p-6 max-w-5xl mx-auto">
         {/* Header with animation */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 relative">
           <div className="mb-4 md:mb-0 relative">
@@ -187,25 +181,24 @@ const handleNavigate = (roomId ,participants) =>{
             )}
           </div>
           <button 
-            onClick={() =>{email?setShowCreateRoom(!showCreateRoom): setIsLoginModalOpen(true)}}
+            onClick={() => {email ? setShowCreateRoom(!showCreateRoom) : setIsLoginModalOpen(true)}}
             className="bg-gradient-to-r from-gray-600 to-black hover:from-gray-700 hover:to-black text-white px-5 py-3 rounded-lg flex items-center transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1"
           >
             <PlusCircle className="mr-2" size={20} />
-            Create Room
+            Create Group
           </button>
         </div>
         
         {/* Create Room Form with animation */}
         {showCreateRoom && (
-          <div className=" p-6 rounded-xl mb-8 border border-blue-100 shadow-inner animate-fadeIn">
+          <div className="p-6 rounded-xl mb-8 border border-blue-100 shadow-inner animate-fadeIn">
             <h2 className="text-xl font-semibold text-gray-600 mb-4 flex items-center">
               <PlusCircle className="mr-2 text-blue-600" size={20} />
-              Create a New Room
+              Create a New Group
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                
-                <label className="block text-gray-700 mb-2 font-medium" htmlFor="roomName">Room Name</label>
+                <label className="block text-gray-700 mb-2 font-medium" htmlFor="roomName">Group Name</label>
                 <input 
                   id="roomName"
                   type="text" 
@@ -213,11 +206,11 @@ const handleNavigate = (roomId ,participants) =>{
                   onChange={handleChange}
                   value={roomData.roomName}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
-                  placeholder="Enter room name"
+                  placeholder="Enter group name"
                 />
               </div>
               <div>
-                <label className="block text-gray-700 mb-2 font-medium" htmlFor="roomDescription">Room Description</label>
+                <label className="block text-gray-700 mb-2 font-medium" htmlFor="roomDescription">Group Description</label>
                 <input 
                   id="roomDescription"
                   type="text" 
@@ -225,7 +218,7 @@ const handleNavigate = (roomId ,participants) =>{
                   onChange={handleChange}
                   value={roomData.roomDescription}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
-                  placeholder="Brief description of your room"
+                  placeholder="Brief description of your Group"
                 />
               </div>
               <div>
@@ -255,7 +248,7 @@ const handleNavigate = (roomId ,participants) =>{
                   value={roomData.roomLevel}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
                 >
-                  <option value="any" >Any Level</option>
+                  <option value="any">Any Level</option>
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
                   <option value="upper-intermediate">Upper Intermediate</option>
@@ -271,7 +264,7 @@ const handleNavigate = (roomId ,participants) =>{
                 Cancel
               </button>
               <button onClick={handleCreateRoom} className="bg-gradient-to-r from-gray-600 to-black hover:from-gray-700 hover:to-black text-white px-6 py-3 rounded-lg transition-all shadow-md hover:shadow-lg">
-                Create Room
+                Create Group
               </button>
             </div>
           </div>
@@ -327,7 +320,7 @@ const handleNavigate = (roomId ,participants) =>{
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              All Rooms
+              ALL GROUP
             </button>
             <button 
               onClick={() => setActiveFilter('trending')}
@@ -371,62 +364,69 @@ const handleNavigate = (roomId ,participants) =>{
           </div>
         ) : (
           <>
-            {filteredRooms &&filteredRooms.length > 0 ? (
+            {displayedRooms.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredRooms.map(room => (
-                
-                    
-                    
-                  <div key={room.id} onClick={handleNavigate(room.id,room.users.length)} className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all hover:border-gray-300 bg-white group">
-                    <div className="flex items-center mb-3">
-                      <div className={`text-white mr-3 p-2 rounded-lg ${
-                        room.language === 'English' ? 'bg-blue-600' :
-                        room.language === 'Spanish' ? 'bg-green-600' :
-                        room.language === 'Japanese' ? 'bg-red-600' :
-                        room.language === 'French' ? 'bg-purple-600' :
-                        room.language === 'German' ? 'bg-yellow-600' :
-                        'bg-indigo-600'
-                      }`}>
-                        <Globe size={18} />
-                      </div>
-                      <span className="font-medium text-lg">{room.roomLanguage}</span>
-                      <span className={`ml-2 text-xs px-2 py-1 rounded-full ${
-                        room.level === 'Beginner' ? 'bg-green-100 text-green-700' :
-                        room.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
-                        room.level === 'Upper Intermediate' ? 'bg-orange-100 text-orange-700' :
-                        room.level === 'Advanced' ? 'bg-red-100 text-red-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {room.roomLevel}
-                      </span>
-                      {room.trending && (
-                        <span className="ml-auto">
-                          <TrendingUp className="text-red-500" size={16} />
+                {displayedRooms.map((room, index) => {
+                  // Add ref to the last element
+                  const isLastElement = index === displayedRooms.length - 1;
+                  
+                  return (
+                    <div 
+                      key={room.id} 
+                      ref={isLastElement ? lastRoomElementRef : null}
+                      onClick={handleNavigate(room.id, room.users.length)} 
+                      className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all hover:border-gray-300 bg-white group"
+                    >
+                      <div className="flex items-center mb-3">
+                        <div className={`text-white mr-3 p-2 rounded-lg ${
+                          room.roomLanguage === 'English' ? 'bg-blue-600' :
+                          room.roomLanguage === 'Spanish' ? 'bg-green-600' :
+                          room.roomLanguage === 'Japanese' ? 'bg-red-600' :
+                          room.roomLanguage === 'French' ? 'bg-purple-600' :
+                          room.roomLanguage === 'German' ? 'bg-yellow-600' :
+                          'bg-indigo-600'
+                        }`}>
+                          <Globe size={18} />
+                        </div>
+                        <span className="font-medium text-lg">{room.roomLanguage}</span>
+                        <span className={`ml-2 text-xs px-2 py-1 rounded-full ${
+                          room.roomLevel === 'Beginner' ? 'bg-green-100 text-green-700' :
+                          room.roomLevel === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
+                          room.roomLevel === 'Upper Intermediate' ? 'bg-orange-100 text-orange-700' :
+                          room.roomLevel === 'Advanced' ? 'bg-red-100 text-red-700' :
+                          'bg-blue-100 text-blue-700'
+                        }`}>
+                          {room.roomLevel}
                         </span>
-                      )}
-                    </div>
-                    
-                    <p className="text-gray-700 mb-4 font-medium">{room.roomDescription}</p>
-                    
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Users size={14} className="mr-1" />
-                        <span>{room.users.length} participants</span>
+                        {room.trending && (
+                          <span className="ml-auto">
+                            <TrendingUp className="text-red-500" size={16} />
+                          </span>
+                        )}
                       </div>
-                      {room.active && (
-                        <span className="flex items-center text-sm text-green-600">
-                          <span className="h-2 w-2 bg-green-600 rounded-full mr-1"></span>
-                          Active now
-                        </span>
-                      )}
+                      
+                      <p className="text-gray-700 mb-4 font-medium">{room.roomDescription}</p>
+                      
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center text-sm text-gray-500">
+                          <Users size={14} className="mr-1" />
+                          <span>{room.users.length} participants</span>
+                        </div>
+                        {room.active && (
+                          <span className="flex items-center text-sm text-green-600">
+                            <span className="h-2 w-2 bg-green-600 rounded-full mr-1"></span>
+                            Active now
+                          </span>
+                        )}
+                      </div>
+                      
+                      <button className="w-full bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 hover:to-black text-white px-4 py-3 rounded-lg flex items-center justify-center text-sm font-medium transition-all shadow-sm group-hover:shadow-md transform group-hover:-translate-y-1">
+                        <MessageCircle className="mr-2" size={16} />
+                        Join Conversation
+                      </button>
                     </div>
-                    
-                    <button className="w-full bg-gradient-to-r from-gray-600 to-gray-800    hover:from-gray-700 hover:to-black text-white px-4 py-3 rounded-lg flex items-center justify-center text-sm font-medium transition-all shadow-sm group-hover:shadow-md transform group-hover:-translate-y-1">
-                      <MessageCircle className="mr-2" size={16} />
-                      Join Conversation
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-12">
@@ -443,6 +443,13 @@ const handleNavigate = (roomId ,participants) =>{
                 </button>
               </div>
             )}
+            
+            {/* Loading indicator at bottom */}
+            {hasMore && (
+              <div className="flex justify-center mt-6">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              </div>
+            )}
           </>
         )}
         
@@ -454,8 +461,8 @@ const handleNavigate = (roomId ,participants) =>{
               <div className="text-sm">Languages</div>
             </div>
             <div>
-              <div className="font-bold text-2xl text-black">{rooms.length||0}+</div>
-              <div className="text-sm">Active rooms</div>
+              <div className="font-bold text-2xl text-black">{allRooms.length||0}+</div>
+              <div className="text-sm">Active groups</div>
             </div>
             <div>
               <div className="font-bold text-2xl text-black">{liveCount||0}+</div>

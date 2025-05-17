@@ -17,6 +17,7 @@ export const currentUser = (req:Request,res:Response,next:NextFunction)=>{
       throw new NotAuthorizedError()
     }
     try {
+  
         const payload = verifyToken(req.headers.authorization) ;
         req.currentUser = payload;
         

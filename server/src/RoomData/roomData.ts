@@ -1,15 +1,256 @@
+interface User {
+  socketId: string;
+  name: string;
+  userImage: string;
+}
 
 interface Room {
-    users: string[];
-   userName:string[];
-    roomName: string;
-    roomLanguage: string;
-    roomDescription: string;
-    roomLevel:string
-    messages?: {
-      from: string;
-      message: string;
-      time: string;
-    }[];
-  }
-  export const rooms: Record<string, Room> = {};
+  groupCreaterId: string;
+  users: User[]; 
+  userName: string[];
+  roomName: string;
+  roomLanguage: string;
+  roomDescription: string;
+  roomLevel: string;
+  messages?: {
+    from: string;
+    message: string;
+    time: string;
+  }[];
+}
+const rooms: Record<string, Room> = {};
+// rooms['.']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['1']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['2']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['3']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['4']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['5']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['6']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['7']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['8']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['9']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['10']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.d']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.ddd']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.sss']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.sssssss']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.qq']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.qqw']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.dssd']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['aa.']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['aa.a']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['az.']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['jdsjk.']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms[';aa.']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.dsdfaaafa']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.aaaasdfafas']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+// rooms['.sdfa']={
+//   groupCreaterId:'d',
+//   roomDescription:'d',
+//   roomLanguage:'d',
+//   roomLevel:'s',
+//   roomName:'d',
+//   users:[],
+//   userName:[]
+// }
+export default  rooms

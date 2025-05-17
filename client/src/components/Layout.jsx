@@ -84,7 +84,7 @@ const handleModalClose = ()=>{
       <header className="bg-white shadow-sm sticky top-0 z-10 h-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
         <Link to="/" className="text-decoration-none">
-          <img src="/logo/A-unscreen.gif" className="w-16 md:w-16" alt="AdMetrix Logo" />
+          <img src="/logo/logo.png" className="my-3 w-28 md:w-28 " alt="AdMetrix Logo" />
         </Link>
         
         {/* Mobile menu button (hidden on larger screens) */}
@@ -273,11 +273,11 @@ const handleModalClose = ()=>{
       </main>
       
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
+      <footer className="bg-gray-800 text-white py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>
-              <img src="/logo/traparent_img_logo.png" className="w-24 h-auto mb-4" alt="" />
+              <img src="/logo/logo_background.png" className="w-24 h-auto mb-4" alt="" />
               <p className="text-gray-400 text-sm">
                 Connecting businesses with their ideal customers through targeted advertising solutions.
               </p>
@@ -313,15 +313,28 @@ const handleModalClose = ()=>{
               © {new Date().getFullYear()} AdPlatform. All rights reserved.
             </p>
             <div className="flex space-x-4">
-              <a href="https://twitter.com" className="text-gray-400 hover:text-gray-300" aria-label="Twitter">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z"></path>
-                </svg>
+              <a href="https://x.com/ad2gro" className="text-gray-400 hover:text-gray-300" aria-label="Twitter">
+               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M14.2 10.6L22 2h-1.8l-6.5 7.3L8.5 2H2l8.3 12L2 22h1.8l6.9-7.8 5.5 7.8H22l-7.8-11.4z" />
+</svg> </a>
+ <a href="https://instagram.com/adtogro" className="text-gray-400 hover:text-gray-300" aria-label="Twitter">
+               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.25-.88a1.13 1.13 0 1 1 0 2.25 1.13 1.13 0 0 1 0-2.25z"/>
+</svg>
+
+
               </a>
+              
               <a href="https://facebook.com" className="text-gray-400 hover:text-gray-300" aria-label="Facebook">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path>
                 </svg>
+              </a>
+              <a href="https://youtube.com/@Irshadudheenp" className="text-gray-400 hover:text-gray-300" aria-label="Facebook">
+               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M10 15.5l6-3.5-6-3.5v7zm12-7.2v7.4c0 2.2-1.8 4-4 4H6c-2.2 0-4-1.8-4-4V8.3C2 6.1 3.8 4.3 6 4.3h12c2.2 0 4 1.8 4 4z"/>
+</svg>
+
               </a>
               <a href="https://linkedin.com" className="text-gray-400 hover:text-gray-300" aria-label="LinkedIn">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">

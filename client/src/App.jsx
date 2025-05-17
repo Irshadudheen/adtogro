@@ -19,8 +19,8 @@ import { JoinRoomProvider } from '@/hooks/useJoinRoom'
 import TalkspaceRoom from '@/pages/TalkSpaceRoom/TalkspaceRoom'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { LoginModalProvider } from './context/LoginModalContext'
-
-
+import LoginPage from './pages/login/loginPage'
+import Loader  from './components/loader'
 
 function App() {
 const user =useGetUserData()
@@ -31,12 +31,12 @@ const user =useGetUserData()
      <LiveCountProvider>
       <JoinRoomProvider>
       <LoginModalProvider >
-      <Suspense fallback={<BrickLoader />}>
+      <Suspense fallback={<Loader />}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/advertise" element={<AdvertisePage />} />
-        {/* <Route path="/login" element={user.id?<Navigate to={'/'}/>:<LoginPage />} /> */}
+        <Route path="/login" element={user.id?<Navigate to={'/'}/>:<LoginPage />} />
         <Route path="/verify-email/:userId" element={<EmailverifyPage />} />
         <Route path='/forgot-password' element={<ForgotPassowrd/>} />
         <Route path='/reset-password/:token' element={<NewPasswordPage/>} />

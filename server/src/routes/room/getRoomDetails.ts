@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { rooms } from "../../RoomData/roomData";
+import  rooms  from "../../RoomData/roomData";
 import { BadRequestError } from "../../errors/bad-request-error";
 
 const router = Router();

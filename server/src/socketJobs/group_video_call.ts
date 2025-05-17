@@ -1,7 +1,8 @@
 import { Server, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { SocketNotInitializedError } from '../errors/socket-not-init-error';
-import { rooms } from '../RoomData/roomData';
+import  rooms  from '../RoomData/roomData';
+import { verifyToken } from '../service/jwt';
 
 // Extend Socket to include custom properties
 interface CustomSocket extends Socket {
@@ -26,8 +27,10 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
     socket.emit('me', socket.id);
 
     // Handle room joining
-    socket.on('join_room', (roomId: string,userName:string) => {
-      console.log(userName)
+    socket.on('join_room', (roomId: string,token:string) => {
+      console.log(token)
+     const user =verifyToken(token)
+    console.log(user,'the user token')
       console.log(`User ${socket.id} attempting to join room: ${roomId}`);
 
       if (!rooms[roomId]) {
@@ -43,14 +46,14 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
         return;
       }
 
-      if (rooms[roomId].users.includes(socket.id)) {
+      if (rooms[roomId].users.some(user =>user.socketId==socket.id)) {
         console.log(`User ${socket.id} is already in room ${roomId}`);
         return;
       }
 
       socket.join(roomId);
-      rooms[roomId].users.push(socket.id);
-
+      rooms[roomId].users.push({socketId:socket.id,userImage:user.profileImage,name:user.name});
+      // rooms[roomId].userName.push()
       socket.roomId = roomId;
 
       console.log(`User ${socket.id} joined room ${roomId}`);
@@ -70,10 +73,10 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
       }
 
       // Request offers from existing users
-      const usersInRoom = rooms[roomId].users.filter(id => id !== socket.id);
-      usersInRoom.forEach(userId => {
-        console.log(`Requesting offer from ${userId} to ${socket.id}`);
-        io.to(userId).emit('offer_request', { from: socket.id });
+      const usersInRoom = rooms[roomId].users.filter(user => user.socketId !== socket.id);
+      usersInRoom.forEach(user => {
+        console.log(`Requesting offer from ${user.socketId} to ${socket.id}`);
+        io.to(user.socketId).emit('offer_request', { from: socket.id });
       });
     });
 
@@ -90,6 +93,7 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
     });
 
     socket.on('ice_candidate', ({ to, candidate }: { to: string; candidate: any }) => {
+      
       io.to(to).emit('ice_candidate', { from: socket.id, candidate });
     });
 
@@ -98,11 +102,17 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
       if (!roomId || !rooms[roomId]) return;
 
       console.log(`Chat message from ${socket.id} in room ${roomId}: ${message}`);
-
+      const userData = rooms[roomId].users.find(user=>{
+        if(user.socketId==socket.id){
+          return user
+        }
+      })
+      console.log(userData,'the user deatil in chat')
       const formattedMessage = {
         from: socket.id,
         message,
         time: new Date().toISOString(),
+        userData
       };
 
       if (!rooms[roomId].messages) {
@@ -118,12 +128,14 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
       socket.to(roomId).emit('chat_message', {
         from: socket.id,
         message,
+        userData
       });
     });
 
     // Handle room leaving
     socket.on('leave_room', () => {
       console.log(`User ${socket.id} leaving room`);
+      
       leaveRoom(socket);
     });
 
@@ -140,24 +152,33 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
 
     if (roomId && rooms[roomId]) {
       console.log(`Removing user ${socket.id} from room ${roomId}`);
+      const leavedUserData = rooms[roomId].users.find(user => user.socketId == socket.id);
 
-      rooms[roomId].users = rooms[roomId].users.filter(id => id !== socket.id);
+      rooms[roomId].users = rooms[roomId].users.filter(user => user.socketId !== socket.id);
 
       io.to(roomId).emit('chat_message', {
         from: 'system',
-        message: `User ${socket.id.substring(0, 5)} left the room`,
+        message: `User ${leavedUserData?.name} left the room`,
       });
 
-      io.to(roomId).emit('user_left', socket.id);
+      io.to(roomId).emit('user_left', socket.id,leavedUserData?.name);
 
       io.to(roomId).emit('users_in_room', rooms[roomId].users);
 
       console.log(`Room ${roomId} users after leave: ${rooms[roomId].users}`);
-
-      if (rooms[roomId].users.length === 0) {
-        console.log(`Removing empty room ${roomId}`);
-        delete rooms[roomId];
-      }
+      
+      // Delay room deletion by 1 minute if empty
+    if (rooms[roomId].users.length === 0) {
+      console.log(`Room ${roomId} is empty, scheduling deletion in 1 minute`);
+      setTimeout(() => {
+        if (rooms[roomId] && rooms[roomId].users.length === 0) {
+          console.log(`Deleting room ${roomId} after 1 minute of inactivity`);
+          delete rooms[roomId];
+        } else {
+          console.log(`Room ${roomId} is no longer empty, not deleting`);
+        }
+      }, 60_000); // 1 minute = 60000 ms
+    }
 
       socket.leave(roomId);
       socket.roomId = null;
