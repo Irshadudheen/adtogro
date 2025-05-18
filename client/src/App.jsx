@@ -5,7 +5,7 @@ const HomePage =lazy(()=>import('@/pages/home/HomePage'))
 const PricingPage =lazy(()=>import('@/pages/PricingPage'))
 const AdvertisePage =lazy(()=>import('@/pages/AdvertisePage'))
 const ForgotPassowrd =lazy(()=>import('@/pages/forgot-password/forgotPassword'))
-
+const Talkspace =lazy(()=>import('@/pages/Talkspace/talkspace'))
 import { Navigate, Route, Routes } from 'react-router-dom'
 import BrickLoader from '@/components/brickLoader'
 import EmailverifyPage from '@/pages/email/emailverifyPage'
@@ -14,7 +14,7 @@ import useGetUserData from '@/hooks/useGetUser'
 import NewPasswordPage from '@/pages/forgot-password/newPassword'
 import { LiveCountProvider } from '@/context/LiveCountContext'
 import AdvertiserDashboard from '@/pages/advetiseDashboard/advertiseDashboard'
-import Talkspace from '@/pages/Talkspace/talkspace'
+
 import { JoinRoomProvider } from '@/hooks/useJoinRoom'
 import TalkspaceRoom from '@/pages/TalkSpaceRoom/TalkspaceRoom'
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -33,6 +33,7 @@ const user =useGetUserData()
       <LoginModalProvider >
       <Suspense fallback={<Loader />}>
       <Routes>
+        <Route path='/loader' element={<Loader/>}/>
         <Route path="/" element={<HomePage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/advertise" element={<AdvertisePage />} />

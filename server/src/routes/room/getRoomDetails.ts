@@ -1,11 +1,12 @@
 import { Router } from "express";
-import  rooms  from "../../RoomData/roomData";
+
 import { BadRequestError } from "../../errors/bad-request-error";
+import { Room } from "../../models/room";
 
 const router = Router();
-router.get('/api/room/:roomId', (req,res)=>{
+router.get('/api/room/:roomId', async(req,res)=>{
     const {roomId} = req.params;
-    const room = rooms[roomId];
+    const room =await Room.findById(roomId)
     if(!room){
         throw new BadRequestError('Room not found')
     }

@@ -1,28 +1,39 @@
 import { Router } from "express";
-import  rooms  from "../../RoomData/roomData";
+
+import { Room } from "../../models/room";
 
 const router = Router();
 
-router.get("/api/rooms", (req, res) => {
-  const allRooms = Object.keys(rooms).map((key) => ({
-    id: key,
-    ...rooms[key],
-  }));
+router.get("/api/rooms",async (req, res) => {
+        const page = Number(req.query.currentPage as string) || 1;
+        const limit = Number(req.query.limit as string) || 9;
+        const skip = (page - 1) * limit;
+        const search = req.query.search as string;
+        const searchFilter = search
+  ? {
+      $or: [
+        { roomName: { $regex: search, $options: 'i' } },
+        { roomDescription: { $regex: search, $options: 'i' } },
+        { roomLanguage: { $regex: search, $options: 'i' } },
+        { roomLevel: { $regex: search, $options: 'i' } },
+      ],
+    }
+  : {};
+      
+        
+       const   Rooms = await Room.find(searchFilter).sort({createdAt:-1}).skip(skip).limit(limit)
+ const  totalRooms = await Room.countDocuments(searchFilter)
+        const hasMore = page * limit <totalRooms
+  
+ 
 
-  // Optional: Handle pagination
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || allRooms.length;
 
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-
-  const paginatedRooms = allRooms.slice(startIndex, endIndex);
 
   res.status(200).json({
-    rooms: paginatedRooms,
+    rooms:Rooms,
     currentPage: page,
-    total: allRooms.length,
-    hasMore: endIndex < allRooms.length,
+    total: totalRooms,
+    hasMore
   });
 });
 

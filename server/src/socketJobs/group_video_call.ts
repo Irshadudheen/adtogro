@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { SocketNotInitializedError } from '../errors/socket-not-init-error';
-import  rooms  from '../RoomData/roomData';
+import  {Room}  from '../models/room';
 import { verifyToken } from '../service/jwt';
 
 // Extend Socket to include custom properties
@@ -27,40 +27,41 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
     socket.emit('me', socket.id);
 
     // Handle room joining
-    socket.on('join_room', (roomId: string,token:string) => {
+    socket.on('join_room',async (roomId: string,token:string) => {
       console.log(token)
      const user =verifyToken(token)
     console.log(user,'the user token')
       console.log(`User ${socket.id} attempting to join room: ${roomId}`);
-
-      if (!rooms[roomId]) {
+      const room =await Room.findById(roomId)
+      if (!room) {
         // rooms[roomId] = { users: [], userName:[userName]  };
         // console.log(`Room ${roomId} created`);
         socket.emit('room_not_found');
         return;
       }
 
-      if (rooms[roomId].users.length >= MAX_USERS_PER_ROOM) {
+      if (room.users.length >= MAX_USERS_PER_ROOM) {
         console.log(`Room ${roomId} is full`);
         socket.emit('room_full');
         return;
       }
 
-      if (rooms[roomId].users.some(user =>user.socketId==socket.id)) {
+      if (room.users.some(user =>user.socketId==socket.id)) {
         console.log(`User ${socket.id} is already in room ${roomId}`);
         return;
       }
 
       socket.join(roomId);
-      rooms[roomId].users.push({socketId:socket.id,userImage:user.profileImage,name:user.name});
+      room.users.push({socketId:socket.id,userImage:user.profileImage,name:user.name});
+      await room.save()
       // rooms[roomId].userName.push()
       socket.roomId = roomId;
 
       console.log(`User ${socket.id} joined room ${roomId}`);
-      console.log(`Room ${roomId} users: ${rooms[roomId].users}`);
+      console.log(`Room ${roomId} users: ${room.users}`);
 
       // Notify users
-      io.to(roomId).emit('users_in_room', rooms[roomId].users);
+      io.to(roomId).emit('users_in_room', room.users);
 
       socket.to(roomId).emit('chat_message', {
         from: 'system',
@@ -68,12 +69,12 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
       });
 
       // Send recent messages
-      if (rooms[roomId].messages && rooms[roomId].messages.length > 0) {
-        socket.emit('chat_history', rooms[roomId].messages);
+      if (room.messages && room.messages.length > 0) {
+        socket.emit('chat_history', room.messages);
       }
 
       // Request offers from existing users
-      const usersInRoom = rooms[roomId].users.filter(user => user.socketId !== socket.id);
+      const usersInRoom = room.users.filter(user => user.socketId !== socket.id);
       usersInRoom.forEach(user => {
         console.log(`Requesting offer from ${user.socketId} to ${socket.id}`);
         io.to(user.socketId).emit('offer_request', { from: socket.id });
@@ -98,11 +99,12 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
     });
 
     // Handle chat messages
-    socket.on('chat_message', ({ roomId, message }: { roomId: string; message: string }) => {
-      if (!roomId || !rooms[roomId]) return;
+    socket.on('chat_message',async ({ roomId, message }: { roomId: string; message: string }) => {
+      const room =await Room.findById(roomId)
+      if (!roomId || !room) return;
 
       console.log(`Chat message from ${socket.id} in room ${roomId}: ${message}`);
-      const userData = rooms[roomId].users.find(user=>{
+      const userData = room.users.find(user=>{
         if(user.socketId==socket.id){
           return user
         }
@@ -115,14 +117,14 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
         userData
       };
 
-      if (!rooms[roomId].messages) {
-        rooms[roomId].messages = [];
+      if (!room.messages) {
+        room.messages = [];
       }
 
-      rooms[roomId].messages.push(formattedMessage);
+      room.messages.push(formattedMessage);
 
-      if (rooms[roomId].messages.length > 50) {
-        rooms[roomId].messages.shift();
+      if (room.messages.length > 50) {
+        room.messages.shift();
       }
 
       socket.to(roomId).emit('chat_message', {
@@ -147,15 +149,15 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
   });
 
   // Helper function
-  function leaveRoom(socket: CustomSocket): void {
+  async function leaveRoom(socket: CustomSocket):  Promise<void> {
     const roomId = socket.roomId;
-
-    if (roomId && rooms[roomId]) {
+    const room = await Room.findById(roomId)
+    if (roomId && room) {
       console.log(`Removing user ${socket.id} from room ${roomId}`);
-      const leavedUserData = rooms[roomId].users.find(user => user.socketId == socket.id);
+      const leavedUserData = room.users.find(user => user.socketId == socket.id);
 
-      rooms[roomId].users = rooms[roomId].users.filter(user => user.socketId !== socket.id);
-
+      room.users = room.users.filter(user => user.socketId !== socket.id);
+      await room.save()
       io.to(roomId).emit('chat_message', {
         from: 'system',
         message: `User ${leavedUserData?.name} left the room`,
@@ -163,17 +165,17 @@ export const initializeGroupVideoCallSocket = (io:Server) => {
 
       io.to(roomId).emit('user_left', socket.id,leavedUserData?.name);
 
-      io.to(roomId).emit('users_in_room', rooms[roomId].users);
+      io.to(roomId).emit('users_in_room', room.users);
 
-      console.log(`Room ${roomId} users after leave: ${rooms[roomId].users}`);
+      console.log(`Room ${roomId} users after leave: ${room.users}`);
       
       // Delay room deletion by 1 minute if empty
-    if (rooms[roomId].users.length === 0) {
+    if (room.users.length === 0) {
       console.log(`Room ${roomId} is empty, scheduling deletion in 1 minute`);
-      setTimeout(() => {
-        if (rooms[roomId] && rooms[roomId].users.length === 0) {
+      setTimeout(async() => {
+        if (room && room.users.length === 0) {
           console.log(`Deleting room ${roomId} after 1 minute of inactivity`);
-          delete rooms[roomId];
+          await Room.findByIdAndDelete(roomId)
         } else {
           console.log(`Room ${roomId} is no longer empty, not deleting`);
         }

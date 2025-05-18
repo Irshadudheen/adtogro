@@ -9,18 +9,19 @@ hide screen share in small screen ✔
 room need responsive ✔
 room creater need to display pop url ✔
 remove big footer in talkspace ✔
-mute video display other profile 
-create db for group and give ttl
+create better loader ✔
+create db for group and give ttl ✔
+infinty scroll 
 feedback 
+mute video display other profile 
 live make 1K 1M 
 live update list room
-infinty scroll 
 search room
-create better loader
 analaytics of clicks device used check with useragent
 pravicy and policy
 give simple admin panel
 block user and advertise
+buy me a coffie
  
 
 

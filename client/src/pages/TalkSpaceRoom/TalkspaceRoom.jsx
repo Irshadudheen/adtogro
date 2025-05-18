@@ -723,7 +723,7 @@ const RoomPage = () => {
           className={`p-3 px-5 rounded-full  bg-red-500 hover:bg-red-600`}
           title={isScreenSharing ? "Stop screen sharing" : "Share screen"}
         >
-          <span class="material-symbols-outlined">
+          <span className="material-symbols-outlined">
 call_end
 </span>
         </button>

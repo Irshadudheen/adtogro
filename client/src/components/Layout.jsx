@@ -273,7 +273,7 @@ const handleModalClose = ()=>{
       </main>
       
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-5">
+      <footer className="bg-[#1F2937] text-white py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>

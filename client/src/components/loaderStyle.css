@@ -1,0 +1,23 @@
+.cls-1 {
+        font-size: 91.51px;
+        font-family: BerlinSansFB-Reg, Berlin Sans FB;
+      }
+      
+      .cls-2 {
+        fill: none;
+      }
+      
+      .cls-3 {
+        fill: #ffde17;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+        100% { transform: scale(1); }
+      }
+      
+      .yellow-circle {
+        animation: pulse 2s infinite ease-in-out;
+        transform-origin: center;
+      }
