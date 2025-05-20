@@ -1,5 +1,6 @@
 import express,{json, urlencoded} from 'express'
 import 'express-async-errors'
+import helmet from "helmet";
 // import { currentUserRouter,singoutRouter ,googleAuthRouter,createQrRouter,createUrlRouter,redirectUrlRouter,getURLAnalyticsRouter, getOverallAnalyticsRouter, topicAnalyticsRouter} from './routes/index'
 import { createAdvertiseRouter } from './routes/advertise/createAdvertise'
 import { errorhandler } from './middlewares/error-handler'
@@ -22,13 +23,14 @@ import { googleAuthRouter } from './routes/user/googleLogin'
 
 
 const app = express()
-
+app.use(helmet())
 
 app.use(json())
 app.use(urlencoded({extended:true}))
 //cookie parser
 //cors
 app.use(cors())
+
 //routes
 // app.use(signUpRouter)
 app.use(verifyEmailRouter)

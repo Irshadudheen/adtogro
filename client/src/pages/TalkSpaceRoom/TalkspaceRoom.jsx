@@ -233,11 +233,15 @@ const RoomPage = () => {
     try {
       // Clear previous error messages
       setErrorMessage('');
-      
+       setIsAudioMuted(true);   // update state accordingly
+    setIsVideoOff(true);
       // Get user media
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       streamRef.current = stream;
-      
+      stream.getAudioTracks().forEach(track => track.enabled = false);
+    stream.getVideoTracks().forEach(track => track.enabled = false);
+
+   
       // We'll set the video element srcObject after the component re-renders
       setTimeout(() => {
         if (userVideoRef.current) {

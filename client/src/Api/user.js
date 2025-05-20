@@ -88,9 +88,9 @@ export const roomDetailsApi = async (roomId) =>{
         throw error 
     }
 }
-export const roomsDetails = async () =>{
+export const roomsDetails = async ({ page = 1, limit = 6, search = '' } = {}) =>{
     try {
-        const {data}  = await Api.get(userRoutes.rooms)
+        const {data}  = await Api.get(`${userRoutes.rooms}?page=${page}&&limit=${limit}&&search=${search}`)
         return data
     } catch (error) {
         

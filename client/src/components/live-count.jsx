@@ -1,11 +1,34 @@
 import { useEffect, useState,useRef } from "react";
 
 export default function DraggableLiveCount({ liveCount }) {
-    const [position, setPosition] = useState({ x: 1150, y: 70 });
+    const [position, setPosition] = useState({ x: 1100, y: 70 });
     const [isDragging, setIsDragging] = useState(false);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const elementRef = useRef(null);
+  useEffect(() => {
+    const handleResize = () => {
+    if (!isDragging) {
+
   
+  const screenWidth = window.innerWidth;
+
+  if (screenWidth <= 640) {
+    // Mobile screens
+    setPosition({ x: 370, y: 70 });
+  } else if (screenWidth <= 1024) {
+    // Tablet screens
+    setPosition({ x: 700, y: 70 });
+  } else {
+    // Desktop
+    setPosition({ x: 1100, y: 70 });
+  }
+    }
+  }
+    window.addEventListener('resize', handleResize);
+    return () =>{
+      window.removeEventListener('resize', handleResize);
+    }
+}, []);
     // Handle the start of a drag operation
     const handleStart = (clientX, clientY) => {
       if (elementRef.current) {

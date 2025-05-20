@@ -48,6 +48,7 @@ const handleClick = async(id,url)=>{
                     src={ad.adImage} 
                     alt={ad.companyName}
                     className="w-full h-full object-cover cursor-pointer"
+                     draggable={false}
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     {ad.companyName}

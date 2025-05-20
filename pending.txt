@@ -22,6 +22,8 @@ pravicy and policy
 give simple admin panel
 block user and advertise
 buy me a coffie
+change payment into paypal and real
+
  
 
 

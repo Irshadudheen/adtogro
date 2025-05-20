@@ -12,7 +12,8 @@ router.post('/api/order',createAdValidate,validateRequest,
     currentUser,
     async (req:Request,res:Response)=>{
         console.log('the order create')
-        const userId = req.headers.authorization 
+        const userId = req.currentUser?.id 
+
         if(!userId){
             throw new BadRequestError('User not authorised')
         }

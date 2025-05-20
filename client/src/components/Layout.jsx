@@ -142,6 +142,7 @@ const handleModalClose = ()=>{
                 src={user.profileImage}
                 alt="Profile"
                 className="w-8 h-8 rounded-full object-cover"
+                draggable={false}
               />
               <span className="font-medium">{user.name}</span>
               <svg

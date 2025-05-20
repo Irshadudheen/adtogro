@@ -8,8 +8,10 @@ import toast from 'react-hot-toast';
 import { LiveCountContext } from '@/context/LiveCountContext';
 import useGetUserData from '../../hooks/useGetUser';
 import { useLoginModal } from '../../context/LoginModalContext';
+import { useDebounce } from '../../utils/debounce';
 
 export default function Talkspace() {
+  const [page, setPage] = useState(1);
   const { setIsLoginModalOpen} = useLoginModal()
   const {email}=useGetUserData()
   const [CommunityCount, setCommunityCount] = useState(0);
@@ -17,24 +19,28 @@ export default function Talkspace() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [allRooms, setAllRooms] = useState([]);
-  const [displayedRooms, setDisplayedRooms] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false); // Separate loading state for pagination
+  const [rooms,setRooms]=useState([]);
+  const ITEMS_PER_PAGE = 6;
+  const [hasMore, setHasMore] = useState(false);
+  
   const [roomData, setRoomData] = useState({roomName:'',roomDescription:'',roomLanguage:'English',roomLevel:'Any Level'});
-  const ITEMS_PER_PAGE = 6; // Number of rooms to load per "page"
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  
+  // Track if we're already fetching to prevent duplicate calls
+  const isFetchingRef = useRef(false);
   
   const observer = useRef();
   const lastRoomElementRef = useCallback(node => {
-    if (isLoading) return;
+    if (isLoading || isLoadingMore || isFetchingRef.current) return;
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        loadMoreRooms();
+      if (entries[0].isIntersecting && hasMore && !isFetchingRef.current) {
+        setPage(prev => prev + 1);
       }
     });
     if (node) observer.current.observe(node);
-  }, [isLoading, hasMore]);
+  }, [isLoading, isLoadingMore, hasMore]);
 
   const handleChange = (e) => {
     const {name,value} = e.target;
@@ -76,14 +82,33 @@ export default function Talkspace() {
   }
 
   const fetchRoomDetails = async () => {
+    // Prevent duplicate calls
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    
     try {
-      setIsLoading(true);
-      const data = await roomsDetails();
-      setAllRooms(data.rooms);
-      setIsLoading(false);
+      if(page === 1){
+        setIsLoading(true);
+      } else {
+        setIsLoadingMore(true);
+      }
+   
+      const { rooms: newRooms, hasMore: more} = await roomsDetails({
+        page, 
+        search: debouncedSearch,
+        limit: ITEMS_PER_PAGE
+      });
+      
+      setRooms(prev => (page === 1 ? newRooms : [...prev, ...newRooms]));
+      setHasMore(more);
+      
     } catch (error) {
+      console.error('Error fetching rooms:', error);
+      toast.error('Failed to load rooms');
+    } finally {
       setIsLoading(false);
-      throw error;
+      setIsLoadingMore(false);
+      isFetchingRef.current = false;
     }
   }
 
@@ -96,63 +121,21 @@ export default function Talkspace() {
     }
   }
 
-  // Apply filters to rooms
-  const filterRooms = useCallback(() => {
-    const filtered = allRooms.filter(room => {
-      const matchesSearch = room.roomLanguage.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          room.roomDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          room.roomLevel.toLowerCase().includes(searchQuery.toLowerCase());
-                          
-      if (activeFilter === 'all') return matchesSearch;
-      if (activeFilter === 'trending') return room.trending && matchesSearch;
-      if (activeFilter === 'active') return room.active && matchesSearch;
-      
-      return matchesSearch;
-    });
-
-    // Initialize with first page of results
-    setDisplayedRooms(filtered.slice(0, ITEMS_PER_PAGE));
+  // Reset page when search changes
+  useEffect(() => {
     setPage(1);
-    setHasMore(filtered.length > ITEMS_PER_PAGE);
-  }, [allRooms, searchQuery, activeFilter]);
+    setRooms([]); // Clear existing rooms when search changes
+  }, [debouncedSearch]);
 
-  // Load more rooms when scrolling
-  const loadMoreRooms = () => {
-    const filteredRooms = allRooms.filter(room => {
-      const matchesSearch = room.roomLanguage.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          room.roomDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          room.roomLevel.toLowerCase().includes(searchQuery.toLowerCase());
-                          
-      if (activeFilter === 'all') return matchesSearch;
-      if (activeFilter === 'trending') return room.trending && matchesSearch;
-      if (activeFilter === 'active') return room.active && matchesSearch;
-      
-      return matchesSearch;
-    });
+  // Fetch rooms when page or search changes
+  useEffect(() => {
+    fetchRoomDetails();
+  }, [page, debouncedSearch]);
 
-    const nextPage = page + 1;
-    const startIndex = (nextPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    
-    const newRooms = filteredRooms.slice(startIndex, endIndex);
-    
-    if (newRooms.length > 0) {
-      setDisplayedRooms(prev => [...prev, ...newRooms]);
-      setPage(nextPage);
-      setHasMore(endIndex < filteredRooms.length);
-    } else {
-      setHasMore(false);
-    }
-  };
-
+  // Fetch community count on component mount
   useEffect(() => {
     fetchCommunityCount();
-    fetchRoomDetails();
   }, []);
-
-  useEffect(() => {
-    filterRooms();
-  }, [filterRooms, allRooms, searchQuery, activeFilter]);
 
   const liveCount = useContext(LiveCountContext);
   
@@ -364,18 +347,18 @@ export default function Talkspace() {
           </div>
         ) : (
           <>
-            {displayedRooms.length > 0 ? (
+            {rooms.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedRooms.map((room, index) => {
+                {rooms.map((room, index) => {
                   // Add ref to the last element
-                  const isLastElement = index === displayedRooms.length - 1;
+                  const isLast  = index === rooms.length - 1;
                   
                   return (
                     <div 
-                      key={room.id} 
-                      ref={isLastElement ? lastRoomElementRef : null}
+                      key={`${room.id}-${index}`} // More unique key
+                      ref={isLast ? lastRoomElementRef : null}
                       onClick={handleNavigate(room.id, room.users.length)} 
-                      className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all hover:border-gray-300 bg-white group"
+                      className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all hover:border-gray-300 bg-white group cursor-pointer"
                     >
                       <div className="flex items-center mb-3">
                         <div className={`text-white mr-3 p-2 rounded-lg ${
@@ -420,9 +403,16 @@ export default function Talkspace() {
                         )}
                       </div>
                       
-                      <button className="w-full bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 hover:to-black text-white px-4 py-3 rounded-lg flex items-center justify-center text-sm font-medium transition-all shadow-sm group-hover:shadow-md transform group-hover:-translate-y-1">
+                      <button 
+                        disabled={room.users.length >= 3}  
+                        className={`w-full px-4 py-3 rounded-lg flex items-center justify-center text-sm font-medium transition-all shadow-sm
+                          ${room.users.length >= 3 
+                            ? 'border border-solid text-black cursor-not-allowed bg-gray-100' 
+                            : 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 text-white hover:to-black group-hover:shadow-md transform group-hover:-translate-y-1'}
+                        `}
+                      >
                         <MessageCircle className="mr-2" size={16} />
-                        Join Conversation
+                        {room.users.length < 3 ? 'Join Conversation' : 'This Group is full'}
                       </button>
                     </div>
                   );
@@ -445,7 +435,7 @@ export default function Talkspace() {
             )}
             
             {/* Loading indicator at bottom */}
-            {hasMore && (
+            {isLoadingMore && (
               <div className="flex justify-center mt-6">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
               </div>
@@ -461,7 +451,7 @@ export default function Talkspace() {
               <div className="text-sm">Languages</div>
             </div>
             <div>
-              <div className="font-bold text-2xl text-black">{allRooms.length||0}+</div>
+              <div className="font-bold text-2xl text-black">{rooms.length||0}+</div>
               <div className="text-sm">Active groups</div>
             </div>
             <div>
