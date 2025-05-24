@@ -1,29 +1,43 @@
-import React,{lazy,Suspense} from 'react'
+import React,{lazy,Suspense, useEffect} from 'react'
 
 
-const HomePage =lazy(()=>import('@/pages/home/HomePage'))
-const PricingPage =lazy(()=>import('@/pages/PricingPage'))
-const AdvertisePage =lazy(()=>import('@/pages/AdvertisePage'))
-const ForgotPassowrd =lazy(()=>import('@/pages/forgot-password/forgotPassword'))
-const Talkspace =lazy(()=>import('@/pages/Talkspace/talkspace'))
-import { Navigate, Route, Routes } from 'react-router-dom'
+const HomePage =lazyWithLoader(()=>import('@/pages/home/HomePage'))
+const PricingPage =lazyWithLoader(()=>import('@/pages/PricingPage'))
+const AdvertisePage =lazyWithLoader(()=>import('@/pages/AdvertisePage'))
+const ForgotPassowrd =lazyWithLoader(()=>import('@/pages/forgot-password/forgotPassword'))
+const Talkspace =lazyWithLoader(()=>import('@/pages/Talkspace/talkspace'))
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import BrickLoader from '@/components/brickLoader'
 import EmailverifyPage from '@/pages/email/emailverifyPage'
-import NotFoundPage from '@/pages/404/404Page'
+const NotFoundPage =lazyWithLoader(()=>import('@/pages/404/404Page'))
 import useGetUserData from '@/hooks/useGetUser'
 import NewPasswordPage from '@/pages/forgot-password/newPassword'
 import { LiveCountProvider } from '@/context/LiveCountContext'
 import AdvertiserDashboard from '@/pages/advetiseDashboard/advertiseDashboard'
-
+import './lib/i18n'
 import { JoinRoomProvider } from '@/hooks/useJoinRoom'
-import TalkspaceRoom from '@/pages/TalkSpaceRoom/TalkspaceRoom'
+const TalkspaceRoom = lazyWithLoader(()=>import('@/pages/TalkSpaceRoom/TalkspaceRoom'))
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { LoginModalProvider } from './context/LoginModalContext'
 import LoginPage from './pages/login/loginPage'
 import Loader  from './components/loader'
+import { RoomDetailsProvider } from './context/videoCallRoomContext/RoomDetailsContext'
+import lazyWithLoader from './utils/lazyWithLoader'
+import Offline from './utils/offline'
+import { useOnlineStatus } from './hooks/useOnlineStatus'
+import { useTranslation } from 'react-i18next'
+import LanguageWrapper from './components/LanguageWrapper'
 
 function App() {
 const user =useGetUserData()
+ const isOnline = useOnlineStatus();
+ const {i18n} = useTranslation()
+ const {lang} = useParams()
+  useEffect(() => {
+    if (['en', 'fr'].includes(lang)) {
+      i18n.changeLanguage(lang);
+    }
+  }, [lang, i18n]);
   return (
 
     <>
@@ -31,10 +45,12 @@ const user =useGetUserData()
      <LiveCountProvider>
       <JoinRoomProvider>
       <LoginModalProvider >
+        <Offline/>
       <Suspense fallback={<Loader />}>
-      <Routes>
+      {isOnline&&<Routes>
         <Route path='/loader' element={<Loader/>}/>
-        <Route path="/" element={<HomePage />} />
+         <Route path="/" element={<HomePage />} />
+        <Route path="/:lang" element={<LanguageWrapper><HomePage /></LanguageWrapper>} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/advertise" element={<AdvertisePage />} />
         <Route path="/login" element={user.id?<Navigate to={'/'}/>:<LoginPage />} />
@@ -43,9 +59,11 @@ const user =useGetUserData()
         <Route path='/reset-password/:token' element={<NewPasswordPage/>} />
         <Route path='/advertiser-dashboard' element={user.id?<AdvertiserDashboard/>:<Navigate to={'/'}/> } />
         <Route path='/TalkSpace' element={<Talkspace/>}/>
-        <Route path='/talkspaceroom/:roomId' element={<TalkspaceRoom/>}/>
+        <Route path='/offline' element={<Offline/>}/>
+        <Route path='/talkspaceroom/:roomId' element={<RoomDetailsProvider><TalkspaceRoom/></RoomDetailsProvider>}/>
+        
         <Route path="*" element={<NotFoundPage/>} />
-      </Routes>
+      </Routes>}
       </Suspense>
       </LoginModalProvider>
       </JoinRoomProvider>

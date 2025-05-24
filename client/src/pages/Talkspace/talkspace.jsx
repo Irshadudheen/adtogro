@@ -3,14 +3,22 @@ import { PlusCircle, Globe, MessageCircle, Users, Search, TrendingUp, Star, Cloc
 import Layout from '@/components/Layout';
 import {createRoom} from '@/Api/user';
 import { useNavigate } from 'react-router-dom';
-import { commmunityCount, roomsDetails } from '../../Api/user';
+import { commmunityCount, roomsDetails } from '@/Api/user';
 import toast from 'react-hot-toast';
 import { LiveCountContext } from '@/context/LiveCountContext';
-import useGetUserData from '../../hooks/useGetUser';
-import { useLoginModal } from '../../context/LoginModalContext';
-import { useDebounce } from '../../utils/debounce';
-
+import useGetUserData from '@/hooks/useGetUser';
+import { useLoginModal } from '@/context/LoginModalContext';
+import { useDebounce } from '@/utils/debounce';
+import { validateRoom } from '@/utils/validateCreatRoom';
 export default function Talkspace() {
+    const allLanguages = ["Arabic",
+  "English", "Spanish", "French", "German", "Japanese", "Vietnamese",
+  "Sinhala", "Hindi", "Bengali", "Telugu", "Marathi", "Tamil", "Gujarati",
+  "Urdu", "Kannada", "Odia", "Punjabi", "Malayalam", "Assamese", "Maithili",
+  "Konkani", "Dogri", "Kashmiri", "Manipuri", "Bodo",'Mandarin'
+];
+ const [selectedLanguage, setSelectedLanguage] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [page, setPage] = useState(1);
   const { setIsLoginModalOpen} = useLoginModal()
   const {email}=useGetUserData()
@@ -58,6 +66,10 @@ export default function Talkspace() {
         setIsLoginModalOpen(true)
         return
       }
+      roomData.roomLanguage=selectedLanguage
+      
+    validateRoom(roomData)
+      
       const data = await createRoom(roomData)
       navigate(`/talkspaceroom/${data.roomId}`)
     } catch (error) {
@@ -121,6 +133,17 @@ export default function Talkspace() {
     }
   }
 
+
+  const handleSelect = (lang) => {
+    if (!selectedLanguage.includes(lang)) {
+      setSelectedLanguage([...selectedLanguage, lang]);
+    }
+    setShowDropdown(false);
+  };
+
+  const handleRemove = (lang) => {
+    setSelectedLanguage(selectedLanguage.filter((l) => l !== lang));
+  };
   // Reset page when search changes
   useEffect(() => {
     setPage(1);
@@ -176,7 +199,7 @@ export default function Talkspace() {
         {showCreateRoom && (
           <div className="p-6 rounded-xl mb-8 border border-blue-100 shadow-inner animate-fadeIn">
             <h2 className="text-xl font-semibold text-gray-600 mb-4 flex items-center">
-              <PlusCircle className="mr-2 text-blue-600" size={20} />
+              <PlusCircle className="mr-2 text-black" size={20} />
               Create a New Group
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -204,24 +227,51 @@ export default function Talkspace() {
                   placeholder="Brief description of your Group"
                 />
               </div>
-              <div>
-                <label className="block text-gray-700 mb-2 font-medium" htmlFor="roomLanguage">Language</label>
-                <select 
-                  id="roomLanguage"
-                  name='roomLanguage'
-                  onChange={handleChange}
-                  value={roomData.roomLanguage}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
-                >
-                  <option value="english">English</option>
-                  <option value="spanish">Spanish</option>
-                  <option value="french">French</option>
-                  <option value="german">German</option>
-                  <option value="japanese">Japanese</option>
-                  <option value="vietnamese">Vietnamese</option>
-                  <option value="sinhala">Sinhala</option>
-                </select>
-              </div>
+                 <div className="w-full relative">
+      <label className="block text-gray-700 mb-2 font-medium">Language</label>
+
+      <div
+        className="flex flex-wrap items-start gap-2 p-2  border border-gray-300 rounded-lg min-h-[48px] cursor-pointer"
+        onClick={() => setShowDropdown(!showDropdown)}
+      >
+        {selectedLanguage.map((lang) => (
+          <span
+            key={lang}
+            className="flex items-center bg-gray-200 text-sm px-2 py-1 rounded-full"
+          >
+            {lang}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemove(lang);
+              }}
+              className="ml-1 text-gray-600 hover:text-red-500"
+            >
+              &times;
+            </button>
+          </span>
+        ))}
+        <input
+          className="flex-grow outline-none bg-transparent"
+          placeholder={selectedLanguage.length === 0 ? "Select languages..." : ""}
+          readOnly
+        />
+      </div>
+
+      {showDropdown && (
+        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-60 overflow-y-auto">
+          {allLanguages.map((lang) => (
+            <div
+              key={lang}
+              onClick={() => handleSelect(lang)}
+              className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+            >
+              {lang}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
               <div>
                 <label className="block text-gray-700 mb-2 font-medium" htmlFor="roomLevel">Proficiency Level</label>
                 <select 
@@ -255,7 +305,7 @@ export default function Talkspace() {
         
         {/* Introduction section */}
         <div className="mb-8 bg-gradient-to-r from-gray-600 to-black text-white p-6 rounded-xl shadow-md">
-          <h3 className="text-2xl font-bold mb-2">Join a conversation space</h3>
+          <h3 className="text-2xl font-bold mb-2">Join  conversation space</h3>
           <p className="text-blue-50 mb-3">Practice languages with native speakers, discuss interesting topics, and make new friends from around the world.</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <div className="flex items-center">
@@ -381,11 +431,7 @@ export default function Talkspace() {
                         }`}>
                           {room.roomLevel}
                         </span>
-                        {room.trending && (
-                          <span className="ml-auto">
-                            <TrendingUp className="text-red-500" size={16} />
-                          </span>
-                        )}
+                        
                       </div>
                       
                       <p className="text-gray-700 mb-4 font-medium">{room.roomDescription}</p>

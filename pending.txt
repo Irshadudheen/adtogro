@@ -11,12 +11,11 @@ room creater need to display pop url ✔
 remove big footer in talkspace ✔
 create better loader ✔
 create db for group and give ttl ✔
-infinty scroll 
-feedback 
+infinty scroll ✔
+live make 1K 1M ✔
+search room ✔
 mute video display other profile 
-live make 1K 1M 
 live update list room
-search room
 analaytics of clicks device used check with useragent
 pravicy and policy
 give simple admin panel

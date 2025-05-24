@@ -7,9 +7,10 @@ import RemoteVideo from './RemoteVideo';
 import toast from 'react-hot-toast';
 import useGetUserData from '@/hooks/useGetUser';
 import { roomDetailsApi } from '../../Api/user';
-import { notifyTheuser } from '../../utils/copyRoomUrl';
+import { roomLink } from '../../utils/copyRoomUrl';
 
 const RoomPage = () => {
+  const [remoteVideoStatus, setRemoteVideoStatus] = useState({});
   const [userMap, setUserMap] = useState({});
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ const RoomPage = () => {
 
   // Handle browser back button and page navigation
   useEffect(() => {
+    console.log(remoteVideoStatus,'status of remote video')
     const fetchRoomDetails = async () =>{
       try {
         const data = await roomDetailsApi(roomId)
@@ -53,7 +55,7 @@ const RoomPage = () => {
         
       } catch (error) {
         navigate('/TalkSpace');
-        throw err
+        throw error;
       }
     }
     fetchRoomDetails()
@@ -80,26 +82,30 @@ const RoomPage = () => {
 
   useEffect(()=>{
     setTimeout(()=>{
-  notifyTheuser(usersInRoom,roomId)
+      roomLink(usersInRoom,roomId)
     },4000)
     
   },[usersInRoom])
-  
+    const handleRoomNotFound = () => {
+      cleanupResources();
+      toast.dismiss()
+      
+      toast.error('Room not found. Please check the room ID or create a new room.');
+      navigate('/TalkSpace');
+       
+    };
 
   useEffect(() => {
-    // Connect to the signaling server
     socketRef.current = socket;
+    // Connect to the signaling server
     
     // Get your socket ID
     socketRef.current.on('me', (id) => {
       setSocketId(id);
       console.log("Connected with socket ID:", id);
     });
-    socketRef.current.on('room_not_found',()=>{
-     
-      toast.error('Room not found. Please check the room ID or create a new room.');
-      navigate('/TalkSpace'); // Go back to join page
-    })
+   
+    socketRef.current.on('room_not_found',handleRoomNotFound)
     // Handle room full error
     socketRef.current.on('room_full', () => {
       toast.error('Room is full. Please try another room. or create');
@@ -110,10 +116,11 @@ const RoomPage = () => {
     socketRef.current.on('users_in_room', (users) => {
       setUsersInRoom(users);
       const map = {};
-    users.forEach(u => { map[u.socketId] = u; });
-    setUserMap(map);
+      users.forEach(u => { map[u.socketId] = u; });
+      setUserMap(map);
+    
     });
-
+    console.log(userMap,'maped User')
     // Handle offer request
     socketRef.current.on('offer_request', async ({ from }) => {
       try {
@@ -156,8 +163,40 @@ const RoomPage = () => {
       }
     });
 
+    // Handle video status changes from other users
+    socketRef.current.on('user_video_toggle', ({ socketId: peerId, isVideoOff, user }) => {
+      console.log(`User ${user} (${peerId}) video status: ${isVideoOff ? 'off' : 'on'}`);
+      
+      setMessages(prev => [
+        ...prev,
+        {
+          type: 'system',
+          content: `${user} ${isVideoOff ? 'turned off' : 'turned on'} their video`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+      
+      // Update remote video status state
+      setRemoteVideoStatus(prev => ({
+        ...prev,
+        [peerId]: isVideoOff
+      }));
+    });
+
+    // Request current video states when joining a room
+    socketRef.current.on('joined_room', () => {
+      // Request current video states of all users in the room
+      socketRef.current.emit('request_video_states', { roomId });
+    });
+
+    // Receive video states of all users in room
+    socketRef.current.on('video_states', ({ states }) => {
+      console.log("Received video states:", states);
+      setRemoteVideoStatus(states);
+    });
+
     // Handle user left
-    socketRef.current.on('user_left', (id,name) => {
+    socketRef.current.on('user_left', (id, name) => {
       try {
         if (peerConnectionsRef.current[id]) {
           peerConnectionsRef.current[id].close();
@@ -168,6 +207,13 @@ const RoomPage = () => {
           const newStreams = { ...prev };
           delete newStreams[id];
           return newStreams;
+        });
+
+        // Also remove from remoteVideoStatus when user leaves
+        setRemoteVideoStatus(prev => {
+          const newStatus = { ...prev };
+          delete newStatus[id];
+          return newStatus;
         });
         
         // Add system message when user leaves
@@ -188,7 +234,7 @@ const RoomPage = () => {
     socketRef.current.on('chat_message', ({ from, message,userData }) => {
       const newMessage = {
         type: 'remote',
-        sender: userData.name,
+        sender: from,
        
         content: message,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -200,10 +246,6 @@ const RoomPage = () => {
       if (!isChatOpen) {
         setUnreadMessages(prev => prev + 1);
       }
-      
-      // Play notification sound
-      const audio = new Audio('/aud/group_chat_received_25c22bd649cdf2538dcc3a39ba7a616b.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
     });
 
     // Setup video call when component mounts
@@ -233,22 +275,18 @@ const RoomPage = () => {
     try {
       // Clear previous error messages
       setErrorMessage('');
-       setIsAudioMuted(true);   // update state accordingly
-    setIsVideoOff(true);
+      setIsAudioMuted(true);   // update state accordingly
+      setIsVideoOff(true);
       // Get user media
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       streamRef.current = stream;
       stream.getAudioTracks().forEach(track => track.enabled = false);
-    stream.getVideoTracks().forEach(track => track.enabled = false);
+      stream.getVideoTracks().forEach(track => track.enabled = false);
 
-   
       // We'll set the video element srcObject after the component re-renders
       setTimeout(() => {
         if (userVideoRef.current) {
           userVideoRef.current.srcObject = stream;
-           const audio = new Audio('/aud/join_call_6a6a67d6bcc7a4e373ed40fdeff3930a.ogg');
-      audio.play().catch(err => console.log('Audio play failed:', err));
-          
         } else {
           console.error("Video element not found after timeout");
         }
@@ -414,14 +452,6 @@ const RoomPage = () => {
       if (audioTracks.length > 0) {
         audioTracks[0].enabled = isAudioMuted;
         setIsAudioMuted(!isAudioMuted);
-        if(!isAudioMuted){
-          const audio = new Audio('/aud/mute_and_unmute.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
-        }else{
-           const audio = new Audio('/aud/unmute.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
-        }
-        
       }
     }
   };
@@ -432,14 +462,14 @@ const RoomPage = () => {
       if (videoTracks.length > 0) {
         videoTracks[0].enabled = isVideoOff;
         setIsVideoOff(!isVideoOff);
-        if(!isVideoOff){
-            const audio = new Audio('/aud/mute_and_unmute.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
-        }else{
-             const audio = new Audio('/aud/unmute.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
-        }
-       
+
+        // Emit video toggle event to all peers with current state
+        socketRef.current.emit('user_video_toggle', {
+          roomId,
+          socketId,
+          isVideoOff: !isVideoOff,
+          user: userData.name,
+        });
       }
     }
   };
@@ -588,34 +618,62 @@ const RoomPage = () => {
             />
              {isVideoOff && (
               <div className="w-full h-full object-cover ">
-    <img 
-      src={userData.profileImage} 
-      alt="User Profile" 
-      className="w-full h-full object-cover blur-sm" 
-    />
-      <div className="absolute inset-0 flex items-center justify-center">
-      <img 
-        src={userData.profileImage} 
-        alt="User Avatar" 
-        className="w-20 h-20 rounded-full border-2 border-white shadow-lg object-cover" 
-      />
-    </div>
-    </div>
-  )}
+                <img 
+                  src={userData.profileImage} 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/icone/person.png"; // use a default image
+                  }}
+                  alt="User Profile" 
+                  className="w-full h-full object-cover blur-sm" 
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <img 
+                    src={userData.profileImage}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/icone/person.png"; // use a default image
+                    }}
+                    alt="User Avatar" 
+                    className="w-20 h-20 rounded-full border-2 border-white shadow-lg object-cover" 
+                  />
+                </div>
+              </div>
+            )}
             <div className="absolute bottom-2 left-2 bg-gray-800 bg-opacity-60 text-white text-sm px-2 py-1 rounded">
               You {isScreenSharing ? '(Screen)' : ''}
             </div>
-
           </div>
           
           {/* Remote Videos */}
           {Object.keys(remoteStreams).map(peerId => (
             <div key={peerId} className="relative bg-gray-200 rounded-lg overflow-hidden w-full md:w-80 h-60">
-              <RemoteVideo stream={remoteStreams[peerId]} 
-               user={userMap[peerId]}
-             
-      
-              />
+              {remoteVideoStatus[peerId] ? (
+                <div className="w-full h-full object-cover">
+                  <img
+                    src={userMap[peerId]?.userImage}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/icone/person.png";
+                    }}
+                    alt="User Profile"
+                    className="w-full h-full object-cover blur-sm"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                      src={userMap[peerId]?.userImage}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/icone/person.png";
+                      }}
+                      alt="User Avatar"
+                      className="w-20 h-20 rounded-full border-2 border-white shadow-lg object-cover"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <RemoteVideo stream={remoteStreams[peerId]} user={userMap[peerId]} />
+              )}
               <div className="absolute bottom-2 left-2 bg-gray-800 bg-opacity-60 text-white text-sm px-2 py-1 rounded">
                 {userMap[peerId]?.name ? userMap[peerId].name : `User ${peerId.substring(0, 5)}`}
               </div>
@@ -725,7 +783,7 @@ const RoomPage = () => {
          <button 
           onClick={leaveRoom}
           className={`p-3 px-5 rounded-full  bg-red-500 hover:bg-red-600`}
-          title={isScreenSharing ? "Stop screen sharing" : "Share screen"}
+          title="Leave room"
         >
           <span className="material-symbols-outlined">
 call_end

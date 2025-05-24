@@ -200,7 +200,7 @@ const ImageCropper = ({ updateAvatarCallback }) => {
         <div style={{
           width: '100px',
           height: '100px',
-          borderRadius: '50%',
+          
           overflow: 'hidden',
           border: '2px solid #e5e7eb',
           backgroundColor: '#f3f4f6',
@@ -295,7 +295,7 @@ const ImageCropper = ({ updateAvatarCallback }) => {
               <ReactCrop
                 crop={crop}
                 onChange={(pixelCrop, percentCrop) => setCrop(percentCrop)}
-                circularCrop
+                
                 keepSelection
                 aspect={ASPECT_RATIO}
                 minWidth={MIN_DIMENSION}

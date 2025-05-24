@@ -1,9 +1,9 @@
 import toast from "react-hot-toast"
 
-export const notifyTheuser= (usersInRoom,roomId)=>{
+export const roomLink= (usersInRoom,roomId)=>{
     try {
         if(usersInRoom.length==1){
-         
+            toast.dismiss()
             toast.custom((t) => (
           <div
             className={`${

@@ -10,6 +10,7 @@ import sendMail from '../../service/mail'
 import { User } from '../../models/user'
 import { currentUser } from '../../middlewares/current-user'
 import { body } from 'express-validator'
+import { Analytics } from '../../models/analytics'
 const router =Router()
 router.post('/api/advertise',
     currentUser,
@@ -52,7 +53,7 @@ router.post('/api/advertise',
         })
        
         await advertise.save()
-       
+        await Analytics.create({userId:req.currentUser?.id,adId:advertise.id,events:[]})
         sendMail({to:user.email,type:"AD_CREATED",data:{name:user.name,adTitile:order.orderData.companyName}})
         res.status(201).send(advertise)
     }

@@ -3,6 +3,7 @@ interface User {
   socketId: string;
   name: string;
   userImage: string;
+  userId: string;
 }
 export interface RoomAttras{
     createrId:string,
