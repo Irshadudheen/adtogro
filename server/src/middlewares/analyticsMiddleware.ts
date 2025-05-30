@@ -15,7 +15,7 @@ export const trackEvent = (eventType: EventType) => {
       try {
         const geo: Lookup | null = geoip.lookup(req.ip!);
         const deviceType = getDeviceType(req.headers["user-agent"] || "");
-       console.log(req.headers["user-agent"],'user-agent')
+      
         await Analytics.findOneAndUpdate(
             
   { adId: req.params.id
@@ -32,7 +32,7 @@ export const trackEvent = (eventType: EventType) => {
   }
 );
       } catch (err) {
-        console.error("Analytics tracking error:", err);
+       throw new Error(`Analytics tracking failed: ${err}`);
       }
     });
 

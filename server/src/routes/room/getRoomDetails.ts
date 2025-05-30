@@ -10,7 +10,7 @@ router.get('/api/room/:roomId', async(req,res)=>{
     if(!room){
         throw new BadRequestError('Room not found')
     }
-    console.log(room)
+ 
     res.status(200).json(room)
 })
 export {router as getRoomDetailsRouter}

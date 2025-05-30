@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef, useCallback } from 'react';
-import { PlusCircle, Globe, MessageCircle, Users, Search, TrendingUp, Star, Clock, Link } from 'lucide-react';
+import { PlusCircle, Globe, MessageCircle, Users, Search, TrendingUp, Star, Clock, Link, Coffee } from 'lucide-react';
 import Layout from '@/components/Layout';
 import {createRoom} from '@/Api/user';
 import { useNavigate } from 'react-router-dom';
@@ -10,9 +10,14 @@ import useGetUserData from '@/hooks/useGetUser';
 import { useLoginModal } from '@/context/LoginModalContext';
 import { useDebounce } from '@/utils/debounce';
 import { validateRoom } from '@/utils/validateCreatRoom';
+import { Helmet } from 'react-helmet';
+import './coffestyle.css'
+import { useAudio } from '../../context/backgroundAudio/AudioContext';
+import FooterTalkspace from '../../components/talkspace/Footer';
 export default function Talkspace() {
+   const { playAudio, pauseAudio } = useAudio();
     const allLanguages = ["Arabic",
-  "English", "Spanish", "French", "German", "Japanese", "Vietnamese",
+  "English", "Spanish", "French", "German","Gen Z", "Japanese", "Vietnamese",
   "Sinhala", "Hindi", "Bengali", "Telugu", "Marathi", "Tamil", "Gujarati",
   "Urdu", "Kannada", "Odia", "Punjabi", "Malayalam", "Assamese", "Maithili",
   "Konkani", "Dogri", "Kashmiri", "Manipuri", "Bodo",'Mandarin'
@@ -22,7 +27,7 @@ export default function Talkspace() {
   const [page, setPage] = useState(1);
   const { setIsLoginModalOpen} = useLoginModal()
   const {email}=useGetUserData()
-  const [CommunityCount, setCommunityCount] = useState(0);
+
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,6 +76,7 @@ export default function Talkspace() {
     validateRoom(roomData)
       
       const data = await createRoom(roomData)
+      pauseAudio()
       navigate(`/talkspaceroom/${data.roomId}`)
     } catch (error) {
       console.log(error.response)
@@ -111,6 +117,7 @@ export default function Talkspace() {
         limit: ITEMS_PER_PAGE
       });
       
+      console.log(newRooms, 'this is the new rooms')
       setRooms(prev => (page === 1 ? newRooms : [...prev, ...newRooms]));
       setHasMore(more);
       
@@ -124,14 +131,7 @@ export default function Talkspace() {
     }
   }
 
-  const fetchCommunityCount = async ( ) => {
-    try {
-      const {communityCount} = await commmunityCount();
-      setCommunityCount(communityCount);
-    } catch (error) {
-      throw error;
-    }
-  }
+
 
 
   const handleSelect = (lang) => {
@@ -156,13 +156,23 @@ export default function Talkspace() {
   }, [page, debouncedSearch]);
 
   // Fetch community count on component mount
-  useEffect(() => {
-    fetchCommunityCount();
-  }, []);
+
 
   const liveCount = useContext(LiveCountContext);
-  
+  const navigateTocoffee = ()=>{
+    try {
+      navigate('/keep_me_coffeinated')
+    } catch (error) {
+      
+    }
+  }
   return (
+    <>
+   <Helmet>
+    <title>Free Talkspace / Adtogro </title>
+<meta name="description" content="Join Free Talkspace by Adtogro – a safe, supportive community where you can express yourself, share your thoughts, and connect with others. No judgment, just real conversations that matter." />
+
+   </Helmet>
     <Layout>
     <div className="bg-[url('/bground_talkspace.jpg')] bg-cover bg-fixed bg-center min-h-screen py-8 px-4">
       <div className="w-full rounded-xl p-6 max-w-5xl mx-auto">
@@ -197,7 +207,7 @@ export default function Talkspace() {
         
         {/* Create Room Form with animation */}
         {showCreateRoom && (
-          <div className="p-6 rounded-xl mb-8 border border-blue-100 shadow-inner animate-fadeIn">
+          <div className="p-6 rounded-xl mb-8 border border-gray-100 shadow-inner animate-fadeIn">
             <h2 className="text-xl font-semibold text-gray-600 mb-4 flex items-center">
               <PlusCircle className="mr-2 text-black" size={20} />
               Create a New Group
@@ -308,11 +318,12 @@ export default function Talkspace() {
           <h3 className="text-2xl font-bold mb-2">Join  conversation space</h3>
           <p className="text-blue-50 mb-3">Practice languages with native speakers, discuss interesting topics, and make new friends from around the world.</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div className="flex items-center">
-              <div className="bg-white/20 p-2 rounded-lg mr-3">
-                <Globe size={18} />
+             <div className="flex  items-center" onClick={navigateTocoffee}>
+              <div className="bg-white/20 cursor-pointer p-2 rounded-lg mr-3">
+                <img  src='/icone/coffee.png' width={20} />
+               
               </div>
-              <span>7+ languages available</span>
+              <span className='coffee-text cursor-pointer'>Keep Me Caffeinated</span>
             </div>
             <div className="flex items-center">
               <div className="bg-white/20 p-2 rounded-lg mr-3">
@@ -422,7 +433,7 @@ export default function Talkspace() {
                           <Globe size={18} />
                         </div>
                         <span className="font-medium text-lg">{room.roomLanguage}</span>
-                        <span className={`ml-2 text-xs px-2 py-1 rounded-full ${
+                        <span className={`ml-1 text-xs px-2 py-1 rounded-full ${
                           room.roomLevel === 'Beginner' ? 'bg-green-100 text-green-700' :
                           room.roomLevel === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
                           room.roomLevel === 'Upper Intermediate' ? 'bg-orange-100 text-orange-700' :
@@ -430,17 +441,34 @@ export default function Talkspace() {
                           'bg-blue-100 text-blue-700'
                         }`}>
                           {room.roomLevel}
+                          
                         </span>
+                        
+                       
                         
                       </div>
                       
-                      <p className="text-gray-700 mb-4 font-medium">{room.roomDescription}</p>
+                     <div className="text-gray-700 mb-4 font-medium">
+                      {room.roomDescription}
+                      <span className="inline-flex items-center text-sm text-gray-500 ml-2">
+                        <Users size={14} className="mr-1" />
+                        <span>{room.users.length} Members</span>
+                      </span>
+                    </div>
                       
                       <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Users size={14} className="mr-1" />
-                          <span>{room.users.length} participants</span>
-                        </div>
+                        {
+                         room.users.length && room.users.map((user,index)=>{
+                          console.log(user,'this is the users',user.userImage)
+                          return (<img key={index} src={user.userImage} alt="" className='bg-gray  border border-gray-300 rounded-full w-1/3 ' draggable={false}  onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "icone/person.png"; // use a default image
+              }} />)
+                         }
+                             
+                          ) 
+                        }
+                        
                         {room.active && (
                           <span className="flex items-center text-sm text-green-600">
                             <span className="h-2 w-2 bg-green-600 rounded-full mr-1"></span>
@@ -490,28 +518,10 @@ export default function Talkspace() {
         )}
         
         {/* Statistics footer */}
-        <div className="mt-12 pt-6 border-t border-gray-200">
-          <div className="flex flex-wrap justify-center gap-8 text-center text-gray-600">
-            <div>
-              <div className="font-bold text-2xl text-black">7+</div>
-              <div className="text-sm">Languages</div>
-            </div>
-            <div>
-              <div className="font-bold text-2xl text-black">{rooms.length||0}+</div>
-              <div className="text-sm">Active groups</div>
-            </div>
-            <div>
-              <div className="font-bold text-2xl text-black">{liveCount||0}+</div>
-              <div className="text-sm">Users online</div>
-            </div>
-            <div>
-              <div className="font-bold text-2xl text-black">{CommunityCount}+</div>
-              <div className="text-sm">Community members</div>
-            </div>
-          </div>
-        </div>
+        <FooterTalkspace/>
       </div>
     </div>
     </Layout>
+     </>
   );
 }

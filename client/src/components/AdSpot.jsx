@@ -4,7 +4,7 @@
 
     function AdSpot({ ad }) {
     const [impressions, setImpressions] = useState(0);
-    console.log('AdSpot component rendered with ad:', ad);
+    
     //   useEffect(() => {
     //     // Record impression when ad is displayed
     //     const recordImpression = async () => {

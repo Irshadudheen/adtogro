@@ -5,7 +5,7 @@ import Layout from "@/components/Layout"
 import DraggableLiveCount from "@/components/live-count"
 import { Link } from "react-router-dom"
 import { LiveCountContext } from "@/context/LiveCountContext"
-import { useOnlineStatus } from "../../hooks/useOnlineStatus"
+import { useOnlineStatus } from "@/hooks/useOnlineStatus"
 import { useTranslation } from "react-i18next"
 
 export default function HomePage() {
@@ -32,7 +32,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
                 to="/talkspace"
-                className="px-8 py-4 bg-black text-white rounded-lg font-semibold inline-block transition-colors hover:bg-gray-800 text-lg shadow-lg"
+                className="px-8 py-4 bg-black text-white rounded-lg font-semibold inline-block transition-colors  text-lg shadow-lg"
               >
                 {t('Enter Talkspace')}
               </Link>
@@ -201,7 +201,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
                 to="/talkspace"
-                className="px-6 py-3 bg-black text-white rounded-lg font-semibold inline-block transition-colors hover:bg-gray-800"
+                className="px-6 py-3 bg-black text-white rounded-lg font-semibold inline-block transition-colors "
               >
                 {t('Enter Talkspace')}
               </Link>

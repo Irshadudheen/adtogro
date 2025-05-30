@@ -9,12 +9,12 @@ body('roomLanguage').notEmpty().isString().trim().withMessage('Group Language is
 body('roomDescription').notEmpty().isString().withMessage('Group Description is required'),
 body('roomLevel').notEmpty().withMessage('Proffiency level is required')],validateRequest,
 currentUser,
-(req:Request,res:Response)=>{
+async(req:Request,res:Response)=>{
     const {roomName,roomLanguage,roomDescription,roomLevel} = req.body;
 
 
    const room= Room.build({roomName,roomLanguage,roomLevel,roomDescription,users:[],createrId:req.currentUser?.id!})
-room.save()
+  await  room.save()
     // rooms[roomId]={
     //     groupCreaterId:req.currentUser?.id!,
     //     users: [],

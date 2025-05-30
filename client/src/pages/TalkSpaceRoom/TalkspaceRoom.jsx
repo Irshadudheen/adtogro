@@ -8,8 +8,10 @@ import toast from 'react-hot-toast';
 import useGetUserData from '@/hooks/useGetUser';
 import { roomDetailsApi } from '../../Api/user';
 import { roomLink } from '../../utils/copyRoomUrl';
+import { useAudio } from '../../context/backgroundAudio/AudioContext';
 
 const RoomPage = () => {
+  const { playAudio, pauseAudio } = useAudio();
   const [remoteVideoStatus, setRemoteVideoStatus] = useState({});
   const [userMap, setUserMap] = useState({});
   const { roomId } = useParams();
@@ -444,6 +446,7 @@ const RoomPage = () => {
   const leaveRoom = () => {
     cleanupResources();
     navigate('/TalkSpace', { replace: true }); // Using replace to avoid back button issues
+    playAudio()
   };
 
   const toggleAudio = () => {

@@ -20,6 +20,9 @@ import { getRoomDetailsRouter } from './routes/room/getRoomDetails'
 import { getAllRoomDetailsRouter } from './routes/room/getAllRoomDetails'
 import { communityCountRouter } from './routes/user/communityCount'
 import { googleAuthRouter } from './routes/user/googleLogin'
+import { AnalyticsStatusRouter } from './routes/analyticse/viewAnalytise';
+import { updateImpressionRouter } from './routes/advertise/updateImpression';
+import { roomCountRouter } from './routes/room/roomCount';
 
 
 const app = express()
@@ -29,7 +32,13 @@ app.use(json())
 app.use(urlencoded({extended:true}))
 //cookie parser
 //cors
-app.use(cors())
+const CLIENT_URL = 'http://localhost:5173'
+app.use(cors({
+   origin: CLIENT_URL,
+  credentials: true,
+}
+ 
+))
 
 //routes
 // app.use(signUpRouter)
@@ -48,6 +57,10 @@ app.use(createRoomRouter)
 app.use(getRoomDetailsRouter)
 app.use(getAllRoomDetailsRouter)
 app.use(communityCountRouter)
+app.use(AnalyticsStatusRouter)
+app.use(updateImpressionRouter)
+//count of room
+app.use(roomCountRouter)
 //not found route
 app.all('*',async()=>{
     throw new NotFoundError();

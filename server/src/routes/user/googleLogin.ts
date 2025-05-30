@@ -11,7 +11,7 @@ const router = Router();
 router.post('/api/user/googleLogin',[body('email').isEmail().withMessage('Must provide email'),
     body('name').notEmpty().withMessage('User name is required'),body('picture').notEmpty().withMessage('picture not found')],validateRequest,
   async  (req:Request,res:Response)=>{
-    console.log(req.body)
+   
         const {email ,name , picture } = req.body;
         const cleanedUrl = picture.slice(0, -6);
 
@@ -20,10 +20,10 @@ router.post('/api/user/googleLogin',[body('email').isEmail().withMessage('Must p
 
         if(user){
              const userJWT =await createToken(user) 
-              console.log(user,'The user data',userJWT)
+             
             res.status(200).json({user:user,token:userJWT})
         }else{
-            console.log('usernot found')
+            
             const newUser = User.build({email,name,profileImage:cleanedUrl})
             
          const savedUser= await  newUser.save() as userData

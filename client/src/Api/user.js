@@ -118,3 +118,12 @@ export const decodedToken = async (token)  =>{
         throw error 
     }
 }
+export const roomCount = async () =>{
+    try {
+        const {data}= await Api.get(userRoutes.roomCount)
+        return data.roomCount
+        
+    } catch (error) {
+        throw error
+    }
+}

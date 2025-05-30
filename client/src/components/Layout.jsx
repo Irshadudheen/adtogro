@@ -23,9 +23,9 @@ const dispatch = useDispatch()
 const googlelogin = useGoogleLogin({
     onSuccess:async (tokenResponse) => {
       try {
-        console.log(tokenResponse);
+    
     const userData = await decodedToken(tokenResponse.access_token)
-console.log(userData,'userData')
+
        dispatch(setUser({
              name: userData.user.name,
              email:userData.user.email,
@@ -41,7 +41,7 @@ console.log(userData,'userData')
     },
     onError: () => {
       toast.error('Login Failed')
-      console.log('Login Failed');
+
     },
   });
 

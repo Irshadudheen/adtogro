@@ -14,17 +14,24 @@ export const creatAdvertise = async (order_id)=>{
 export const fetchLogo = async ()=>{
     try {
         const response = await Api.get(advertiseRoutes.getLogo)
-        console.log(response,'the response from fetch logo')
         return response.data.advertise
         
     } catch (error) {
         throw error
     }
 }
-export const countClick = async( id)=>{
+export const countClick = async( id )=>{
     try {
         const response = await Api.get(`${advertiseRoutes.updateClick}${id}`) 
         return response.data 
+    } catch (error) {
+        throw error
+    }
+}
+export const countImpression = async( id ) =>{
+    try {
+        const { data } = await Api.post(`${advertiseRoutes.updateImpression}${id}`)
+        return data
     } catch (error) {
         throw error
     }

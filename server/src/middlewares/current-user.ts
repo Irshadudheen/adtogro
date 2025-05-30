@@ -13,6 +13,7 @@ declare global {
     }
 }
 export const currentUser = (req:Request,res:Response,next:NextFunction)=>{
+    console.log(req.headers?.authorization)
     if(!req.headers?.authorization){
       throw new NotAuthorizedError()
     }

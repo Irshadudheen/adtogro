@@ -11,7 +11,7 @@ const router =Router()
 router.post('/api/order',createAdValidate,validateRequest,
     currentUser,
     async (req:Request,res:Response)=>{
-        console.log('the order create')
+      
         const userId = req.currentUser?.id 
 
         if(!userId){
@@ -23,23 +23,9 @@ router.post('/api/order',createAdValidate,validateRequest,
         }
         const order = Order.build({userId,orderData:req.body,totalPrice:4000,createAt:new Date,status:'pending'})
         await order.save()
-        // const advertise = Advertise.build({
-        //     userId,
-        //     companyName,
-        //     companyWebsite,
-        //     contactName,
-        //     contactEmail,
-        //     contactPhone,
-        //     adDescription,
-        //     adImage,
-        //     targetAudience,
-        //     advertisPlan,
-        //     clicks:0,
-        //     createdAt:new Date,
-        //     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now,,
-        // })
        
-        // await advertise.save()
+       
+       
        const razorpayOrder=await instance.orders.create({
             amount:4000*100,
             currency:"INR",

@@ -13,6 +13,7 @@ const userRoutes={
     roomDetails:'/room',
     rooms:'/rooms',
     communityCount:'/community/count',
+    roomCount:'/totalRoom'
   
 }
 

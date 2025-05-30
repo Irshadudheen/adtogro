@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { 
   LineChart, 
   Line, 
@@ -35,6 +35,8 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { LiveCountContext } from "@/context/LiveCountContext"
+import AnalyticsContext from '../../context/analaticsState/analaticsState';
 
 // Sample data
 const analyticsData = [
@@ -52,7 +54,18 @@ const platformData = [
   { name: 'Mobile', value: 300 },
   { name: 'Tablet', value: 100 },
 ];
-
+const weekly= [
+    { name: 'Week 1', clicks: 7000, impressions: 10000, ctr: 2.5 },
+    { name: 'Week 2', clicks: 2, impressions: 3000, ctr: 2.9 },
+    { name: 'Week 3', clicks: 54, impressions: 11000, ctr: 3.1 },
+    { name: 'Week 4', clicks: 4800, impressions: 9500, ctr: 2.7 },
+  ]
+const daily= Array.from({ length: 30 }, (_, i) => ({
+    name: `Day ${i + 1}`,
+    clicks: Math.floor(Math.random() * 3000),
+    impressions: Math.floor(Math.random() * 5000),
+    ctr: parseFloat((Math.random() * 5).toFixed(1)),
+}))
 const advertisements = [
   { id: 1, name: 'Summer Sale Banner', clicks: 1245, impressions: 45023, ctr: 2.76, status: 'active' },
   { id: 2, name: 'New Product Launch', clicks: 876, impressions: 32450, ctr: 2.7, status: 'active' },
@@ -64,10 +77,11 @@ const advertisements = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function AdvertiserDashboard() {
+    const liveCount = useContext(LiveCountContext)
   const [activeTab, setActiveTab] = useState('analytics');
   const [dateRange, setDateRange] = useState('Last 7 days');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const analyticsDataState = useContext(AnalyticsContext);
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -77,7 +91,7 @@ export default function AdvertiserDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-auto">
       {/* Mobile Header with Menu Button */}
       <div className="md:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200">
         <button 
@@ -149,7 +163,7 @@ export default function AdvertiserDashboard() {
         </div>
         
         {/* Main Content - Full width on mobile, adjusted width on desktop */}
-        <div className="w-full  p-4 md:p-4">
+        <div className="w-full  p-4 md:p-4 ">
           {activeTab === 'analytics' && (
             <div>
               {/* Header */}
@@ -174,7 +188,7 @@ export default function AdvertiserDashboard() {
                     <Clock className="w-4 h-4 mr-1" />
                     <span>Today</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-800">3,549</div>
+                  <div className="text-2xl font-bold text-gray-800">{analyticsDataState?analyticsDataState.today.length?analyticsDataState.today[0].count:0:0}</div>
                   <div className="text-sm font-medium mt-1">Total Clicks</div>
                   <div className="flex items-center text-sm font-medium text-green-600 mt-2">
                     <ArrowUp className="w-4 h-4 mr-1" />
@@ -187,7 +201,7 @@ export default function AdvertiserDashboard() {
                     <User className="w-4 h-4 mr-1" />
                     <span>Today</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-800">12,984</div>
+                  <div className="text-2xl font-bold text-gray-800">{analyticsDataState?analyticsDataState.today.length?analyticsDataState.today[1].count:0:0}</div>
                   <div className="text-sm font-medium mt-1">Total Impressions</div>
                   <div className="flex items-center text-sm font-medium text-green-600 mt-2">
                     <ArrowUp className="w-4 h-4 mr-1" />
@@ -200,7 +214,7 @@ export default function AdvertiserDashboard() {
                     <TrendingUp className="w-4 h-4 mr-1" />
                     <span>Today</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-800">3.2%</div>
+                  <div className="text-2xl font-bold text-gray-800">{analyticsDataState?analyticsDataState.todayCtr:0}%</div>
                   <div className="text-sm font-medium mt-1">CTR</div>
                   <div className="flex items-center text-sm font-medium text-red-600 mt-2">
                     <ArrowDown className="w-4 h-4 mr-1" />
@@ -210,11 +224,11 @@ export default function AdvertiserDashboard() {
                 
                 <div className="bg-white p-4 rounded-lg shadow-sm">
                   <div className="flex items-center text-sm text-gray-500 mb-2">
-                    <DollarSign className="w-4 h-4 mr-1" />
-                    <span>Today</span>
+                    <div className="w-2 h-2 mx-1 bg-green-500 rounded-full custom-pulse"></div>
+                    <span>Live</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-800">$682.5</div>
-                  <div className="text-sm font-medium mt-1">Revenue</div>
+                  <div className="text-2xl font-bold text-gray-800">{liveCount}</div>
+                  <div className="text-sm font-medium mt-1">Users</div>
                   <div className="flex items-center text-sm font-medium text-green-600 mt-2">
                     <ArrowUp className="w-4 h-4 mr-1" />
                     <span>15.3% from yesterday</span>
@@ -223,13 +237,13 @@ export default function AdvertiserDashboard() {
               </div>
               
               {/* Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
                 <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Click Performance</h3>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart
-                        data={analyticsData}
+                        data={analyticsDataState&&analyticsDataState.daily}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
@@ -249,20 +263,20 @@ export default function AdvertiserDashboard() {
                   </div>
                 </div>
                 
-                <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Platform Distribution</h3>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={platformData}
+                          data={analyticsDataState&&analyticsDataState.totalByDevice}
                           cx="50%"
                           cy="50%"
                           labelLine={false}
-                          outerRadius={80}
+                          outerRadius={90}
                           fill="#8884d8"
                           dataKey="value"
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          label={({ _id, percent }) => `${_id.charAt(0).toUpperCase() + _id.slice(1)} ${(percent * 100).toFixed(0)}%`}
                         >
                           {platformData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -275,65 +289,7 @@ export default function AdvertiserDashboard() {
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <div className="flex justify-between items-center p-4 border-b border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-800">Top Performing Advertisements</h3>
-                </div>
-                
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clicks</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Impressions</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CTR</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {advertisements.map(ad => (
-                        <tr key={ad.id}>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{ad.name}</div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{ad.clicks.toLocaleString()}</div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{ad.impressions.toLocaleString()}</div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{ad.ctr}%</div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                              ${ad.status === 'active' ? 'bg-green-100 text-green-800' : 
-                                ad.status === 'paused' ? 'bg-yellow-100 text-yellow-800' : 
-                                'bg-red-100 text-red-800'}`}>
-                              {ad.status.charAt(0).toUpperCase() + ad.status.slice(1)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <div className="flex space-x-2">
-                              <button className="text-gray-400 hover:text-blue-600">
-                                <Eye className="w-4 h-4" />
-                              </button>
-                              <button className="text-gray-400 hover:text-blue-600">
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button className="text-gray-400 hover:text-red-600">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              
             </div>
           )}
           

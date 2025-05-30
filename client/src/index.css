@@ -7,3 +7,31 @@
   }
 
 
+@keyframes customPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+.custom-pulse {
+  animation: customPulse 1.2s ease-in-out infinite;
+}
+
+
+::-webkit-scrollbar {
+  width: 10px; /* width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* color of the track (the area behind the scrollbar) */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #facc15; /* color of the scrollbar handle */
+  border-radius: 5px; /* rounded corners */
+}

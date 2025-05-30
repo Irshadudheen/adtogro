@@ -13,7 +13,7 @@ const NotFoundPage =lazyWithLoader(()=>import('@/pages/404/404Page'))
 import useGetUserData from '@/hooks/useGetUser'
 import NewPasswordPage from '@/pages/forgot-password/newPassword'
 import { LiveCountProvider } from '@/context/LiveCountContext'
-import AdvertiserDashboard from '@/pages/advetiseDashboard/advertiseDashboard'
+const AdvertiserDashboard =lazyWithLoader(()=>import( '@/pages/advetiseDashboard/advertiseDashboard'))
 import './lib/i18n'
 import { JoinRoomProvider } from '@/hooks/useJoinRoom'
 const TalkspaceRoom = lazyWithLoader(()=>import('@/pages/TalkSpaceRoom/TalkspaceRoom'))
@@ -27,12 +27,17 @@ import Offline from './utils/offline'
 import { useOnlineStatus } from './hooks/useOnlineStatus'
 import { useTranslation } from 'react-i18next'
 import LanguageWrapper from './components/LanguageWrapper'
-
+import AnalyticsProvider from './context/analaticsState/providerAnalytics'
+import { playBackgroundAudio } from './service/audio'
+import { AudioProvider } from './context/backgroundAudio/AudioContext'
+const Coffee= lazyWithLoader(()=>import('@/pages/coffee/Coffee'))
 function App() {
 const user =useGetUserData()
  const isOnline = useOnlineStatus();
  const {i18n} = useTranslation()
  const {lang} = useParams()
+
+
   useEffect(() => {
     if (['en', 'fr'].includes(lang)) {
       i18n.changeLanguage(lang);
@@ -41,6 +46,7 @@ const user =useGetUserData()
   return (
 
     <>
+    <AudioProvider>
     <GoogleOAuthProvider clientId='824445413802-j8ir94j160j0t28cvc06majqtu13s8u8.apps.googleusercontent.com'>
      <LiveCountProvider>
       <JoinRoomProvider>
@@ -57,11 +63,11 @@ const user =useGetUserData()
         <Route path="/verify-email/:userId" element={<EmailverifyPage />} />
         <Route path='/forgot-password' element={<ForgotPassowrd/>} />
         <Route path='/reset-password/:token' element={<NewPasswordPage/>} />
-        <Route path='/advertiser-dashboard' element={user.id?<AdvertiserDashboard/>:<Navigate to={'/'}/> } />
+        <Route path='/advertiser-dashboard' element={user.id?<AnalyticsProvider><AdvertiserDashboard/></AnalyticsProvider>:<Navigate to={'/'}/> } />
         <Route path='/TalkSpace' element={<Talkspace/>}/>
         <Route path='/offline' element={<Offline/>}/>
         <Route path='/talkspaceroom/:roomId' element={<RoomDetailsProvider><TalkspaceRoom/></RoomDetailsProvider>}/>
-        
+        <Route path='/keep_me_coffeinated' element={<Coffee/>}/>
         <Route path="*" element={<NotFoundPage/>} />
       </Routes>}
       </Suspense>
@@ -69,6 +75,7 @@ const user =useGetUserData()
       </JoinRoomProvider>
       </LiveCountProvider>
       </GoogleOAuthProvider>
+      </AudioProvider>
     </>
   )
 }
