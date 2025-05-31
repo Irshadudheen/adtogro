@@ -19,7 +19,7 @@ function FooterTalkspace() {
 
         
     fetchCommunityCountandRoomCount();
-     })
+     },[])
    
   return (
     <>

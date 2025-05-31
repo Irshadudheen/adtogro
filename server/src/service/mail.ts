@@ -4,7 +4,7 @@ import { baseStyle, buttonStyle, footer } from "../mail/components";
 
 interface MailOptions {
   to: string;
-  type: 'VERIFY_EMAIL' | 'PAYMENT_SUCCESS' | 'AD_CREATED' | 'AD_EXPIRING_SOON'|'RESET PASSWORD';
+  type: 'VERIFY_EMAIL' | 'PAYMENT_SUCCESS' | 'AD_CREATED' | 'AD_EXPIRING_SOON'|'RESET PASSWORD' | "SHARE_PLATFORM";
   data: any;
 }
 
@@ -39,6 +39,20 @@ const sendMail = async ({ to, type, data }: MailOptions) => {
           </div>
         `;
         break;
+        case 'SHARE_PLATFORM':
+           subject = "🚀 Unlock Rewards! Share the Secret with Friends 👀"
+           html = `
+            <div style="${baseStyle}">
+              <h2>Hey ${data.name},</h2>
+              <p>Loving your AdtoGro experience? Your friends will too! Invite them now and unlock surprises! 🚀</p>
+              <a href="https://adtogro.com" style="${buttonStyle}">
+      Copy This Link
+    </a>
+    <p style="margin-top: 10px; font-size: 12px; color: #555;">(or copy this link manually: https://adtogro.com)</p>
+              ${footer}
+              </div>`
+              
+           break;
 
         case 'PAYMENT_SUCCESS':
             subject = 'Payment Successful';

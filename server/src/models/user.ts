@@ -6,6 +6,10 @@ import { UserAttrs, UserDoc, UserModel } from '../@types/UserAttras';
 
 
 const userSchema = new Schema({
+    createdAt:{
+        type:Date,
+        default:Date.now()
+    },
     name:{
         type:String,
         required:true
@@ -20,10 +24,12 @@ const userSchema = new Schema({
     required:true
    }
   ,
-    is_verified:{
+    
+    is_premium:{
         type:Boolean,
         default:false
-    },   
+    }   
+   
    
 },{toJSON:{
     transform(doc,ret){

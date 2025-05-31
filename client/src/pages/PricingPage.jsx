@@ -3,60 +3,80 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import PricingCard from '@/components/PricingCard';
+import { Helmet } from 'react-helmet';
 
 function PricingPage() {
   const pricingPlans = [
     {
       id: 'basic',
       name: 'Basic',
-      price: 99,
-      period: 'month',
+      price: 9,
+      period: 'day',
       description: 'Perfect for small businesses just getting started',
       featured: false,
       features: [
-        '1 ad spot (100px x 100px)',
-        'Basic analytics dashboard',
-        'Up to 10,000 impressions',
+        ' Ad spot',
+        'Advanced analytics dashboard',
         'Standard position rotation',
-        'Email support'
+     
       ]
     },
     {
       id: 'pro',
       name: 'Professional',
-      price: 299,
+      price: 59,
       period: 'month',
       description: 'Great for growing businesses with established audience',
       featured: true,
       features: [
-        '3 ad spots (100px x 100px each)',
+        'Ad spot ',
         'Advanced analytics dashboard',
-        'Up to 50,000 impressions',
-        'Premium positioning',
-        'Priority email & chat support',
-        'A/B testing capabilities'
+           'Standard position rotation',
+        
       ]
     },
     {
       id: 'enterprise',
       name: 'Enterprise',
-      price: 799,
-      period: 'month',
+      price: 299,
+      period: 'half year',
       description: 'For large businesses with significant advertising needs',
       featured: false,
       features: [
-        '10 ad spots (100px x 100px each)',
-        'Comprehensive analytics suite',
-        'Unlimited impressions',
-        'Premium fixed positioning',
-        '24/7 dedicated support',
-        'Custom integration options',
-        'API access'
+        ' Ad spot',
+        'Advanced analytics dashboard',
+     'Standard position rotation',
+        
+       
       ]
     }
   ];
 
   return (
+    <>
+    <Helmet>
+      <title>Pricing / Advertise with Us</title>
+      <meta name="description" content="Explore our transparent pricing plans for advertising. Choose the perfect package for your business needs." />
+      <meta name="keywords" content="advertising, pricing, plans, business, marketing, grow, spot" />
+      <link rel="canonical" href="https://www.adtogro.com/pricing" />
+      <meta property="og:title" content="Pricing - Advertise with Us" />
+      <meta property="og:description" content="Explore our transparent pricing plans for advertising. Choose the perfect package for your business needs." />
+      <meta property="og:url" content="https://www.adtogro.com/pricing" />
+      <meta property="og:type" content="website" />
+    {/*   <meta property="og:image" content="https://yourwebsite.com/images/pricing-thumbnail.jpg" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Pricing - Advertise with Us" />
+      <meta name="twitter:description" content="Explore our transparent pricing plans for advertising. Choose the perfect package for your business needs." />
+      <meta name="twitter:image" content="https://yourwebsite.com/images/pricing-thumbnail.jpg" />
+      <meta name="theme-color" content="#ffffff" />
+      <link rel="icon" href="/favicon.ico" />
+      <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      <link rel="manifest" href="/manifest.json" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="robots" content="index, follow" />
+      <meta name="google-site-verification" content="your-google-site-verification-code" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" /> */}
+    </Helmet>
     <Layout>
       <div style={{
         maxWidth: '1200px',
@@ -95,41 +115,10 @@ function PricingPage() {
           ))}
         </div>
         
-        <div style={{
-          marginTop: '4rem',
-          backgroundColor: '#f9fafb',
-          padding: '2rem',
-          borderRadius: '0.5rem',
-          maxWidth: '48rem',
-          margin: '4rem auto'
-        }}>
-          <h2 style={{
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            marginBottom: '1rem'
-          }}>Need a custom solution?</h2>
-          <p style={{ marginBottom: '1.5rem' }}>
-            We offer tailored packages for businesses with specific advertising requirements. 
-            Contact our team to discuss your unique needs.
-          </p>
-          <Link 
-            to="/contact"
-            style={{
-              display: 'inline-block',
-              padding: '0.5rem 1.5rem',
-              backgroundColor: 'black',
-              color: 'white',
-              borderRadius: '0.5rem',
-              fontWeight: '500',
-              textDecoration: 'none',
-              transition: 'background-color 0.2s'
-            }}
-          >
-            Contact Sales
-          </Link>
-        </div>
+       
       </div>
     </Layout>
+    </>
   );
 }
 

@@ -390,9 +390,9 @@ const handleImage=(adImage)=>{
                     required
                   >
                     <option value="basic">Basic ($9/ day)</option>
-                    <option value="pro">Professional ($299/month)</option>
-                    <option value="enterprise">Enterprise ($799/month)</option>
-                    <option value="custom">Custom Solution</option>
+                    <option value="pro">Professional ($59/month)</option>
+                    <option value="enterprise">Enterprise ($299/half year)</option>
+                    
                   </select>
                 </div>
               </div>

@@ -48,6 +48,7 @@ export interface MessageDoc extends Document {
  * Room interfaces for video chat rooms
  */
 export interface RoomAttrs {
+  created_by_premium: boolean;
   createrId: string;
   roomName: string;
   roomLanguage: string;
@@ -58,6 +59,7 @@ export interface RoomAttrs {
 }
 
 export interface RoomDoc extends Document {
+  created_by_premium: boolean;
   createrId: string;
   roomName: string;
   roomLanguage: string;
@@ -105,6 +107,11 @@ const roomSchema = new Schema({
     ref: 'User',
     required: true
   },
+  created_by_premium:{
+    type: Boolean,
+    required: true,
+  }
+  ,
   roomName: {
     type: String,
     required: true,

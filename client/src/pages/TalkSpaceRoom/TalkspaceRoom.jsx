@@ -237,7 +237,7 @@ const RoomPage = () => {
       const newMessage = {
         type: 'remote',
         sender: from,
-       
+        user: userData.name,
         content: message,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -686,8 +686,8 @@ const RoomPage = () => {
         
         {/* Chat panel */}
         {isChatOpen && (
-          <div className=" w-1/4 min-w-64 border-l border-gray-300 flex flex-col bg-white">
-            <div className="p-3 bg-gray-100 border-b border-gray-300 font-medium flex justify-between items-center">
+          <div className=" w-1/4 min-w-64 border-l border-gray-900 flex flex-col bg-gray-500">
+            <div className="p-3 bg-gray-800 border-b text-gray-300 border-gray-900 font-medium flex justify-between items-center">
               <span>Chat</span>
               <button onClick={toggleChat} className="text-gray-500 hover:text-gray-700">
                 <X size={18} />
@@ -702,14 +702,14 @@ const RoomPage = () => {
               {messages.map((msg, index) => (
                 <div key={index} className={`max-w-xs ${msg.type === 'local' ? 'ml-auto' : msg.type === 'system' ? 'mx-auto text-center' : ''}`}>
                   {msg.type === 'system' ? (
-                    <div className="text-xs text-gray-500 py-1 px-2 bg-gray-100 rounded inline-block">
+                    <div className="text-xs text-gray-300 py-1 px-2 bg-gray-800 rounded inline-block">
                       {msg.content}
                     </div>
                   ) : (
                     <div className={`p-3 rounded-lg ${msg.type === 'local' ? 'bg-black text-white' : 'bg-gray-200'}`}>
                       {msg.type === 'remote' && (
                         <div className="text-xs font-medium text-gray-700 mb-1">
-                           {msg.sender}
+                           {msg.user ? msg.user : `User ${msg.sender.substring(0, 5)}`}
                         </div>
                       )}
                       <div>{msg.content}</div>
@@ -723,20 +723,20 @@ const RoomPage = () => {
             </div>
             
             {/* Message input */}
-            <div className="p-3 border-t border-gray-300">
+            <div className="p-3  border-t border-gray-900">
               <div className="flex">
                 <textarea
                   value={messageInput}
                   onChange={(e) => setMessageInput(e.target.value)}
                   onKeyDown={handleKeyPress}
                   placeholder="Type a message..."
-                  className="flex-1 p-2 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
-                  rows="2"
+                  className="flex-1 p-2 border border-gray-900 rounded-l focus:outline-none focus:ring-1 focus:ring-gray-500 resize-none"
+                  rows="1"
                 />
                 <button
                   onClick={sendMessage}
                   disabled={!messageInput.trim()}
-                  className={`p-2 mx-0.5 rounded-r flex items-center justify-center ${!messageInput.trim() ? 'bg-gray-300' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                  className={`p-2 mx-0.5 rounded-r flex items-center justify-center ${!messageInput.trim() ? 'bg-gray-500' : 'bg-gray-500 hover:bg-gray-600 text-white'}`}
                 >
                   <Send size={20} />
                 </button>

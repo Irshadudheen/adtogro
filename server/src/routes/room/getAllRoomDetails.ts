@@ -22,7 +22,7 @@ router.get("/api/rooms", async (req, res) => {
     : {};
 
   const rooms = await Room.find(searchFilter)
-    .sort({ createdAt: -1 })
+    .sort({created_by_premium:-1, createdAt: -1 })
     .skip(skip)
     .limit(limit);
     

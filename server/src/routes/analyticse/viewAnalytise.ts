@@ -3,7 +3,44 @@ import { Analytics } from "../../models/analytics";
 import { BadRequestError } from "../../errors/bad-request-error";
 import mongoose from "mongoose";
 import { currentUser } from "../../middlewares/current-user";
+import dayjs from 'dayjs';
+interface DataItem {
+  name: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+}
+function fillMissingDates(data: DataItem[]): DataItem[] {
+  const dateFormat = 'YYYY-MM-DD';
+  
+
+  // Filter out non-date entries like "Today" and "Yesterday"
+  const filteredData = data.filter(item => /^\d{4}-\d{2}-\d{2}$/.test(item.name));
+
+  // Extract all dates and sort them
+  const dates = filteredData.map(item => item.name).sort();
+  const start = dayjs(dates[0]);
+  const end = dayjs(dates[dates.length - 1]);
+
+  const allDates = new Set(dates);
+  const completeData = [];
+
+  for (let d = start; d.isBefore(end.add(1, 'day')); d = d.add(1, 'day')) {
+    const dateStr = d.format(dateFormat);
+    const existing = data.find(item => item.name === dateStr);
+    if (existing) {
+      completeData.push(existing);
+    } else {
+      completeData.push({ name: dateStr, clicks: 0, impressions: 0, ctr: 0 });
+    }
+  }
+
+  // Add back "Yesterday" and "Today"
+  const extras = data.filter(item => item.name === 'Yesterday' || item.name === 'Today');
+  return [...completeData, ...extras];
+}
 type Event = {
+  eventType: 'click' | 'impression' | string;
   _id: 'click' | 'impression' | string;
   count: number;
 };
@@ -156,7 +193,7 @@ const dailyRaw = await Analytics.aggregate([
     }
   }
 
-  const daily: DailyStat[] = Object.entries(dateMap).map(([date, { clicks, impressions }]) => ({
+  let daily: DailyStat[] = Object.entries(dateMap).map(([date, { clicks, impressions }]) => ({
   name: date,
   clicks,
   impressions,
@@ -164,8 +201,10 @@ const dailyRaw = await Analytics.aggregate([
 }));
 
 daily.sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime());
+daily =fillMissingDates(daily)
 if(daily.length){
 daily[daily.length - 1].name = 'Today'; 
+
 }
 
 if(daily[daily.length -2]){
@@ -176,6 +215,7 @@ clickStatus[0].todayCtr = Math.round(
   ((clickStatus[0].today.find((event: Event) => event._id === 'click')?.count ?? 0) /
     (clickStatus[0].today.find((event: Event) => event._id === 'impression')?.count ?? 0)) *
     100 )|| 0;
+    clickStatus[0].todayClicks = clickStatus[0].today.find((event: Event) => event.eventType === 'click')?.count || 0;
   res.send(clickStatus[0])
 })
 export {router as AnalyticsStatusRouter}

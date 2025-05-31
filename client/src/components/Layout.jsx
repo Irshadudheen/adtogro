@@ -11,9 +11,23 @@ import { decodedToken } from '../Api/user';
 import LoginModal from './loginModal';
 import { useLoginModal } from '../context/LoginModalContext';
 import toast from 'react-hot-toast';
+import { useAudio } from '../context/backgroundAudio/AudioContext';
  
 
 function Layout({ children }) {
+   const { playAudio, pauseAudio,isAudioEnabled } = useAudio();
+   const [isAudioPlaying, setIsAudioPlaying] = useState(true);
+   const handlePlayAudio = (e)=>{
+    console.log(e.target.checked)
+
+    if(!e.target.checked){
+      pauseAudio()
+      setIsAudioPlaying(false)
+    }else{
+      playAudio()
+      setIsAudioPlaying(true)
+    }
+   }
 const { isLoginModalOpen, setIsLoginModalOpen} = useLoginModal()
 const dispatch = useDispatch()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -79,9 +93,9 @@ const handleModalClose = ()=>{
  }
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="bg-[url('/bground_talkspace.jpg')] bg-cover bg-fixed bg-center min-h-screen flex flex-col">
       {/* Header/Navigation */}
-      <header className="bg-white shadow-sm sticky top-0 z-10 h-16">
+      <header className=" shadow-sm  top-0 z-10 h-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
         <Link to="/" className="text-decoration-none">
           <img src="/logo/logo.png" className="my-3 w-28 md:w-28 " alt="AdMetrix Logo" />
@@ -93,49 +107,31 @@ const handleModalClose = ()=>{
           onClick={toggleMobileMenu}
           aria-label="Toggle mobile menu"
         >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth="2" 
-              d={isMobileMenuOpen 
-                ? "M6 18L18 6M6 6l12 12" // X icon when menu is open
-                : "M4 6h16M4 12h16M4 18h16" // Hamburger icon when menu is closed
-              } 
-            />
-          </svg>
+          <img
+                src={user.profileImage}
+                onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "icone/person.png"; // use a default image
+              }}
+                alt="Profile"
+                className="w-8 h-8 rounded-full object-cover"
+                draggable={false}
+              />
         </button>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:block">
           <ul className="flex space-x-6 items-center">
-            <li>
-              <Link to="/TalkSpace" className="text-gray-700 font-medium hover:text-gray-800">
-              TalkSpace
-              </Link>
-            </li>
-            <li>
-              <Link to="/publishers" className="text-gray-700 font-medium hover:text-gray-800">
-                For Publishers
-              </Link>
-            </li>
-            <li>
-              <Link to="/pricing" className="text-gray-700 font-medium hover:text-gray-800">
-                Pricing
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" className="text-gray-700 font-medium hover:text-gray-800">
-                Contact
-              </Link>
-            </li>
+           
+            
+           
             <li>
               {user?.name ? (
                 <div className="relative" ref={dropdownRef}
                 onClick={() => setIsDropdownOpen(true)}
                   >
                   <div
-              className="flex items-center gap-2 px-4 py-1 border border-black rounded-full text-white bg-black hover:bg-gray-800 cursor-pointer transition-all duration-300"
+              className="flex items-center gap-2 px-4 py-1 border border-black rounded-full text-black  cursor-pointer transition-all duration-300"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <img
@@ -150,7 +146,7 @@ const handleModalClose = ()=>{
               />
               <span className="font-medium">{user.name}</span>
               <svg
-                className="w-4 h-4 text-white"
+                className="w-4 h-4 text-black "
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -166,18 +162,48 @@ const handleModalClose = ()=>{
                   
                   {/* Dropdown menu */}
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
-                      
+                    <div className="absolute right-0 mt-2 w-50 bg-white rounded-md shadow-lg py-1 z-20">
+                     <div className="flex items-center justify-center">
+
+                   
+                      <img
+                src={user.profileImage}
+                onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "icone/person.png"; // use a default image
+              }}
+                alt="Profile"
+                className="w-15 h-15  rounded-full object-cover"
+                draggable={false}
+              />
+                </div>
+            
+            
+                
                       <Link 
                         to="/advertiser-dashboard" 
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         Your Advertiser Dashboard
                       </Link>
+                       <div className="px-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-600">Music</span>
+                          <label className="relative inline-flex items-center cursor-pointer ">
+                            <input type="checkbox" defaultChecked={isAudioEnabled} className="sr-only peer" onChange={handlePlayAudio} />
+                            <div className="w-11 h-6 mt-2 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 rounded-full 
+                                            peer peer-checked:after:translate-x-full peer-checked:after:border-white 
+                                            after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white 
+                                            after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
+                                            peer-checked:bg-black relative">
+                            </div>
+                          </label>
+                        </div>
+                      </div>
                       <button 
                         
-                        className="block px-4 w-full py-2 text-sm  text-red-700 hover:bg-red-100 text-left"
+                        className="block font-medium px-2 w-full py-2 text-sm  text-red-700 hover:bg-red-100 text-left"
                         onClick={() =>{ setIsDropdownOpen(false)
                           handleLogout()
                         }}
@@ -287,28 +313,14 @@ const handleModalClose = ()=>{
                We connect strangers and turn them into loyal supporters through targeted outreach.
               </p>
             </div>
-            <div>
-              <h4 className="text-base font-medium mb-4">Resources</h4>
-              <ul className="space-y-2">
-                <li><Link to="/blog" className="text-gray-400 hover:text-gray-300">Blog</Link></li>
-                <li><Link to="/help" className="text-gray-400 hover:text-gray-300">Help Center</Link></li>
-                <li><Link to="/guides" className="text-gray-400 hover:text-gray-300">Guides</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-base font-medium mb-4">Company</h4>
-              <ul className="space-y-2">
-                <li><Link to="/about" className="text-gray-400 hover:text-gray-300">About Us</Link></li>
-                <li><Link to="/careers" className="text-gray-400 hover:text-gray-300">Careers</Link></li>
-                <li><Link to="/contact" className="text-gray-400 hover:text-gray-300">Contact Us</Link></li>
-              </ul>
-            </div>
+            
+           
             <div>
               <h4 className="text-base font-medium mb-4">Legal</h4>
               <ul className="space-y-2">
                 <li><Link to="/privacy" className="text-gray-400 hover:text-gray-300">Privacy Policy</Link></li>
                 <li><Link to="/terms" className="text-gray-400 hover:text-gray-300">Terms of Service</Link></li>
-                <li><Link to="/cookies" className="text-gray-400 hover:text-gray-300">Cookie Policy</Link></li>
+                
               </ul>
             </div>
           </div>

@@ -14,6 +14,7 @@ import { Helmet } from 'react-helmet';
 import './coffestyle.css'
 import { useAudio } from '../../context/backgroundAudio/AudioContext';
 import FooterTalkspace from '../../components/talkspace/Footer';
+
 export default function Talkspace() {
    const { playAudio, pauseAudio } = useAudio();
     const allLanguages = ["Arabic",
@@ -131,9 +132,6 @@ export default function Talkspace() {
     }
   }
 
-
-
-
   const handleSelect = (lang) => {
     if (!selectedLanguage.includes(lang)) {
       setSelectedLanguage([...selectedLanguage, lang]);
@@ -157,11 +155,10 @@ export default function Talkspace() {
 
   // Fetch community count on component mount
 
-
   const liveCount = useContext(LiveCountContext);
   const navigateTocoffee = ()=>{
     try {
-      navigate('/keep_me_coffeinated')
+      navigate('/coffee')
     } catch (error) {
       
     }
@@ -174,7 +171,63 @@ export default function Talkspace() {
 
    </Helmet>
     <Layout>
-    <div className="bg-[url('/bground_talkspace.jpg')] bg-cover bg-fixed bg-center min-h-screen py-8 px-4">
+    <div className=" min-h-screen py-8 px-4">
+      <style jsx>{`
+        /* Glow Border Animation */
+        .animated-border-box, .animated-border-box-glow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          overflow: hidden;
+          z-index: 0;
+          border-radius: 12px;
+        }
+
+        .animated-border-box-glow {
+          filter: blur(20px);
+        }
+
+        .animated-border-box:before, .animated-border-box-glow:before {
+          content: '';
+          z-index: -2;
+          text-align: center;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotate(0deg);
+          position: absolute;
+          width: 99999px;
+          height: 99999px;
+          background-repeat: no-repeat;
+          background-position: 0 0;
+          background-image: conic-gradient(rgba(0,0,0,0), #f0b207, rgba(0,0,0,0) 25%);
+          animation: rotate 4s linear infinite;
+        }
+
+        .animated-border-box:after {
+          content: '';
+          position: absolute;
+          z-index: -1;
+          left: 3px;
+          top: 3px;
+          width: calc(100% - 6px);
+          height: calc(100% - 6px);
+          background: white;
+          border-radius: 9px;
+        }
+
+        @keyframes rotate {
+          100% {
+            transform: translate(-50%, -50%) rotate(1turn);
+          }
+        }
+
+        .premium-room-container {
+          position: relative;
+          z-index: 1;
+        }
+      `}</style>
       <div className="w-full rounded-xl p-6 max-w-5xl mx-auto">
         {/* Header with animation */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 relative">
@@ -349,45 +402,67 @@ export default function Talkspace() {
             <input
               type="text"
               placeholder="Search rooms by language, level or topic..."
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           
           <div className="flex space-x-2 w-full md:w-auto">
-            <button 
-              onClick={() => setActiveFilter('all')}
-              className={`px-4 py-2 rounded-lg flex items-center transition-all ${
-                activeFilter === 'all' 
-                  ? 'bg-black text-gray-100 font-medium' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              ALL GROUP
-            </button>
-            <button 
-              onClick={() => setActiveFilter('trending')}
-              className={`px-4 py-2 rounded-lg flex items-center transition-all ${
-                activeFilter === 'trending' 
-                  ? 'bg-black text-gray-100 font-medium' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <TrendingUp className="mr-1" size={16} />
-              Trending
-            </button>
-            <button 
-              onClick={() => setActiveFilter('active')}
+            
+             <a 
+            href='https://x.com/ad2gro'
               className={`px-4 py-2 rounded-lg flex items-center transition-all ${
                 activeFilter === 'active' 
                   ? 'bg-black text-gray-100 font-medium' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-white text-black hover:bg-gray-200'
               }`}
             >
-              <Clock className="mr-1" size={16} />
-              Active Now
-            </button>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M14.2 10.6L22 2h-1.8l-6.5 7.3L8.5 2H2l8.3 12L2 22h1.8l6.9-7.8 5.5 7.8H22l-7.8-11.4z" />
+</svg> 
+              
+            </a>
+             <a 
+            href='https://instagram.com/adtogro'
+              className={`px-4 py-2 rounded-lg flex items-center transition-all ${
+                activeFilter === 'active' 
+                  ? 'bg-black text-gray-100 font-medium' 
+                  : 'bg-white text-gray-500 hover:bg-gray-200'
+              }`}
+            >
+              <svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.25-.88a1.13 1.13 0 1 1 0 2.25 1.13 1.13 0 0 1 0-2.25z"/>
+</svg>
+              
+            </a>
+             <a 
+            href='https://facebook.com'
+              className={`px-4 py-2 rounded-lg flex items-center transition-all ${
+                activeFilter === 'active' 
+                  ? 'bg-black text-gray-100 font-medium' 
+                  : 'bg-white  text-blue-700 hover:bg-gray-200'
+              }`}
+            >
+               <svg width="25" height="25" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path>
+                </svg>
+              
+            </a>
+            
+            <a 
+            href='https://linkedin.com/in/irshadudheenp'
+              className={`px-4 py-2 rounded-lg flex items-center transition-all ${
+                activeFilter === 'active' 
+                  ? 'bg-black text-gray-100 font-medium' 
+                  : 'bg-white  text-blue-700 hover:bg-gray-200'
+              }`}
+            >
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+                </svg>
+              
+            </a>
           </div>
         </div>
         
@@ -419,9 +494,15 @@ export default function Talkspace() {
                       key={`${room.id}-${index}`} // More unique key
                       ref={isLast ? lastRoomElementRef : null}
                       onClick={handleNavigate(room.id, room.users.length)} 
-                      className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all hover:border-gray-300 bg-white group cursor-pointer"
+                      className={`${room.created_by_premium ? "premium-room-container relative" : ""} border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all hover:border-gray-300 bg-white group cursor-pointer`}
                     >
-                      <div className="flex items-center mb-3">
+                      {room.created_by_premium && (
+                <>
+                  <div className="animated-border-box-glow"></div>
+                  <div className="animated-border-box"></div>
+                </>
+              )}
+                      <div className={`flex items-center mb-3 ${room.created_by_premium &&'relative z-20'}`}>
                         <div className={`text-white mr-3 p-2 rounded-lg ${
                           room.roomLanguage === 'English' ? 'bg-blue-600' :
                           room.roomLanguage === 'Spanish' ? 'bg-green-600' :
@@ -432,7 +513,7 @@ export default function Talkspace() {
                         }`}>
                           <Globe size={18} />
                         </div>
-                        <span className="font-medium text-lg">{room.roomLanguage}</span>
+                        <span className="font-medium text-lg ">{room.roomLanguage}</span>
                         <span className={`ml-1 text-xs px-2 py-1 rounded-full ${
                           room.roomLevel === 'Beginner' ? 'bg-green-100 text-green-700' :
                           room.roomLevel === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
@@ -448,7 +529,7 @@ export default function Talkspace() {
                         
                       </div>
                       
-                     <div className="text-gray-700 mb-4 font-medium">
+                     <div className={`text-gray-700 mb-4 font-medium ${room.created_by_premium &&'relative z-20'}`}>
                       {room.roomDescription}
                       <span className="inline-flex items-center text-sm text-gray-500 ml-2">
                         <Users size={14} className="mr-1" />
@@ -456,18 +537,25 @@ export default function Talkspace() {
                       </span>
                     </div>
                       
-                      <div className="flex items-center justify-between mb-4">
-                        {
-                         room.users.length && room.users.map((user,index)=>{
-                          console.log(user,'this is the users',user.userImage)
-                          return (<img key={index} src={user.userImage} alt="" className='bg-gray  border border-gray-300 rounded-full w-1/3 ' draggable={false}  onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "icone/person.png"; // use a default image
-              }} />)
-                         }
-                             
-                          ) 
-                        }
+                      <div className={`flex items-center justify-between mb-4 ${room.created_by_premium &&'relative z-20'}`}>
+                       
+  {Array.isArray(room.users) && room.users.length > 0 ? (
+    room.users.map((user, index) => (
+      <img
+        key={index}
+        src={user.userImage}
+        alt=""
+        className="bg-gray border border-gray-300 rounded-full w-1/3"
+        draggable={false}
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = "icone/person.png";
+        }}
+      />
+    ))
+  ) : (
+    <p className="text-gray-500 text-sm">No users in this room</p>
+  )}
                         
                         {room.active && (
                           <span className="flex items-center text-sm text-green-600">
@@ -480,6 +568,7 @@ export default function Talkspace() {
                       <button 
                         disabled={room.users.length >= 3}  
                         className={`w-full px-4 py-3 rounded-lg flex items-center justify-center text-sm font-medium transition-all shadow-sm
+                          ${room.users.length === 0 && 'mt-21'}
                           ${room.users.length >= 3 
                             ? 'border border-solid text-black cursor-not-allowed bg-gray-100' 
                             : 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 text-white hover:to-black group-hover:shadow-md transform group-hover:-translate-y-1'}
@@ -489,6 +578,7 @@ export default function Talkspace() {
                         {room.users.length < 3 ? 'Join Conversation' : 'This Group is full'}
                       </button>
                     </div>
+                    
                   );
                 })}
               </div>

@@ -188,7 +188,7 @@ export default function AdvertiserDashboard() {
                     <Clock className="w-4 h-4 mr-1" />
                     <span>Today</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-800">{analyticsDataState?analyticsDataState.today.length?analyticsDataState.today[0].count:0:0}</div>
+                  <div className="text-2xl font-bold text-gray-800">{analyticsDataState?analyticsDataState.daily[analyticsDataState.daily.length-1].clicks:0}</div>
                   <div className="text-sm font-medium mt-1">Total Clicks</div>
                   <div className="flex items-center text-sm font-medium text-green-600 mt-2">
                     <ArrowUp className="w-4 h-4 mr-1" />
@@ -201,7 +201,7 @@ export default function AdvertiserDashboard() {
                     <User className="w-4 h-4 mr-1" />
                     <span>Today</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-800">{analyticsDataState?analyticsDataState.today.length?analyticsDataState.today[1].count:0:0}</div>
+                  <div className="text-2xl font-bold text-gray-800">{analyticsDataState?analyticsDataState.daily[analyticsDataState.daily.length-1].impressions:0}</div>
                   <div className="text-sm font-medium mt-1">Total Impressions</div>
                   <div className="flex items-center text-sm font-medium text-green-600 mt-2">
                     <ArrowUp className="w-4 h-4 mr-1" />

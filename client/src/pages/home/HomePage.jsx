@@ -19,34 +19,29 @@ export default function HomePage() {
         <meta name="description" content={t('description')} />
     </Helmet>
     <Layout>
-      <div className="bg-[url('/bground_talkspace.jpg')] bg-cover bg-center bg-fixed min-h-screen py-8 px-4">
+      <div className="min-h-screen py-8 px-4">
         <div className="max-w-6xl mx-auto p-4">
           {/* Hero section highlighting Talkspace first */}
           <div className="text-center mb-12 pt-4">
-            <h1 className="text-5xl font-bold mb-6"> 
-              <img src="/logo/logo_text_black.png" draggable={false} alt="Adtogro Logo" className="h-12 px-1 inline-block" />
-              dtogro</h1>
+            
+              <img src="/logo/logo.png" draggable={false} alt="Adtogro Logo" className="h-20 px-1 inline-block" />
+              
             <p className="text-xl mb-8 max-w-3xl mx-auto">
-              {t('Connect, collaborate, and grow with like-minded professionals in our vibrant community platform')}
+              {t('Address, collaborate, and grow with like minded people in our vibrant Ecosystem.')}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
                 to="/talkspace"
-                className="px-8 py-4 bg-black text-white rounded-lg font-semibold inline-block transition-colors  text-lg shadow-lg"
+                className="px-8 py-4 border  text-black hover:bg-black hover:text-white rounded-lg font-semibold inline-block transition-colors  text-lg shadow-lg"
               >
                 {t('Enter Talkspace')}
               </Link>
-              <Link
-                to="/advertise"
-                className="px-8 py-4 border border-black bg-white text-black rounded-lg font-semibold inline-block transition-colors hover:bg-gray-100 text-lg"
-              >
-                {t('Advertise With Us')}
-              </Link>
+             
             </div>
           </div>
 
           {/* Enhanced "Why Join Talkspace?" section */}
-          <div className="bg-white p-8 rounded-lg shadow-lg mb-16 max-w-3xl mx-auto">
+          <div className=" p-8 rounded-lg shadow-lg mb-16 max-w-3xl mx-auto">
             <h2 className="text-2xl font-bold mb-4 text-black">{t('Why Join Talkspace?')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="flex items-start">
@@ -65,8 +60,8 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">{t('Connect with Professionals')}</h3>
-                  <p className="text-gray-700">{t('Network with experts and peers in your industry')}</p>
+                  <h3 className="font-semibold text-lg">{t('Learn Through Communication')}</h3>
+                  <p className="text-gray-700">{t("Language improves through communication, not just reading.")}</p>
                 </div>
               </div>
               <div className="flex items-start">
@@ -151,15 +146,15 @@ export default function HomePage() {
 
           {/* Features section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="p-6 bg-white rounded-lg shadow-md">
+            <div className="p-6  rounded-lg shadow-md">
               <h3 className="text-xl font-semibold mb-3">{t('Active Community')}</h3>
               <p>{t('Join thousands of active users sharing insights and experiences daily.')}</p>
             </div>
-            <div className="p-6 bg-white rounded-lg shadow-md">
+            <div className="p-6  rounded-lg shadow-md">
               <h3 className="text-xl font-semibold mb-3">{t('Expert Discussions')}</h3>
               <p>{t('Participate in moderated discussions led by industry experts and thought leaders.')}</p>
             </div>
-            <div className="p-6 bg-white rounded-lg shadow-md">
+            <div className="p-6  rounded-lg shadow-md">
               <h3 className="text-xl font-semibold mb-3">{t('Networking Events')}</h3>
               <p>{t('Attend virtual and in-person events to expand your professional network.')}</p>
             </div>
@@ -172,7 +167,7 @@ export default function HomePage() {
           </div>
 
           {/* Business benefits section */}
-          <div className="bg-white p-6 rounded-lg shadow-md mb-16 max-w-3xl mx-auto">
+          <div className=" p-6 rounded-lg shadow-md mb-16 max-w-3xl mx-auto">
             <h3 className="text-xl font-semibold mb-4 text-black text-center">{t('For Businesses')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
               <div className="text-center">
@@ -197,7 +192,7 @@ export default function HomePage() {
 
           {/* Call to action */}
           <div className="text-center pb-12">
-            <h2 className="text-3xl font-bold mb-4">{t('Join our growing community today')}</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('Join Our Growing Platform Today')}</h2>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
                 to="/talkspace"

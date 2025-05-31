@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Coffee, MessageCircle, Users, DollarSign, Gift, Star, User } from 'lucide-react';
+import { Helmet } from 'react-helmet';
 
 function CoffeeSupport() {
   const [selectedAmount, setSelectedAmount] = useState(10);
@@ -78,6 +79,14 @@ function CoffeeSupport() {
   };
 
   return (
+    <>
+      <Helmet>
+        <title>Buy Me a Coffee / adtogro</title>
+        <meta name="description" content="Support my work by buying me a coffee! Every contribution helps me continue creating content and pursuing my passion." />
+        <meta name="keywords" content="buy me a coffee, support, donation, coffee, creator support" />
+        <meta name="author" content="Irshadudheen" />
+        <link rel="canonical" href="https://www.adtogro.com/coffee" />
+      </Helmet>
     <div className="bg-[url('/backgroundImage/medium-shot-man-woman-with-coffee.jpg')] bg-amber-500 bg-cover bg-center bg-fixed min-h-screen py-8 px-4">
     <div className="min-h-screen bg-gradient-to-br  py-8 px-4">
       {/* Hero Section */}
@@ -290,6 +299,7 @@ function CoffeeSupport() {
       </div>
     </div>
     </div>
+        </>
   );
 }
 
