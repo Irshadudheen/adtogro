@@ -51,7 +51,8 @@ router.post('/api/advertise',
             createdAt:new Date,
             expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now,,
         })
-       
+       user.is_purchasedAd = true
+       await user.save();
         await advertise.save()
         await Analytics.create({userId:req.currentUser?.id,adId:advertise.id,events:[]})
         sendMail({to:user.email,type:"AD_CREATED",data:{name:user.name,adTitile:order.orderData.companyName}})

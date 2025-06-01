@@ -7,6 +7,7 @@ import { Room, MessageAttrs, RoomDoc } from '../models/room';
 import { verifyToken } from '../service/jwt';
 import { SocketNotInitializedError } from '../errors/socket-not-init-error';
 import { userData } from '../interface/userInterface';
+import { io } from '../index';
 
 // Types definitions for better type safety
 interface CustomSocket extends Socket {
@@ -164,6 +165,7 @@ export class VideoCallSocketServer {
     }
     
     await room.save();
+     io.emit("room:updated", room)
     
     // Notify all users in the room about current participants
     this.io.to(room._id.toString()).emit('users_in_room', room.users);
@@ -437,7 +439,7 @@ export class VideoCallSocketServer {
     // This was the user's last socket in this room, fully remove them
     room.users = room.users.filter(user => user.socketId !== socket.id);
     await room.save();
-    
+    io.emit("room:updated", room)
     // Send system message about user leaving
     this.io.to(roomId).emit('chat_message', {
       from: 'system',
@@ -465,6 +467,7 @@ export class VideoCallSocketServer {
         const currentRoom = await Room.findById(roomId);
         if (currentRoom && currentRoom.users.length === 0) {
           console.log(`🗑️ Deleting room ${roomId} after 1 minute of inactivity`);
+          io.emit("room:deleted", roomId);
           await Room.findByIdAndDelete(roomId);
         } else {
           console.log(`👥 Room ${roomId} is no longer empty, not deleting`);

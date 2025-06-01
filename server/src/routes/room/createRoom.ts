@@ -4,6 +4,7 @@ import { validateRequest } from "../../middlewares/validateRequest";
 import { currentUser } from "../../middlewares/current-user";
 import { Room } from "../../models/room";
 import { User } from "../../models/user";
+import { io } from "../..";
 const router =Router();
 router.post('/api/room',[body('roomName').notEmpty().isString().withMessage('Group name is required'),
 body('roomLanguage').notEmpty().isString().trim().withMessage('Group Language is required'),
@@ -17,6 +18,7 @@ async(req:Request,res:Response)=>{
     console.log(user,'premium user');
    const room= Room.build({roomName,roomLanguage,roomLevel,roomDescription,users:[],createrId:req.currentUser?.id!,created_by_premium:user?true:false});
   await  room.save()
+  io.emit("room:new", room)
     // rooms[roomId]={
     //     groupCreaterId:req.currentUser?.id!,
     //     users: [],

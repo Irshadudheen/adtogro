@@ -18,6 +18,7 @@ const io = new Server(server, {
   });
 initializeSocket(io);
 initializeGroupVideoCallSocket(io);
+export {io}
 
 const port = 3000
 const start = async()=>{

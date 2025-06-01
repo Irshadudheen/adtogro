@@ -11,6 +11,7 @@ import { useLoginModal } from '@/context/LoginModalContext';
 import { useDebounce } from '@/utils/debounce';
 import { validateRoom } from '@/utils/validateCreatRoom';
 import { Helmet } from 'react-helmet';
+import socket from '@/utils/socket';
 import './coffestyle.css'
 import { useAudio } from '../../context/backgroundAudio/AudioContext';
 import FooterTalkspace from '../../components/talkspace/Footer';
@@ -93,6 +94,7 @@ export default function Talkspace() {
         return
       }
       if(participants < 3){
+        pauseAudio()
         navigate(`/talkspaceroom/${roomId}`)
       } else {
         toast.error('Room is full you can create a new room or join another room')
@@ -151,6 +153,21 @@ export default function Talkspace() {
   // Fetch rooms when page or search changes
   useEffect(() => {
     fetchRoomDetails();
+     socket.on("room:new", (room) => {
+      setRooms(prev => [room, ...prev]);
+    });
+     socket.on("room:updated", (updatedRoom) => {
+      console.log(updatedRoom,'the updatedRoom')
+      setRooms(prev => prev.map(r => r.id === updatedRoom.id ? updatedRoom : r));
+    });
+    socket.on("room:deleted", (roomId) => {
+      setRooms(prev => prev.filter(r => r.id !== roomId));
+    });
+    return () => {
+      socket.off("room:new");
+      socket.off("room:updated");
+      socket.off("room:deleted");
+    };
   }, [page, debouncedSearch]);
 
   // Fetch community count on component mount
@@ -172,7 +189,7 @@ export default function Talkspace() {
    </Helmet>
     <Layout>
     <div className=" min-h-screen py-8 px-4">
-      <style jsx>{`
+      <style >{`
         /* Glow Border Animation */
         .animated-border-box, .animated-border-box-glow {
           position: absolute;
@@ -509,23 +526,30 @@ export default function Talkspace() {
                           room.roomLanguage === 'Japanese' ? 'bg-red-600' :
                           room.roomLanguage === 'French' ? 'bg-purple-600' :
                           room.roomLanguage === 'German' ? 'bg-yellow-600' :
-                          'bg-indigo-600'
+                          'bg-yellow-500'
                         }`}>
-                          <Globe size={18} />
+                           <MessageCircle size={24} />
                         </div>
                         <span className="font-medium text-lg ">{room.roomLanguage}</span>
-                        <span className={`ml-1 text-xs px-2 py-1 rounded-full ${
+                        
+                        <span className={`ml-1 text-xs px-2 py-1 r ${
                           room.roomLevel === 'Beginner' ? 'bg-green-100 text-green-700' :
                           room.roomLevel === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
                           room.roomLevel === 'Upper Intermediate' ? 'bg-orange-100 text-orange-700' :
                           room.roomLevel === 'Advanced' ? 'bg-red-100 text-red-700' :
-                          'bg-blue-100 text-blue-700'
+                          ' text-blue-700 '
                         }`}>
                           {room.roomLevel}
                           
                         </span>
+                        {room?.users.length>1 && (
+                          <span className="flex px-1 items-center text-sm text-green-600">
+                            <span className="h-2 w-2 bg-green-600 rounded-full mr-1"></span>
+                            Active now
+                          </span>
+                        )}
                         
-                       
+                        
                         
                       </div>
                       
@@ -537,7 +561,7 @@ export default function Talkspace() {
                       </span>
                     </div>
                       
-                      <div className={`flex items-center justify-between mb-4 ${room.created_by_premium &&'relative z-20'}`}>
+                      <div className={`flex items-center gap-1 mb-4 ${room.created_by_premium &&'relative z-20'}`}>
                        
   {Array.isArray(room.users) && room.users.length > 0 ? (
     room.users.map((user, index) => (
@@ -557,12 +581,7 @@ export default function Talkspace() {
     <p className="text-gray-500 text-sm">No users in this room</p>
   )}
                         
-                        {room.active && (
-                          <span className="flex items-center text-sm text-green-600">
-                            <span className="h-2 w-2 bg-green-600 rounded-full mr-1"></span>
-                            Active now
-                          </span>
-                        )}
+                       
                       </div>
                       
                       <button 

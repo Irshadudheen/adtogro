@@ -23,6 +23,9 @@ import { googleAuthRouter } from './routes/user/googleLogin'
 import { AnalyticsStatusRouter } from './routes/analyticse/viewAnalytise';
 import { updateImpressionRouter } from './routes/advertise/updateImpression';
 import { roomCountRouter } from './routes/room/roomCount';
+import { totalCountCoffeeRouter } from './routes/coffee/totalCount';
+import { viewAllCoffeeRouter } from './routes/coffee/viewAllCoffee';
+import { buyCoffeeRouter } from './routes/coffee/buyCoffee';
 
 
 const app = express()
@@ -61,6 +64,12 @@ app.use(AnalyticsStatusRouter)
 app.use(updateImpressionRouter)
 //count of room
 app.use(roomCountRouter)
+//count of coffee
+app.use(totalCountCoffeeRouter)
+//view all coffee
+app.use(viewAllCoffeeRouter)
+// buy coffee
+app.use(buyCoffeeRouter)
 //not found route
 app.all('*',async()=>{
     throw new NotFoundError();

@@ -28,7 +28,11 @@ const userSchema = new Schema({
     is_premium:{
         type:Boolean,
         default:false
-    }   
+    } ,
+    is_purchasedAd:{
+        type:Boolean
+        ,default:false
+    }  
    
    
 },{toJSON:{
