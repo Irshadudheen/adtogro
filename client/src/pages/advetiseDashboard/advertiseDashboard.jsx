@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import './style.css'
 import { 
   LineChart, 
   Line, 
@@ -33,7 +34,13 @@ import {
   Edit,
   Trash2,
   Menu,
-  X
+  X,
+  CircleCheck,
+  ThumbsUp,
+  MoveDown,
+  Keyboard,
+  KeyboardMusic,
+  ArrowBigDownDashIcon
 } from 'lucide-react';
 import { LiveCountContext } from "@/context/LiveCountContext"
 import AnalyticsContext from '../../context/analaticsState/analaticsState';
@@ -77,8 +84,9 @@ const advertisements = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function AdvertiserDashboard() {
+  const [expanded, setExpanded] = useState(false)
     const liveCount = useContext(LiveCountContext)
-  const [activeTab, setActiveTab] = useState('analytics');
+  const [activeTab, setActiveTab] = useState('advertisements');
   const [dateRange, setDateRange] = useState('Last 7 days');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const analyticsDataState = useContext(AnalyticsContext);
@@ -129,6 +137,16 @@ export default function AdvertiserDashboard() {
           <nav className="mt-6">
             <button 
               onClick={() => {
+                setActiveTab('advertisements');
+                closeSidebar();
+              }}
+              className={`flex items-center px-6 py-3 w-full ${activeTab === 'advertisements' ? 'bg-blue-50 text-black border-l-4 border-black' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              <Edit3 className="w-5 h-5 mr-3" />
+              <span className="text-sm font-medium">Advertisements</span>
+            </button>
+            <button 
+              onClick={() => {
                 setActiveTab('analytics');
                 closeSidebar();
               }}
@@ -138,16 +156,7 @@ export default function AdvertiserDashboard() {
               <span className="text-sm font-medium">Analytics</span>
             </button>
             
-            <button 
-              onClick={() => {
-                setActiveTab('advertisements');
-                closeSidebar();
-              }}
-              className={`flex items-center px-6 py-3 w-full ${activeTab === 'advertisements' ? 'bg-blue-50 text-black border-l-4 border-black' : 'text-gray-600 hover:bg-gray-100'}`}
-            >
-              <Edit3 className="w-5 h-5 mr-3" />
-              <span className="text-sm font-medium">Advertisements</span>
-            </button>
+            
             
             <button 
               onClick={() => {
@@ -302,6 +311,67 @@ export default function AdvertiserDashboard() {
                   Create New Ad
                 </button>
               </div>
+                 <div className=" flex gap-4  flex-col sm:flex-row sm:items-start">
+  <div className="bg-white border border-gray-300 text-black max-w-sm rounded-lg mb-10">
+    <h1 className='font-bold text-xl px-5 py-4'>Latest Performance</h1>
+    <div className="w-3/4 relative mb-2 mx-auto">
+      <img className='rounded-lg' src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+    </div>
+    <div className="p-5 flex justify-between">
+ <div className='flex items-center'><BarChart2 className="w-5 h-5 mr-3" /> 190</div> 
+ <div className="flex items-center"><ThumbsUp className="w-5 h-5 mr-3 ml-4" /> 100</div> 
+ <div className="flex items-center "><span className='font-bold mr-3'>CTR </span>10%</div> 
+  <button onClick={() => setExpanded(!expanded)} className=" flex items-center">
+   {!expanded?(<ArrowDown className="w-5 h-5 mr-2" />):(<ArrowUp className='w-5 h-5 mr-2' />)}
+  </button>
+</div>
+<div className="border-t border-gray-400 w-4/5 mx-7"></div>
+<div className={`px-5  text-sm text-gray-700 expandable ${expanded ? 'open' : ''}`}>
+  <p className='text-gray-500'>First 38 days 16 hours</p>
+  <p className="text-black flex font-medium justify-between">
+  Impression <span>190</span>
+  
+</p>
+<p className="text-black flex font-medium justify-between">
+  Clicks <span>100</span>
+
+  
+</p>
+<p className="text-black flex font-medium justify-between">
+  Click Through Rate <span>10%</span>
+
+  
+</p>
+  
+</div>
+<button className='bg-gray-300 hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to ad analytics</button>
+
+  </div>
+
+  <div className="bg-white border border-gray-300 text-black max-w-sm rounded-lg mb-10">
+    <h1 className='font-bold text-xl px-5 py-4 '>Advertisement analytics
+      <p className='text-sm font-medium text-gray-500'>Current clicks</p>
+       <h1 className='font-bold text-6xl mb-5'>100</h1>
+    </h1>
+    <div className="border-t border-gray-400 w-4/5 mx-7"></div>
+    
+    <div className="w-3/4 relative mb-2 mx-auto">
+    <h1 className='font-bold text-xl'>Summary</h1>
+    <p className='text-gray-600'>Last 38 days</p>
+    <h1 className='font-bold flex justify-between'>Impression <span>190</span></h1>
+     <h1 className='font-bold flex justify-between'>Click <span>100</span></h1>
+      <h1 className='font-bold flex justify-between'>Click Through Rate <span>10%</span></h1>
+    </div>
+    <div className="border-t border-gray-400 w-4/5 mx-7"></div>
+    
+      <button className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to ad analytics</button>
+    
+  </div>
+</div>
+                  <div className="bg-white max-w-xl rounded-lg shadow-sm  mb-10">
+                    sakjlf
+                    
+                  </div>
               
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 {/* Mobile view: Stacked cards for data */}
@@ -354,6 +424,7 @@ export default function AdvertiserDashboard() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clicks</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Impressions</th>
@@ -365,6 +436,9 @@ export default function AdvertiserDashboard() {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {advertisements.map(ad => (
                         <tr key={ad.id}>
+                          <td className='px-4 py-4 whitespace-nowrap'>
+                            <div className="">image</div>
+                          </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">{ad.name}</div>
                           </td>

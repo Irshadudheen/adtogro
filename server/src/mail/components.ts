@@ -30,7 +30,7 @@ const footer = `
   </div>
   <p style="margin-top: 15px;">
     <img src="https://res.cloudinary.com/dspi0sqap/image/upload/v1748599770/logo_1_lkgwru.jpg" width=24 height=24 alt="logo" />
-    <strong style="margin-left: 5px;">Adtogro</strong>
+    <strong style="margin-left: 5px;"></strong>
   </p>
   <p>&copy; ${new Date().getFullYear()} adtogro. All rights reserved.</p>
 </div>

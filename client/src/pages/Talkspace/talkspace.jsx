@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { PlusCircle, Globe, MessageCircle, Users, Search, TrendingUp, Star, Clock, Link, Coffee } from 'lucide-react';
-import Layout from '@/components/Layout';
+import Layout from '@/components/layout/Layout';
 import {createRoom} from '@/Api/user';
 import { useNavigate } from 'react-router-dom';
 import { commmunityCount, roomsDetails } from '@/Api/user';
@@ -17,6 +17,12 @@ import { useAudio } from '../../context/backgroundAudio/AudioContext';
 import FooterTalkspace from '../../components/talkspace/Footer';
 
 export default function Talkspace() {
+   useEffect(() => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
+}, []);
    const { playAudio, pauseAudio } = useAudio();
     const allLanguages = ["Arabic",
   "English", "Spanish", "French", "German","Gen Z", "Japanese", "Vietnamese",

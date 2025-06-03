@@ -8,7 +8,7 @@ export const AudioProvider = ({ children }) => {
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   useEffect(() => {
     const player = playBackgroundAudio({
-      volume: 0.1,
+      volume: 0.05,
       loop: true,
     });
 

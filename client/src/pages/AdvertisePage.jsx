@@ -1,15 +1,18 @@
 // src/pages/AdvertisePage.js
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import Layout from '@/components/Layout';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
 import razorpayPayment from '@/utils/razorpay';
-
+import { useDispatch } from 'react-redux';
 import 'react-image-crop/dist/ReactCrop.css'
 import ImageCropper from '@/components/imageCropper';
 import toast from 'react-hot-toast';
 import { createOrder } from '@/Api/order';
+import { updateAdvertiserStatus } from '../redux/userSlice';
 
 function AdvertisePage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   // Parse query parameters to get plan
   const searchParams = new URLSearchParams(location.search);
@@ -89,6 +92,7 @@ const handleImage=(adImage)=>{
     const data= await razorpayPayment(response)
     
       setSuccess(true);
+      dispatch(updateAdvertiserStatus({ is_advertiser: true }));
       setFormData({
         companyName: '',
         companyWebsite: '',
@@ -142,12 +146,12 @@ const handleImage=(adImage)=>{
                 fontSize: '1.25rem',
                 fontWeight: '600',
                 marginBottom: '0.5rem'
-              }}>Application Submitted!</h2>
+              }}>Thank you for your interest in advertising with us.</h2>
               <p style={{ marginBottom: '1rem' }}>
-                Thank you for your interest in advertising with us. Our team will review your application and contact you within 1-2 business days.
+                We truly appreciate your consideration and are excited about the possibility of collaborating with you. Our platform offers a variety of advertising opportunities designed to help you reach your target audience effectively. 
               </p>
               <button 
-                onClick={() => setSuccess(false)}
+                onClick={() => navigate('/')}
                 style={{
                   padding: '0.5rem 1rem',
                   backgroundColor: '#10b981',
@@ -158,7 +162,7 @@ const handleImage=(adImage)=>{
                   transition: 'background-color 0.2s'
                 }}
               >
-                Submit Another Application
+                Home 
               </button>
             </div>
           ) : (

@@ -1,22 +1,22 @@
 // src/components/Layout.js
 import  { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import useGetUserData from '../hooks/useGetUser';
-import { removeUser, setUser } from '../redux/userSlice';
+import useGetUserData from '@/hooks/useGetUser';
+import { removeUser, setUser } from '@/redux/userSlice';
 import { useDispatch } from 'react-redux';
-import { logout } from '../Api/user';
-
+import { logout } from '@/Api/user';
+import './layoutanimation.css'
 import {  useGoogleLogin } from '@react-oauth/google';
-import { decodedToken } from '../Api/user';
-import LoginModal from './loginModal';
-import { useLoginModal } from '../context/LoginModalContext';
+import { decodedToken } from '@/Api/user';
+import LoginModal from '@/components/loginModal';
+import { useLoginModal } from '@/context/LoginModalContext';
 import toast from 'react-hot-toast';
-import { useAudio } from '../context/backgroundAudio/AudioContext';
+import { useAudio } from '@/context/backgroundAudio/AudioContext';
  
 
 function Layout({ children }) {
    const { playAudio, pauseAudio,isAudioEnabled } = useAudio();
-  
+   const [imageError, setImageError] = useState(false);
    const handlePlayAudio = (e)=>{
     console.log(e.target.checked)
 
@@ -39,13 +39,14 @@ const googlelogin = useGoogleLogin({
       try {
     
     const userData = await decodedToken(tokenResponse.access_token)
-
+        console.log(userData,'userData')
        dispatch(setUser({
              name: userData.user.name,
              email:userData.user.email,
              id: userData.user.id,
              profileImage: userData.user.profileImage,
-             token:userData.token
+             token:userData.token,
+             is_advertiser: userData.user.is_purchasedAd,
          }))
          setIsDropdownOpen(false)
       } catch (error) {
@@ -106,17 +107,19 @@ const handleModalClose = ()=>{
           className="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
           onClick={toggleMobileMenu}
           aria-label="Toggle mobile menu"
-        >
-          <img
+        >{!imageError ? ( <img
                 src={user.profileImage}
-                onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "icone/person.png"; // use a default image
-              }}
+                onError={() => setImageError(true)}
                 alt="Profile"
                 className="w-8 h-8 rounded-full object-cover"
                 draggable={false}
-              />
+              />):(<div
+          className="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-semibold"
+          title={user.name}
+        >
+          {user.name ? user.name.charAt(0).toUpperCase(): "U"}
+        </div>)}
+         
         </button>
         
         {/* Desktop Navigation */}
@@ -134,16 +137,18 @@ const handleModalClose = ()=>{
               className="flex items-center gap-2 px-4 py-1 border border-black rounded-full text-black  cursor-pointer transition-all duration-300"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <img
+              {!imageError?(<img
                 src={user.profileImage}
-                onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "icone/person.png"; // use a default image
-              }}
+                onError={()=> setImageError(true)}
                 alt="Profile"
                 className="w-8 h-8 rounded-full object-cover"
                 draggable={false}
-              />
+              />):(<div
+          className="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-semibold"
+          title={user.name}
+        >
+          {user.name ? user.name.charAt(0).toUpperCase(): "U"}
+        </div>)}
               <span className="font-medium">{user.name}</span>
               <svg
                 className="w-4 h-4 text-black "
@@ -183,9 +188,16 @@ const handleModalClose = ()=>{
                       <Link 
                         to="/advertiser-dashboard" 
                         className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsDropdownOpen(false)}
+                        onClick={(e) => {
+
+                          setIsDropdownOpen(false)
+                          if(!user.is_advertiser){
+                            e.preventDefault();
+                            toast.error('You need to purchase an ad plan to access this page.');
+                          }
+                        }}
                       >
-                        Your Advertiser Dashboard
+                       My Ads
                       </Link>
                        <div className="px-2">
                         <div className="flex items-center justify-between">
@@ -208,18 +220,22 @@ const handleModalClose = ()=>{
                           handleLogout()
                         }}
                       >
-                        Logout
+                        Logout 
                       </button>
                     </div>
                   )}
                 </div>
               ) : (
-                <button
+                <div className="">
+
+                
+                <div 
                  onClick={() => googlelogin()}
-                  className="px-4 py-1 bg-black text-white rounded-md font-medium hover:bg-gray-800"
+                  className="px-4 rise-shake py-1 bg-black text-white rounded-md font-medium hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer flex items-center gap-2 border"
                 >
-                  Log In
-                </button>
+                <span > Log In</span> 
+                </div>
+                </div>
               )}
             </li>
           </ul>

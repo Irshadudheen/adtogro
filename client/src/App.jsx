@@ -8,6 +8,8 @@ const PricingPage = lazyWithLoader(()=>import('@/pages/PricingPage'))
 const NotFoundPage = lazyWithLoader(()=>import('@/pages/404/404Page'))
 const AdvertisePage = lazyWithLoader(()=>import('@/pages/AdvertisePage'))
 const Talkspace = lazyWithLoader(()=>import('@/pages/Talkspace/talkspace'))
+
+
 const TalkspaceRoom = lazyWithLoader(()=>import('@/pages/TalkSpaceRoom/TalkspaceRoom'))
 const ForgotPassowrd = lazyWithLoader(()=>import('@/pages/forgot-password/forgotPassword'))
 const AdvertiserDashboard = lazyWithLoader(()=>import( '@/pages/advetiseDashboard/advertiseDashboard'))
@@ -22,7 +24,7 @@ import Offline from './utils/offline'
 import LanguageWrapper from './components/LanguageWrapper'
 import AnalyticsProvider from './context/analaticsState/providerAnalytics'
 import Dashboard from './components/Dashboard'
-
+const Privacy = lazyWithLoader(()=>import('./pages/Privacy'))
 import { LiveCountProvider } from '@/context/LiveCountContext'
 import { JoinRoomProvider } from '@/hooks/useJoinRoom'
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -30,7 +32,8 @@ import { LoginModalProvider } from './context/LoginModalContext'
 import { RoomDetailsProvider } from './context/videoCallRoomContext/RoomDetailsContext'
 import { useOnlineStatus } from './hooks/useOnlineStatus'
 import { useTranslation } from 'react-i18next'
-import { AudioProvider } from './context/backgroundAudio/AudioContext'
+import { AudioProvider } from '@/context/backgroundAudio/AudioContext'
+const Termscondition = lazyWithLoader(()=>import('./pages/terms&condition'))
 
 
 function App() {
@@ -61,9 +64,12 @@ const user =useGetUserData()
         <Route path="/"                     element={<HomePage />} />
         <Route path='/dashboard'            element={<Dashboard/>}/>
         <Route path='/TalkSpace'            element={<Talkspace/>}/>
+        <Route path='/privacy'              element={<Privacy/>}/>
+        <Route path='/terms'                element={<Termscondition/>}/>
         <Route path="*"                     element={<NotFoundPage/>} />
         <Route path="/pricing"              element={<PricingPage />} />
         <Route path="/advertise"            element={<AdvertisePage />} />
+      
         <Route path='/forgot-password'      element={<ForgotPassowrd/>} />
         <Route path='/reset-password/:token'element={<NewPasswordPage/>} />
         <Route path="/verify-email/:userId" element={<EmailverifyPage />} />
@@ -71,6 +77,7 @@ const user =useGetUserData()
         <Route path="/:lang"                element={<LanguageWrapper><HomePage /></LanguageWrapper>} />
         <Route path='/talkspaceroom/:roomId'element={<RoomDetailsProvider><TalkspaceRoom/></RoomDetailsProvider>}/>
         <Route path='/advertiser-dashboard' element={user.id?<AnalyticsProvider><AdvertiserDashboard/></AnalyticsProvider>:<Navigate to={'/'}/> } />
+      
       </Routes>}
       </Suspense>
       </LoginModalProvider>

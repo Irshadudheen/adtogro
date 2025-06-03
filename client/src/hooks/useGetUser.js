@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import {store} from '../redux/storage'
+import {store} from '@/redux/storage'
 export const getData =()=>{
     const state = store.getState()
 

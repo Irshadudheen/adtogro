@@ -5,10 +5,12 @@ const initialState ={
     id: '',
     name: '',
     email: '',
-    role: '',
+   
     blocked:false,
     user:undefined,
-    profileImage:''
+    profileImage:'',
+    is_advertiser:false,
+    token:''
 
 }
 const userSlice = createSlice({
@@ -21,30 +23,40 @@ const userSlice = createSlice({
         removeRole:(state)=>{
             state.role=''
         },
+        updateAdvertiserStatus:(state,action)=>{
+            const {is_advertiser} = action.payload;
+            state.is_advertiser = is_advertiser;
+        }
+        ,
         setUser:(state,action)=>{
-            const {role,name,email,id,blocked,profileImage,token}=action.payload;
+            const {name,email,id,blocked,profileImage,token,is_advertiser}=action.payload;
             console.log(action.payload,'action paylaod')
-            state.role=role
+           
             state.name=name
             state.email=email
             state.id=id
             state.blocked=blocked
             state.profileImage=profileImage
             state.token =token
+            state.is_advertiser = is_advertiser
 
 
         },
       
         removeUser:(state)=>{
-            state.role = '';
+          
             state.email='';
             state.id="";
             state.name="";
             state.profileImage="";
+            state.token='';
+            state.is_advertiser = false;
+
         }
+
     }
 
 
 })
-export const {setRole,removeRole,removeUser, setUser} = userSlice.actions;
+export const {setRole,removeRole,removeUser, setUser,updateAdvertiserStatus} = userSlice.actions;
 export default userSlice.reducer;

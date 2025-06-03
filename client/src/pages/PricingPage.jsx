@@ -1,7 +1,7 @@
 // src/pages/PricingPage.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Layout from '@/components/Layout';
+import Layout from '@/components/layout/Layout';
 import PricingCard from '@/components/PricingCard';
 import { Helmet } from 'react-helmet';
 

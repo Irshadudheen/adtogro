@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet';
 import { useContext } from "react"
 import AdBanner from "@/components/AdBanner"
-import Layout from "@/components/Layout"
+import Layout from "@/components/layout/Layout"
 import DraggableLiveCount from "@/components/live-count"
 import { Link } from "react-router-dom"
 import { LiveCountContext } from "@/context/LiveCountContext"
@@ -34,7 +34,7 @@ export default function HomePage() {
                 to="/talkspace"
                 className="px-8 py-4 border  text-black hover:bg-black hover:text-white rounded-lg font-semibold inline-block transition-colors  text-lg shadow-lg"
               >
-                {t('Enter Talkspace')}
+                {t('Explore Talkspace')}
               </Link>
              
             </div>
