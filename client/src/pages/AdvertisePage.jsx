@@ -382,7 +382,7 @@ const handleImage=(adImage)=>{
                     fontWeight: '500'
                   }}>Advertising Plan *</label>
                   <select
-                    name="plaadvertisPlann"
+                    name="advertisPlan"
                     value={formData.advertisPlan}
                     onChange={handleChange}
                     style={{

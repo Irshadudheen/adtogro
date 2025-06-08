@@ -13,6 +13,7 @@ export interface AdvertiseAttras{
     clicks:number,
     createdAt:Date,
     expiresAt:Date,
+    impressions:number,
  
 }
 
@@ -30,6 +31,7 @@ export interface AdvertiseDoc extends Document{
     clicks:number,
     createdAt:Date,
     expiresAt:Date,
+    impressions:number,
     
 }
 export interface AdvertiseModel extends Model<AdvertiseDoc>{

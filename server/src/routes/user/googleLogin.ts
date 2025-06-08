@@ -5,6 +5,7 @@ import { User } from "../../models/user";
 import jwt from 'jsonwebtoken'
 import { createToken } from "../../service/jwt";
 import { userData } from "../../interface/userInterface";
+import sendMail from "../../service/mail";
 
 
 const router = Router();
@@ -28,6 +29,7 @@ router.post('/api/user/googleLogin',[body('email').isEmail().withMessage('Must p
             
          const savedUser= await  newUser.save() as userData
             const userJWT = createToken(savedUser) 
+            sendMail({to:email,type:'SHARE_PLATFORM',data:{name:name}})
             res.set('Cache-Control', 'private, max-age=300');
             res.status(200).send({user:savedUser,token:userJWT})
         }

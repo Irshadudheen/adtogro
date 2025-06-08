@@ -10,3 +10,11 @@ export const fetchAnalytics = async () =>{
         throw error
     }
 }
+export const fetchLatestPerformance = async () =>{
+    try {
+        const {data} = await Api.get(analyticsRoutes.getLatestPerformance);
+        return data;
+    } catch (error) {
+        throw error 
+    }
+}

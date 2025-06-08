@@ -1,3 +1,4 @@
 export const analyticsRoutes = {
-    getAnalytics:'/analytics'
+    getAnalytics:'/analytics',
+    getLatestPerformance:'/analytics/latest-performance',
 }

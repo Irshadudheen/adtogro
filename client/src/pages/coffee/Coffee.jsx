@@ -81,7 +81,7 @@ function CoffeeSupport() {
   return (
     <>
       <Helmet>
-        <title>Buy Me a Coffee / adtogro</title>
+        <title>Buy Me a Coffee / AdToGro</title>
         <meta name="description" content="Support my work by buying me a coffee! Every contribution helps me continue creating content and pursuing my passion." />
         <meta name="keywords" content="buy me a coffee, support, donation, coffee, creator support" />
         <meta name="author" content="Irshadudheen" />

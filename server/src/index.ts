@@ -9,7 +9,9 @@ import {  initializeSocket } from "./socketJobs/liveUserCount";
 import { initializeGroupVideoCallSocket } from './socketJobs/group_video_call';
 import { Server } from 'socket.io';
 import { sharePlatform } from './jobs/sharePaltform.job';
+
 const server = createServer(app);
+
 const io = new Server(server, {
     cors: {
       origin: '*',

@@ -47,6 +47,11 @@ const advertiseSchema = new Schema({
         required:true,
         default:0
     },
+    impressions:{
+        type:Number,
+        required:true,
+        default:0
+    },
     createdAt:{
         type:Date,
         required:true

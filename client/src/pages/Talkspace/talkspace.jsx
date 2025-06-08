@@ -189,7 +189,7 @@ export default function Talkspace() {
   return (
     <>
    <Helmet>
-    <title>Free Talkspace / Adtogro </title>
+    <title>Free Talkspace / AdToGro </title>
 <meta name="description" content="Join Free Talkspace by Adtogro – a safe, supportive community where you can express yourself, share your thoughts, and connect with others. No judgment, just real conversations that matter." />
 
    </Helmet>

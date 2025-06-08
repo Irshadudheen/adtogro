@@ -14,6 +14,7 @@ export interface OrderAttras{
     },
     totalPrice:number,
     createAt:Date,
+    adExpireAt:Date,
     status:string,
     
 }
@@ -33,6 +34,7 @@ export interface OrderDoc extends Document{
     },
     totalPrice:number,
     createAt:Date,
+    adExpireAt:Date,
     status:string,
     
 }

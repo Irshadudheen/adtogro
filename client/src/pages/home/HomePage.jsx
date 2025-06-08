@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <>
     <Helmet>
-       <title>{t('adtogro')}</title>
+       <title>{t('AdToGro')}</title>
         <meta name="description" content={t('description')} />
     </Helmet>
     <Layout>

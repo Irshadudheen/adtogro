@@ -8,6 +8,21 @@ import { instance } from '../../payment_gateway/razorpay'
 import { Order } from '../../models/order'
 import { currentUser } from '../../middlewares/current-user'
 const router =Router()
+type PlanKey = keyof typeof plan;
+const plan ={
+    basic:{
+        price:9,
+        expireAt: new Date(Date.now() +  24 * 60 * 60 * 1000) // 7 days
+    },
+    pro:{
+        price:59,
+        expireAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) 
+    },
+    enterprise:{
+        price:299,
+        expireAt: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000) 
+    }
+}
 router.post('/api/order',createAdValidate,validateRequest,
     currentUser,
     async (req:Request,res:Response)=>{
@@ -21,14 +36,22 @@ router.post('/api/order',createAdValidate,validateRequest,
         if(existingAdvertiseCount >=100) {
            throw new BadRequestError('Advertise limit reached')
         }
-        const order = Order.build({userId,orderData:req.body,totalPrice:4000,createAt:new Date,status:'pending'})
+        console.log(req.body,'order data')
+        const plansFromUser = req.body.advertisPlan as PlanKey; 
+        console.log(plansFromUser,'plan from user')
+        if(plansFromUser !== 'basic' && plansFromUser !== 'pro' && plansFromUser !== 'enterprise'){
+
+            throw new BadRequestError('Invalid plan selected')
+        }
+        const planSelected = plan[plansFromUser];
+        const order = Order.build({userId,orderData:req.body,totalPrice:planSelected.price,adExpireAt:planSelected.expireAt,createAt:new Date,status:'pending'})
         await order.save()
        
        
        
        const razorpayOrder=await instance.orders.create({
-            amount:4000*100,
-            currency:"INR",
+            amount:planSelected.price*100,
+            currency:"USD",
             receipt:order.id
         })
         res.status(201).send({razorpayOrder,order})

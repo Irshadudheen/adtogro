@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './style.css'
 import { 
   LineChart, 
@@ -44,6 +44,8 @@ import {
 } from 'lucide-react';
 import { LiveCountContext } from "@/context/LiveCountContext"
 import AnalyticsContext from '../../context/analaticsState/analaticsState';
+import RenewalModal from '../../components/renewalModal';
+import { fetchLatestPerformance } from '../../Api/analytics';
 
 // Sample data
 const analyticsData = [
@@ -85,14 +87,33 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function AdvertiserDashboard() {
   const [expanded, setExpanded] = useState(false)
+  const [isRenewalModalOpen, setIsRenewalModalOpen] = useState(false)
     const liveCount = useContext(LiveCountContext)
+  const [latestPerformance, setLatestPerformance] = useState()
   const [activeTab, setActiveTab] = useState('advertisements');
   const [dateRange, setDateRange] = useState('Last 7 days');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const analyticsDataState = useContext(AnalyticsContext);
+  useEffect(()=>{
+    const ApiCallFetchLatestPerformance = async () =>{
+      try {
+        const latestPerformanceData = await fetchLatestPerformance()
+        setLatestPerformance(latestPerformanceData)
+        console.log(latestPerformanceData)
+      } catch (error) {
+        throw error
+      }
+    }
+    ApiCallFetchLatestPerformance()
+  },[])
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+const handleRenewal = (plan, amount) => {
+    console.log(`Renewing with ${plan} plan for $${amount}`)
+    // Add your renewal logic here
+    // This could include API calls, payment processing, etc.
+  }
 
   const closeSidebar = () => {
     setSidebarOpen(false);
@@ -115,7 +136,7 @@ export default function AdvertiserDashboard() {
       {/* Overlay for mobile sidebar */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          className="fixed inset-0  bg-opacity-50 z-30 md:hidden"
           onClick={closeSidebar}
         ></div>
       )}
@@ -307,20 +328,18 @@ export default function AdvertiserDashboard() {
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">Manage Advertisements</h1>
                 
-                <button className="px-4 py-2 bg-black text-white rounded-md shadow-sm hover:bg-gray-800 w-full sm:w-auto">
-                  Create New Ad
-                </button>
+               
               </div>
                  <div className=" flex gap-4  flex-col sm:flex-row sm:items-start">
-  <div className="bg-white border border-gray-300 text-black max-w-sm rounded-lg mb-10">
+  <div className="bg-white border border-gray-300 text-black sm:max-w-md w-full rounded-lg mb-10">
     <h1 className='font-bold text-xl px-5 py-4'>Latest Performance</h1>
     <div className="w-3/4 relative mb-2 mx-auto">
-      <img className='rounded-lg' src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+      <img className='w-full rounded-lg ' src={latestPerformance?.latestPerformance.adImage} alt=""  />
     </div>
     <div className="p-5 flex justify-between">
- <div className='flex items-center'><BarChart2 className="w-5 h-5 mr-3" /> 190</div> 
- <div className="flex items-center"><ThumbsUp className="w-5 h-5 mr-3 ml-4" /> 100</div> 
- <div className="flex items-center "><span className='font-bold mr-3'>CTR </span>10%</div> 
+ <div className='flex items-center'><BarChart2 className="w-5 h-5 mr-3" /> {latestPerformance?.latestPerformance.impressions}</div> 
+ <div className="flex items-center"><ThumbsUp className="w-5 h-5 mr-3 ml-4" /> {latestPerformance?.latestPerformance.clicks}</div> 
+ <div className="flex items-center "><span className='font-bold mr-3'>CTR </span>{latestPerformance?.ctr}%</div> 
   <button onClick={() => setExpanded(!expanded)} className=" flex items-center">
    {!expanded?(<ArrowDown className="w-5 h-5 mr-2" />):(<ArrowUp className='w-5 h-5 mr-2' />)}
   </button>
@@ -329,16 +348,16 @@ export default function AdvertiserDashboard() {
 <div className={`px-5  text-sm text-gray-700 expandable ${expanded ? 'open' : ''}`}>
   <p className='text-gray-500'>First 38 days 16 hours</p>
   <p className="text-black flex font-medium justify-between">
-  Impression <span>190</span>
+  Impression <span>{latestPerformance?.latestPerformance.impressions}</span>
   
 </p>
 <p className="text-black flex font-medium justify-between">
-  Clicks <span>100</span>
+  Clicks <span>{latestPerformance?.latestPerformance.clicks}</span>
 
   
 </p>
 <p className="text-black flex font-medium justify-between">
-  Click Through Rate <span>10%</span>
+  Click Through Rate <span>{latestPerformance?.ctr}%</span>
 
   
 </p>
@@ -348,30 +367,43 @@ export default function AdvertiserDashboard() {
 
   </div>
 
-  <div className="bg-white border border-gray-300 text-black max-w-sm rounded-lg mb-10">
+  <div className="bg-white border border-gray-300 text-black  w-full sm:w-1/2 rounded-lg mb-10">
     <h1 className='font-bold text-xl px-5 py-4 '>Advertisement analytics
       <p className='text-sm font-medium text-gray-500'>Current clicks</p>
-       <h1 className='font-bold text-6xl mb-5'>100</h1>
+       <h1 className='font-bold text-6xl mb-5'>{latestPerformance?.latestPerformance.clicks}</h1>
     </h1>
     <div className="border-t border-gray-400 w-4/5 mx-7"></div>
     
     <div className="w-3/4 relative mb-2 mx-auto">
     <h1 className='font-bold text-xl'>Summary</h1>
-    <p className='text-gray-600'>Last 38 days</p>
-    <h1 className='font-bold flex justify-between'>Impression <span>190</span></h1>
-     <h1 className='font-bold flex justify-between'>Click <span>100</span></h1>
-      <h1 className='font-bold flex justify-between'>Click Through Rate <span>10%</span></h1>
+    <p className='text-gray-600'>Last {latestPerformance?.lastDays} days</p>
+    <h1 className='font-bold flex justify-between'>Impression <span>{latestPerformance?.latestPerformance.impressions}</span></h1>
+     <h1 className='font-bold flex justify-between'>Click <span>{latestPerformance?.latestPerformance.clicks}</span></h1>
+      <h1 className='font-bold flex justify-between'>Click Through Rate <span>{latestPerformance?.ctr}%</span></h1>
     </div>
     <div className="border-t border-gray-400 w-4/5 mx-7"></div>
     
       <button className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to ad analytics</button>
     
   </div>
+  <div className="bg-white border border-gray-300 text-black  sm:w-1/3   rounded-lg mb-10">
+    <h1 className='font-bold text-xl px-5 py-4 '>Renewal
+      <p className='text-sm font-medium text-gray-500 flex justify-between'>Expire date:- <span>{new Date(latestPerformance?.latestPerformance?.expiresAt).toLocaleDateString()}</span></p>
+       <h1 className='font-bold text-2xl mb-2'>{latestPerformance?.expireDays} days</h1>
+
+      
+      
+    </h1>
+    
+    <div className="border-t border-gray-400 w-4/5 mx-7"></div>
+
+    
+      <button  onClick={() => setIsRenewalModalOpen(true)} className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to renewal</button>
+    
+  </div>
 </div>
-                  <div className="bg-white max-w-xl rounded-lg shadow-sm  mb-10">
-                    sakjlf
-                    
-                  </div>
+
+                  
               
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 {/* Mobile view: Stacked cards for data */}
@@ -549,6 +581,7 @@ export default function AdvertiserDashboard() {
           )}
         </div>
       </div>
+      {isRenewalModalOpen &&<RenewalModal  onClose={() => setIsRenewalModalOpen(false)} onRenew={handleRenewal}/>}
     </div>
   );
 }

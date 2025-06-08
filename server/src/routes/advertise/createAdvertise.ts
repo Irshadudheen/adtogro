@@ -49,7 +49,8 @@ router.post('/api/advertise',
             advertisPlan:order.orderData.advertisPlan,
             clicks:0,
             createdAt:new Date,
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now,,
+            expiresAt: order.adExpireAt, 
+            impressions:0
         })
        user.is_purchasedAd = true
        await user.save();

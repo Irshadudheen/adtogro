@@ -40,15 +40,14 @@ const sendMail = async ({ to, type, data }: MailOptions) => {
         `;
         break;
         case 'SHARE_PLATFORM':
-           subject = "🚀 Unlock Rewards! Share the Secret with Friends 👀"
+           subject = `🚀 ${data.name.charAt(0).toUpperCase()+data.name.split(' ')[0].slice(1)}, Unlock Rewards! Share the Secret with Friends 👀`;
            html = `
             <div style="${baseStyle}">
-              <h2>Hey ${data.name},</h2>
+              <h2>Hey ${data.name.split(' ')[0]},</h2>
               <p>Loving your AdtoGro experience? Your friends will too! Invite them now and unlock surprises! 🚀</p>
-              <a href="https://adtogro.com" style="${buttonStyle}">
-      Copy This Link
-    </a>
-    <p style="margin-top: 10px; font-size: 12px; color: #555;">(or copy this link manually: https://adtogro.com)</p>
+            
+    <p style="margin-top: 10px; font-size: 12px; color: #555;">Feel free to pass it along or just drop the link: https://adtogro.com</p>
+
               ${footer}
               </div>`
               
@@ -70,7 +69,7 @@ const sendMail = async ({ to, type, data }: MailOptions) => {
           
 
       case 'AD_CREATED':
-        subject = 'Spot Created Successfully';
+        subject =  `${data.name}, Spot Created Successfully`;
         html = `
           <div style="${baseStyle}">
             <h2>Hi ${data.name},</h2>

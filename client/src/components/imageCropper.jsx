@@ -29,7 +29,8 @@ const ImageCropper = ({ updateAvatarCallback }) => {
     // Set canvas size to the desired output size
     canvas.width = 150;
     canvas.height = 150;
-
+  ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = "high"
     // Draw the cropped image onto the canvas
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
@@ -45,6 +46,7 @@ const ImageCropper = ({ updateAvatarCallback }) => {
       canvas.width,
       canvas.height
     );
+   
 
     return canvas.toDataURL();
   };

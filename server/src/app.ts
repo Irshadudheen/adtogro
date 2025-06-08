@@ -26,6 +26,7 @@ import { roomCountRouter } from './routes/room/roomCount';
 import { totalCountCoffeeRouter } from './routes/coffee/totalCount';
 import { viewAllCoffeeRouter } from './routes/coffee/viewAllCoffee';
 import { buyCoffeeRouter } from './routes/coffee/buyCoffee';
+import { getLatestPerformanceRouter } from './routes/analyticse/getLatestPerformance';
 
 
 const app = express()
@@ -38,6 +39,10 @@ app.use(urlencoded({extended:true}))
 const CLIENT_URL = 'http://localhost:5173'
 app.use(cors({
    origin: CLIENT_URL,
+   
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+
+  
   credentials: true,
 }
  
@@ -70,6 +75,8 @@ app.use(totalCountCoffeeRouter)
 app.use(viewAllCoffeeRouter)
 // buy coffee
 app.use(buyCoffeeRouter)
+//view latest performance of ad
+app.use(getLatestPerformanceRouter)
 //not found route
 app.all('*',async()=>{
     throw new NotFoundError();

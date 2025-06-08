@@ -321,12 +321,12 @@ const handleModalClose = ()=>{
       
       {/* Footer */}
       <hr></hr>
-      <footer className=" text-black py-1">
+      <footer className=" text-black ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
-            <div>
-              <img src="/logo/logo.png" width={240} height={240} alt="" />
-              <p className="text-gray-900 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ">
+            <div className='mt-3'>
+              <img src="/logo/logo.png" width={150} height={150} alt="" />
+              <p className="text-gray-900 text-xs">
                We connect strangers and turn them into loyal supporters through targeted outreach.
               </p>
             </div>
@@ -335,15 +335,15 @@ const handleModalClose = ()=>{
             <div>
               <h4 className="text-base font-medium mb-2 mt-4">Legal</h4>
               <ul className="space-y-2">
-                <li><Link to="/privacy" className="text-gray-800 hover:text-gray-900">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="text-gray-800 hover:text-gray-900">Terms of Service</Link></li>
+                <li><Link to="/privacy" className="text-gray-800 text-sm hover:text-gray-900">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="text-gray-800 text-sm hover:text-gray-900">Terms of Service</Link></li>
                 
               </ul>
             </div>
           </div>
           
           <div className="border-t border-gray-700 pt-2 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-            <p className="text-gray-900 text-sm">
+            <p className="text-gray-900 text-xs">
               © {new Date().getFullYear()} Powered by Irshadudheen 
             </p>
             <div className="flex space-x-4">
