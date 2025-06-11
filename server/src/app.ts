@@ -27,6 +27,8 @@ import { totalCountCoffeeRouter } from './routes/coffee/totalCount';
 import { viewAllCoffeeRouter } from './routes/coffee/viewAllCoffee';
 import { buyCoffeeRouter } from './routes/coffee/buyCoffee';
 import { getLatestPerformanceRouter } from './routes/analyticse/getLatestPerformance';
+import { uploadImageRouter } from './routes/uploadImage/uploadImage';
+import { getUserAdvertiseRouter } from './routes/analyticse/getUserAdvertise';
 
 
 const app = express()
@@ -77,6 +79,10 @@ app.use(viewAllCoffeeRouter)
 app.use(buyCoffeeRouter)
 //view latest performance of ad
 app.use(getLatestPerformanceRouter)
+//upload image
+app.use(uploadImageRouter)
+//user analytics
+app.use(getUserAdvertiseRouter)
 //not found route
 app.all('*',async()=>{
     throw new NotFoundError();

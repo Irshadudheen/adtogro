@@ -7,12 +7,16 @@ import { BadRequestError } from '../../errors/bad-request-error'
 import { instance } from '../../payment_gateway/razorpay'
 import { Order } from '../../models/order'
 import { currentUser } from '../../middlewares/current-user'
+import upload from '../../service/fileUplaod/multer'
+import cloudinary from '../../service/fileUplaod/cloudinary'
+
 const router =Router()
+
 type PlanKey = keyof typeof plan;
 const plan ={
     basic:{
         price:9,
-        expireAt: new Date(Date.now() +  24 * 60 * 60 * 1000) // 7 days
+        expireAt: new Date(Date.now() +  24 * 60 * 60 * 1000)
     },
     pro:{
         price:59,
@@ -23,7 +27,9 @@ const plan ={
         expireAt: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000) 
     }
 }
-router.post('/api/order',createAdValidate,validateRequest,
+router.post('/api/order',
+    createAdValidate,
+   validateRequest,
     currentUser,
     async (req:Request,res:Response)=>{
       

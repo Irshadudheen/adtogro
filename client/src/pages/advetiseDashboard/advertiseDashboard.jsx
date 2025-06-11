@@ -45,7 +45,7 @@ import {
 import { LiveCountContext } from "@/context/LiveCountContext"
 import AnalyticsContext from '../../context/analaticsState/analaticsState';
 import RenewalModal from '../../components/renewalModal';
-import { fetchLatestPerformance } from '../../Api/analytics';
+import { advertisementsApiCall, fetchLatestPerformance, PerformanceCall } from '../../Api/analytics';
 
 // Sample data
 const analyticsData = [
@@ -86,6 +86,9 @@ const advertisements = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function AdvertiserDashboard() {
+
+  const [Title,setTitle] = useState('Latest Performance')
+  const [advertisements, setAdvertisements] = useState([]);
   const [expanded, setExpanded] = useState(false)
   const [isRenewalModalOpen, setIsRenewalModalOpen] = useState(false)
     const liveCount = useContext(LiveCountContext)
@@ -94,17 +97,46 @@ export default function AdvertiserDashboard() {
   const [dateRange, setDateRange] = useState('Last 7 days');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const analyticsDataState = useContext(AnalyticsContext);
-  useEffect(()=>{
-    const ApiCallFetchLatestPerformance = async () =>{
+  function toTop(){
+     window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  }
+   useEffect(() => {
+   toTop()
+  }, []);
+  const fetchAdvertisements = async () => {
       try {
-        const latestPerformanceData = await fetchLatestPerformance()
-        setLatestPerformance(latestPerformanceData)
-        console.log(latestPerformanceData)
+        const advertisementsData = await advertisementsApiCall();
+        console.log(advertisementsData, 'the advertisements data');
+        setAdvertisements(advertisementsData);
+      } catch (error) {
+        console.error('Error fetching advertisements:', error);
+      }
+    };
+    const ApiCallFetchPerformance = async (id) =>{
+      try {
+        toTop()
+        if(id){
+          const performanceData = await PerformanceCall(id)
+          setTitle('Performance - '+performanceData.latestPerformance.companyName)
+          setLatestPerformance(performanceData)
+        }else{
+
+          const latestPerformanceData = await fetchLatestPerformance()
+          setLatestPerformance(latestPerformanceData)
+          console.log(latestPerformanceData)
+        }
       } catch (error) {
         throw error
       }
     }
-    ApiCallFetchLatestPerformance()
+  useEffect(()=>{
+    
+fetchAdvertisements();
+    
+    ApiCallFetchPerformance()
   },[])
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -332,9 +364,9 @@ const handleRenewal = (plan, amount) => {
               </div>
                  <div className=" flex gap-4  flex-col sm:flex-row sm:items-start">
   <div className="bg-white border border-gray-300 text-black sm:max-w-md w-full rounded-lg mb-10">
-    <h1 className='font-bold text-xl px-5 py-4'>Latest Performance</h1>
+    <h1 className='font-bold text-xl px-5 py-4'>{Title}</h1>
     <div className="w-3/4 relative mb-2 mx-auto">
-      <img className='w-full rounded-lg ' src={latestPerformance?.latestPerformance.adImage} alt=""  />
+      <img className='w-full rounded-lg ' draggable={false} src={latestPerformance?.latestPerformance.adImage} alt=""  />
     </div>
     <div className="p-5 flex justify-between">
  <div className='flex items-center'><BarChart2 className="w-5 h-5 mr-3" /> {latestPerformance?.latestPerformance.impressions}</div> 
@@ -346,7 +378,7 @@ const handleRenewal = (plan, amount) => {
 </div>
 <div className="border-t border-gray-400 w-4/5 mx-7"></div>
 <div className={`px-5  text-sm text-gray-700 expandable ${expanded ? 'open' : ''}`}>
-  <p className='text-gray-500'>First 38 days 16 hours</p>
+  <p className='text-gray-500'>First  {latestPerformance?.lastDays} days  {latestPerformance?.lastHours} hours</p>
   <p className="text-black flex font-medium justify-between">
   Impression <span>{latestPerformance?.latestPerformance.impressions}</span>
   
@@ -363,14 +395,14 @@ const handleRenewal = (plan, amount) => {
 </p>
   
 </div>
-<button className='bg-gray-300 hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to ad analytics</button>
+<button className='bg-gray-300 hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to analytics</button>
 
   </div>
 
   <div className="bg-white border border-gray-300 text-black  w-full sm:w-1/2 rounded-lg mb-10">
     <h1 className='font-bold text-xl px-5 py-4 '>Advertisement analytics
       <p className='text-sm font-medium text-gray-500'>Current clicks</p>
-       <h1 className='font-bold text-6xl mb-5'>{latestPerformance?.latestPerformance.clicks}</h1>
+       <h className='font-bold text-6xl mb-5'>{latestPerformance?.latestPerformance.clicks}</h>
     </h1>
     <div className="border-t border-gray-400 w-4/5 mx-7"></div>
     
@@ -383,13 +415,13 @@ const handleRenewal = (plan, amount) => {
     </div>
     <div className="border-t border-gray-400 w-4/5 mx-7"></div>
     
-      <button className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to ad analytics</button>
+      <button className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to analytics</button>
     
   </div>
   <div className="bg-white border border-gray-300 text-black  sm:w-1/3   rounded-lg mb-10">
     <h1 className='font-bold text-xl px-5 py-4 '>Renewal
-      <p className='text-sm font-medium text-gray-500 flex justify-between'>Expire date:- <span>{new Date(latestPerformance?.latestPerformance?.expiresAt).toLocaleDateString()}</span></p>
-       <h1 className='font-bold text-2xl mb-2'>{latestPerformance?.expireDays} days</h1>
+      <p className='text-sm font-medium text-gray-500 flex justify-between'>Expire date:- <span>{new Date(latestPerformance?.latestPerformance?.expiresAt).toLocaleDateString('en-GB')}</span></p>
+       <h className='font-bold text-2xl mb-2'>{latestPerformance?.expireDays} days</h>
 
       
       
@@ -413,13 +445,17 @@ const handleRenewal = (plan, amount) => {
                       <div className="flex justify-between mb-2">
                         <div className="text-sm font-medium text-gray-900">{ad.name}</div>
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${ad.status === 'active' ? 'bg-green-100 text-green-800' : 
+                          ${ad.block === false ? 'bg-green-100 text-green-800' : 
                             ad.status === 'paused' ? 'bg-yellow-100 text-yellow-800' : 
                             'bg-red-100 text-red-800'}`}>
-                          {ad.status.charAt(0).toUpperCase() + ad.status.slice(1)}
+                          {"active"}
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 mb-3">
+                          <div>
+                         
+                          <img className="w-20 rounded border" src={ad.adImage}/>
+                        </div>
                         <div>
                           <div className="text-xs text-gray-500">Clicks</div>
                           <div className="text-sm font-medium">{ad.clicks.toLocaleString()}</div>
@@ -459,7 +495,7 @@ const handleRenewal = (plan, amount) => {
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clicks</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Impressions</th>
+                        <th className=" py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Impressions</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CTR</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -467,12 +503,12 @@ const handleRenewal = (plan, amount) => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {advertisements.map(ad => (
-                        <tr key={ad.id}>
+                        <tr key={ad.id} onClick={()=>ApiCallFetchPerformance(ad.id)} className='hover:bg-gray-100 transition duration-300 ease-in-out'>
                           <td className='px-4 py-4 whitespace-nowrap'>
-                            <div className="">image</div>
+                            <img src={ad.adImage} width={40} height={40} className='rounded border' alt="" />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{ad.name}</div>
+                            <div className="text-sm font-medium text-gray-900">{ad.companyName}</div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">{ad.clicks.toLocaleString()}</div>
@@ -481,14 +517,14 @@ const handleRenewal = (plan, amount) => {
                             <div className="text-sm text-gray-900">{ad.impressions.toLocaleString()}</div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{ad.ctr}%</div>
+                            <div className="text-sm text-gray-900">{Math.round((ad.clicks/ad.impressions)*100)}%</div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                               ${ad.status === 'active' ? 'bg-green-100 text-green-800' : 
                                 ad.status === 'paused' ? 'bg-yellow-100 text-yellow-800' : 
                                 'bg-red-100 text-red-800'}`}>
-                              {ad.status.charAt(0).toUpperCase() + ad.status.slice(1)}
+                              {"active"}
                             </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -514,15 +550,8 @@ const handleRenewal = (plan, amount) => {
                 </div>
                 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-3 bg-gray-50 border-t border-gray-200">
-                  <div className="mb-3 sm:mb-0">
-                    <p className="text-sm text-gray-700">
-                      Showing <span className="font-medium">1</span> to <span className="font-medium">5</span> of <span className="font-medium">15</span> results
-                    </p>
-                  </div>
-                  <div className="flex justify-between sm:justify-end">
-                    <button className="px-4 py-2 mx-1 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</button>
-                    <button className="px-4 py-2 mx-1 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Next</button>
-                  </div>
+                 
+                  
                 </div>
               </div>
             </div>

@@ -105,19 +105,19 @@ const handleModalClose = ()=>{
         {/* Mobile menu button (hidden on larger screens) */}
         <button 
           className="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
-          onClick={toggleMobileMenu}
+          onClick={user.name?toggleMobileMenu: googlelogin}
           aria-label="Toggle mobile menu"
-        >{!imageError ? ( <img
+        >{!imageError && user?.name ? ( <img
                 src={user.profileImage}
                 onError={() => setImageError(true)}
                 alt="Profile"
                 className="w-8 h-8 rounded-full object-cover"
                 draggable={false}
               />):(<div
-          className="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-semibold"
+          className={`${user.name?"w-8 h-8  rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-semibold":'px-4 rise-shake py-1 bg-black text-white rounded-md font-medium hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer flex items-center gap-2 border'}`}
           title={user.name}
         >
-          {user.name ? user.name.charAt(0).toUpperCase(): "U"}
+          {user.name ? user.name.charAt(0).toUpperCase(): "Login"}
         </div>)}
          
         </button>

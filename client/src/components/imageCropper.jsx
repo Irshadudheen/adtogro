@@ -4,7 +4,9 @@ import ReactCrop, {
   convertToPixelCrop,
   makeAspectCrop,
 } from "react-image-crop";
+import './animationloadinguploadImage/style.css'
 import "react-image-crop/dist/ReactCrop.css";
+import { uploadImage } from "../Api/upload";
 
 const ASPECT_RATIO = 1;
 const MIN_DIMENSION = 150;
@@ -17,6 +19,7 @@ const ImageCropper = ({ updateAvatarCallback }) => {
   const [error, setError] = useState("");
   const [croppedImageUrl, setCroppedImageUrl] = useState("");
   const [showCropInterface, setShowCropInterface] = useState(false);
+  const [LoadingImageUpload,setLoadingImageUpload]= useState(false)
   const fileInputRef = useRef(null);
 
   // Function to set canvas preview and generate the data URL
@@ -51,10 +54,17 @@ const ImageCropper = ({ updateAvatarCallback }) => {
     return canvas.toDataURL();
   };
 
-  const onSelectFile = (e) => {
+  const onSelectFile = async(e) => {
+   
     const file = e.target.files?.[0];
     if (!file) return;
-
+    setLoadingImageUpload(true)
+    console.log('file image',file)
+const formData = new FormData();
+formData.append('image', file);
+const uploadImageInCloudinary = await uploadImage(formData)
+setLoadingImageUpload(false)
+console.log(uploadImageInCloudinary,'the image link')
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       const imageElement = new Image();
@@ -69,6 +79,7 @@ const ImageCropper = ({ updateAvatarCallback }) => {
           return setImgSrc("");
         }
       });
+      
       setImgSrc(imageUrl);
       setShowCropInterface(true);
     });
@@ -197,7 +208,6 @@ const ImageCropper = ({ updateAvatarCallback }) => {
             Recommended size: 1200×1200 pixels (1:1 ratio)
           </p>
         </div>
-
         {/* Avatar preview */}
         <div style={{
           width: '100px',
@@ -212,12 +222,12 @@ const ImageCropper = ({ updateAvatarCallback }) => {
         }}>
           {croppedImageUrl ? (
             <img
-              src={croppedImageUrl}
-              alt="Company Avatar"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover'
+            src={croppedImageUrl}
+            alt="Company Avatar"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
               }}
             />
           ) : (
@@ -240,7 +250,7 @@ const ImageCropper = ({ updateAvatarCallback }) => {
         onChange={onSelectFile}
         style={{ display: 'none' }}
         ref={fileInputRef}
-      />
+        />
 
       {error && (
         <div style={{
@@ -301,14 +311,14 @@ const ImageCropper = ({ updateAvatarCallback }) => {
                 keepSelection
                 aspect={ASPECT_RATIO}
                 minWidth={MIN_DIMENSION}
-              >
+                >
                 <img
                   ref={imgRef}
                   src={imgSrc}
                   alt="Upload"
                   style={{ maxHeight: "60vh"}}
                   onLoad={onImageLoad}
-                />
+                  />
               </ReactCrop>
             </div>
             
@@ -339,7 +349,7 @@ const ImageCropper = ({ updateAvatarCallback }) => {
                   borderRadius: '0.375rem',
                   cursor: 'pointer'
                 }}
-              >
+                >
                 Apply Crop
               </button>
             </div>
@@ -353,7 +363,8 @@ const ImageCropper = ({ updateAvatarCallback }) => {
         style={{
           display: "none",
         }}
-      />
+        />
+        {LoadingImageUpload&& (<div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.75)] z-50"><span class="loader">Load&nbsp;ng</span></div>)}
     </div>
   );
 };

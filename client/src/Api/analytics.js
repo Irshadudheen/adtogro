@@ -18,3 +18,19 @@ export const fetchLatestPerformance = async () =>{
         throw error 
     }
 }
+export const PerformanceCall = async (id) =>{
+    try {
+        const { data } = await Api.get(`${analyticsRoutes.getLatestPerformance}?advertiseId=${id}`);
+        return data
+    } catch (error) {
+        throw error
+    }
+}
+export const advertisementsApiCall = async () =>{
+    try {
+        const {data} = await Api.get(analyticsRoutes.getAdvertisements);
+        return data
+    } catch (error) {
+        throw error
+    }
+}
