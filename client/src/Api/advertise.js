@@ -36,3 +36,12 @@ export const countImpression = async( id ) =>{
         throw error
     }
 }
+
+export const renewAd = async (order_id,id)=>{
+    try {
+        const {data} = Api.put(`${advertiseRoutes.renew}/${id}`,{order_id})
+        return data
+    } catch (error) {
+        throw error
+    }
+}

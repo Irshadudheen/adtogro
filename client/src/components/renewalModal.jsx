@@ -3,26 +3,26 @@ import { useState } from "react"
 
 
 
-function RenewalModal({ onClose, onRenew }) {
+function RenewalModal({ onClose, onRenew,advertiseId }) {
   const [selectedPlan, setSelectedPlan] = useState("")
-
+  
   const renewalPlans = [
     {
-      id: "daily",
+      id: "basic",
       name: "Daily",
       amount: 9,
       period: "1 Day",
       popular: false,
     },
     {
-      id: "monthly",
+      id: "pro",
       name: "Monthly",
       amount: 59,
       period: "1 Month",
       popular: true,
     },
     {
-      id: "halfyearly",
+      id: "enterprise",
       name: "Half Year",
       amount: 299,
       period: "6 Months",
@@ -33,7 +33,8 @@ function RenewalModal({ onClose, onRenew }) {
   const handleRenewal = () => {
     const plan = renewalPlans.find((p) => p.id === selectedPlan)
     if (plan && onRenew) {
-      onRenew(plan.id, plan.amount)
+      onRenew(plan.id, plan.amount,advertiseId)
+
     }
     onClose()
   }

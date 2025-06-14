@@ -103,6 +103,7 @@ const handleModalClose = ()=>{
         </Link>
         
         {/* Mobile menu button (hidden on larger screens) */}
+        
         <button 
           className="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
           onClick={user.name?toggleMobileMenu: googlelogin}
@@ -250,15 +251,10 @@ const handleModalClose = ()=>{
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            For Advertisers
+            My Ads
           </Link>
-          <Link 
-            to="/publishers" 
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            For Publishers
-          </Link>
+          
+            
           <Link 
             to="/pricing" 
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"

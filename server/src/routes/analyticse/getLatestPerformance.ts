@@ -16,6 +16,7 @@ router.get('/api/analytics/latest-performance',currentUser, async (req , res)=>{
       if(!latestPerformance){
          throw new BadRequestError('No performance data found for this user')
       }
+      const expired =  new Date(latestPerformance.expiresAt) < new Date();
       const  ctr = Math.round((latestPerformance.clicks / latestPerformance.impressions) * 100);
     const createAt =new Date(latestPerformance.createdAt) ;
     const now = new Date();
@@ -23,12 +24,13 @@ const diffTime = Math.abs(now.getTime() - createAt.getTime());
 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 const expiresAt = getDaysUntilExpire(latestPerformance.expiresAt);
-      res.json({latestPerformance,ctr,lastDays:diffDays,expireDays:expiresAt,lastHours:diffHours})
+      res.json({latestPerformance,ctr,lastDays:diffDays,expireDays:expiresAt,lastHours:diffHours,expired})
     }else{
 const latestPerformance = await Advertise.findOne({userId}).sort({clicks:-1})
       if(!latestPerformance){
          throw new BadRequestError('No performance data found for this user')
       }
+      const expired =  new Date(latestPerformance.expiresAt) < new Date();
     const  ctr = Math.round((latestPerformance.clicks / latestPerformance.impressions) * 100);
     const createAt =new Date(latestPerformance.createdAt) ;
     const now = new Date();
@@ -36,7 +38,8 @@ const diffTime = Math.abs(now.getTime() - createAt.getTime());
 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 const expiresAt = getDaysUntilExpire(latestPerformance.expiresAt);
-      res.json({latestPerformance,ctr,lastDays:diffDays,expireDays:expiresAt,lastHours:diffHours})
+console.log(expired,'expr')
+      res.json({latestPerformance,ctr,lastDays:diffDays,expireDays:expiresAt,lastHours:diffHours,expired})
     }
     
    

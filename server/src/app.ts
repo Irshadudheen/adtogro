@@ -29,6 +29,8 @@ import { buyCoffeeRouter } from './routes/coffee/buyCoffee';
 import { getLatestPerformanceRouter } from './routes/analyticse/getLatestPerformance';
 import { uploadImageRouter } from './routes/uploadImage/uploadImage';
 import { getUserAdvertiseRouter } from './routes/analyticse/getUserAdvertise';
+import { RenewAdRouter } from './routes/order/reniewOrder';
+import { renewAdUpdateRouter } from './routes/advertise/renewAdvertise';
 
 
 const app = express()
@@ -83,6 +85,10 @@ app.use(getLatestPerformanceRouter)
 app.use(uploadImageRouter)
 //user analytics
 app.use(getUserAdvertiseRouter)
+//renew ad route
+app.use(RenewAdRouter)
+//renew ad update route
+app.use(renewAdUpdateRouter)
 //not found route
 app.all('*',async()=>{
     throw new NotFoundError();

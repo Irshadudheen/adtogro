@@ -12,6 +12,7 @@ const orderSchema = new Schema({
             type:String,
             required:true
         },
+        
         contactEmail:{
             type:String,
             required:true
@@ -29,6 +30,10 @@ const orderSchema = new Schema({
             required:true
         },
         adDescription:{
+            type:String,
+            required:true
+        },
+        orginalImage:{
             type:String,
             required:true
         },
@@ -53,6 +58,10 @@ const orderSchema = new Schema({
     createAt:{
         type:Date,
         default:Date.now
+    },
+    adExpireAt:{
+        type:Date,
+        required:true
     },
     status:{
         type:String,

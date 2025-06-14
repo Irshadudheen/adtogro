@@ -30,6 +30,10 @@ const advertiseSchema = new Schema({
     adDescription:{
         type:String,
     },
+    orginalImage:{
+        type:String,
+        required:true
+    },
     adImage:{
         type:String,
         required:true
@@ -59,7 +63,7 @@ const advertiseSchema = new Schema({
     expiresAt: {
         type: Date,
         required: true,
-        default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+        
     },
     isExpired: {
         type: Boolean,

@@ -33,9 +33,10 @@ function AdvertisePage() {
   // Image handling states
   const [adImage, setAdImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-
-const handleImage=(adImage)=>{
+  const [OrginalImageLink,setOrginalImageLink]= useState()
+const handleImage=(adImage,orginalImage)=>{
   setPreviewImage(adImage)
+  setOrginalImageLink(orginalImage)
 }
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,7 +72,7 @@ const handleImage=(adImage)=>{
     
     setIsSubmitting(true);
     setError('');
-    if(!previewImage){
+    if(!previewImage||!OrginalImageLink){
       toast.error('Image not found')
     setError('Image not found')
     setIsSubmitting(false)
@@ -79,10 +80,11 @@ const handleImage=(adImage)=>{
     }
     
     try {
-      // Create form data for submission including the image
+      // Create form data for submission including the images
       const submissionData = {
         ...formData,
-        adImage: previewImage
+        adImage: previewImage,
+        orginalImage:OrginalImageLink
       };
       
       

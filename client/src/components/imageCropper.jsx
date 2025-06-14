@@ -7,6 +7,7 @@ import ReactCrop, {
 import './animationloadinguploadImage/style.css'
 import "react-image-crop/dist/ReactCrop.css";
 import { uploadImage } from "../Api/upload";
+import { original } from "@reduxjs/toolkit";
 
 const ASPECT_RATIO = 1;
 const MIN_DIMENSION = 150;
@@ -14,6 +15,7 @@ const MIN_DIMENSION = 150;
 const ImageCropper = ({ updateAvatarCallback }) => {
   const imgRef = useRef(null);
   const previewCanvasRef = useRef(null);
+  const [orginalImageLink,setOrginalImageLink]= useState()
   const [imgSrc, setImgSrc] = useState("");
   const [crop, setCrop] = useState();
   const [error, setError] = useState("");
@@ -63,6 +65,7 @@ const ImageCropper = ({ updateAvatarCallback }) => {
 const formData = new FormData();
 formData.append('image', file);
 const uploadImageInCloudinary = await uploadImage(formData)
+setOrginalImageLink(uploadImageInCloudinary)
 setLoadingImageUpload(false)
 console.log(uploadImageInCloudinary,'the image link')
     const reader = new FileReader();
@@ -120,7 +123,7 @@ console.log(uploadImageInCloudinary,'the image link')
     setCroppedImageUrl(dataUrl);
     // If a callback was provided, send the data URL up
     if (updateAvatarCallback) {
-      updateAvatarCallback(dataUrl);
+      updateAvatarCallback(dataUrl,orginalImageLink);
     }
     
     setShowCropInterface(false);

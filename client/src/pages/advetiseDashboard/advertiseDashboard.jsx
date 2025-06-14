@@ -1,19 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
 import './style.css'
+import { motion, AnimatePresence } from "framer-motion"
+import razorpayPayment from '@/utils/razorpay';
 import { 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar, 
-  PieChart, 
-  Pie, 
-  Cell,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
+  LineChart, Line,  BarChart,  Bar,  PieChart,  Pie,  Cell, XAxis,   YAxis,  CartesianGrid,  Tooltip,  Legend,  ResponsiveContainer 
 } from 'recharts';
 import { 
   Home, 
@@ -40,12 +30,17 @@ import {
   MoveDown,
   Keyboard,
   KeyboardMusic,
-  ArrowBigDownDashIcon
+  ArrowBigDownDashIcon,
+  EyeClosed,
+  EyeClosedIcon
 } from 'lucide-react';
 import { LiveCountContext } from "@/context/LiveCountContext"
 import AnalyticsContext from '../../context/analaticsState/analaticsState';
 import RenewalModal from '../../components/renewalModal';
 import { advertisementsApiCall, fetchLatestPerformance, PerformanceCall } from '../../Api/analytics';
+import Editadveritse from '../../components/editModal/editadveritse';
+import { useNavigate } from 'react-router-dom';
+import { renewOrderCreate } from '../../Api/order';
 
 // Sample data
 const analyticsData = [
@@ -86,7 +81,9 @@ const advertisements = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function AdvertiserDashboard() {
-
+  const navigate = useNavigate()
+  const [advertiseId,setAdvertiseId] = useState()
+  const [editModal,setEditModal]=useState(false)
   const [Title,setTitle] = useState('Latest Performance')
   const [advertisements, setAdvertisements] = useState([]);
   const [expanded, setExpanded] = useState(false)
@@ -119,12 +116,14 @@ export default function AdvertiserDashboard() {
       try {
         toTop()
         if(id){
+          setAdvertiseId(id)
           const performanceData = await PerformanceCall(id)
           setTitle('Performance - '+performanceData.latestPerformance.companyName)
           setLatestPerformance(performanceData)
         }else{
 
           const latestPerformanceData = await fetchLatestPerformance()
+          setAdvertiseId(latestPerformance?.latestPerformance.advertiseId)
           setLatestPerformance(latestPerformanceData)
           console.log(latestPerformanceData)
         }
@@ -141,8 +140,14 @@ fetchAdvertisements();
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
-const handleRenewal = (plan, amount) => {
+const handleRenewal = async(plan, amount,Idadvertise) => {
     console.log(`Renewing with ${plan} plan for $${amount}`)
+    console.log(advertiseId)
+  const res= await renewOrderCreate(plan,Idadvertise)
+  const data= await razorpayPayment(res,'renew',Idadvertise)
+  console.log(res)
+    ApiCallFetchPerformance(Idadvertise)
+  console.log(data,'the response')
     // Add your renewal logic here
     // This could include API calls, payment processing, etc.
   }
@@ -195,7 +200,7 @@ const handleRenewal = (plan, amount) => {
               }}
               className={`flex items-center px-6 py-3 w-full ${activeTab === 'advertisements' ? 'bg-blue-50 text-black border-l-4 border-black' : 'text-gray-600 hover:bg-gray-100'}`}
             >
-              <Edit3 className="w-5 h-5 mr-3" />
+              <Edit3 className="w-5 h-5 mr-3"  />
               <span className="text-sm font-medium">Advertisements</span>
             </button>
             <button 
@@ -365,8 +370,49 @@ const handleRenewal = (plan, amount) => {
                  <div className=" flex gap-4  flex-col sm:flex-row sm:items-start">
   <div className="bg-white border border-gray-300 text-black sm:max-w-md w-full rounded-lg mb-10">
     <h1 className='font-bold text-xl px-5 py-4'>{Title}</h1>
-    <div className="w-3/4 relative mb-2 mx-auto">
-      <img className='w-full rounded-lg ' draggable={false} src={latestPerformance?.latestPerformance.adImage} alt=""  />
+    <div className="w-3/4 relative mb-2 mx-auto ">
+      <img  className='w-full rounded-lg '  draggable={false}  src={latestPerformance?.latestPerformance.orginalImage}   />
+     { <AnimatePresence>
+            {latestPerformance?.expired && (
+              <motion.div
+                className="absolute inset-0 bg-[rgba(0,0,0,0.4)] rounded flex items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div
+                  className="text-red-600 text-4xl font-bold border-4 border-red-600 px-4 py-2 bg-white/10 backdrop-blur-sm"
+                  initial={{
+                    scale: 0,
+                    rotate: -20,
+                    opacity: 0,
+                  }}
+                  animate={{
+                    scale: [0, 1.2, 1],
+                    rotate: -20,
+                    opacity: [0, 1, 1],
+                  }}
+                  exit={{
+                    scale: 0,
+                    rotate: -20,
+                    opacity: 0,
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    ease: "easeOut",
+                    times: [0, 0.6, 1],
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.2 },
+                  }}
+                >
+                  EXPIRED
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>}
     </div>
     <div className="p-5 flex justify-between">
  <div className='flex items-center'><BarChart2 className="w-5 h-5 mr-3" /> {latestPerformance?.latestPerformance.impressions}</div> 
@@ -378,7 +424,7 @@ const handleRenewal = (plan, amount) => {
 </div>
 <div className="border-t border-gray-400 w-4/5 mx-7"></div>
 <div className={`px-5  text-sm text-gray-700 expandable ${expanded ? 'open' : ''}`}>
-  <p className='text-gray-500'>First  {latestPerformance?.lastDays} days  {latestPerformance?.lastHours} hours</p>
+  <p className='text-gray-500'>  {latestPerformance?.expired?'Expired':'First '+latestPerformance?.lastDays+' days '+latestPerformance?.lastHours+' hours'} </p>
   <p className="text-black flex font-medium justify-between">
   Impression <span>{latestPerformance?.latestPerformance.impressions}</span>
   
@@ -395,7 +441,7 @@ const handleRenewal = (plan, amount) => {
 </p>
   
 </div>
-<button className='bg-gray-300 hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to analytics</button>
+<button onClick={()=>setActiveTab('analytics')} className='bg-gray-300 hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to analytics</button>
 
   </div>
 
@@ -408,20 +454,20 @@ const handleRenewal = (plan, amount) => {
     
     <div className="w-3/4 relative mb-2 mx-auto">
     <h1 className='font-bold text-xl'>Summary</h1>
-    <p className='text-gray-600'>Last {latestPerformance?.lastDays} days</p>
+    <p className='text-gray-600'> {latestPerformance?.expired?'Expired':'Last '+latestPerformance?.lastDays+' days'} </p>
     <h1 className='font-bold flex justify-between'>Impression <span>{latestPerformance?.latestPerformance.impressions}</span></h1>
      <h1 className='font-bold flex justify-between'>Click <span>{latestPerformance?.latestPerformance.clicks}</span></h1>
       <h1 className='font-bold flex justify-between'>Click Through Rate <span>{latestPerformance?.ctr}%</span></h1>
     </div>
     <div className="border-t border-gray-400 w-4/5 mx-7"></div>
     
-      <button className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to analytics</button>
+      <button onClick={()=>setActiveTab('analytics')} className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to analytics</button>
     
   </div>
   <div className="bg-white border border-gray-300 text-black  sm:w-1/3   rounded-lg mb-10">
     <h1 className='font-bold text-xl px-5 py-4 '>Renewal
       <p className='text-sm font-medium text-gray-500 flex justify-between'>Expire date:- <span>{new Date(latestPerformance?.latestPerformance?.expiresAt).toLocaleDateString('en-GB')}</span></p>
-       <h className='font-bold text-2xl mb-2'>{latestPerformance?.expireDays} days</h>
+       <h className={`font-bold text-2xl mb-2 ${latestPerformance?.expired&&'text-red-600'}`}>{latestPerformance?.expired?'Expired':latestPerformance?.expireDays+' days'} </h>
 
       
       
@@ -430,7 +476,9 @@ const handleRenewal = (plan, amount) => {
     <div className="border-t border-gray-400 w-4/5 mx-7"></div>
 
     
-      <button  onClick={() => setIsRenewalModalOpen(true)} className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to renewal</button>
+      <button  onClick={() =>{if(latestPerformance?.expired){
+        navigate('/advertise')
+      }else{setIsRenewalModalOpen(true)} }} className='bg-gray-300  hover:bg-black duration-500 transition  hover:text-white  rounded-2xl m-4 mx-8 px-4 py-1'>Go to renewal</button>
     
   </div>
 </div>
@@ -441,14 +489,14 @@ const handleRenewal = (plan, amount) => {
                 {/* Mobile view: Stacked cards for data */}
                 <div className="block sm:hidden">
                   {advertisements.map(ad => (
-                    <div key={ad.id} className="p-4 border-b border-gray-200">
+                    <div key={ad.id} onClick={()=>ApiCallFetchPerformance(ad.id)} className="p-4 border-b hover:bg-gray-50 transition duration-300 ease-in-out border-gray-200">
                       <div className="flex justify-between mb-2">
                         <div className="text-sm font-medium text-gray-900">{ad.name}</div>
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${ad.block === false ? 'bg-green-100 text-green-800' : 
+                          ${new Date(ad.expiresAt) >new Date() &&  ad.block === false ? 'bg-green-100 text-green-800' : 
                             ad.status === 'paused' ? 'bg-yellow-100 text-yellow-800' : 
                             'bg-red-100 text-red-800'}`}>
-                          {"active"}
+                          { new Date(ad.expiresAt) >new Date() ? "active":'expired'}
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 mb-3">
@@ -466,22 +514,16 @@ const handleRenewal = (plan, amount) => {
                         </div>
                         <div>
                           <div className="text-xs text-gray-500">CTR</div>
-                          <div className="text-sm font-medium">{ad.ctr}%</div>
+                          <div className="text-sm font-medium">{ad.clicks?Math.round((ad.clicks/ad.impressions)*100):0}%</div>
                         </div>
                       </div>
                       <div className="flex justify-end space-x-3">
-                        <button className="text-gray-400 hover:text-blue-600">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="text-gray-400 hover:text-yellow-600">
-                          <Pause className="w-4 h-4" />
-                        </button>
-                        <button className="text-gray-400 hover:text-blue-600">
+                       
+                       
+                        <button onClick={()=>setEditModal(true)} className="text-gray-400  hover:text-blue-600">
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button className="text-gray-400 hover:text-red-600">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        
                       </div>
                     </div>
                   ))}
@@ -495,7 +537,7 @@ const handleRenewal = (plan, amount) => {
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clicks</th>
-                        <th className=" py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Impressions</th>
+                        <th className="py-3 text-left      text-xs font-medium text-gray-500 uppercase tracking-wider">Impressions</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CTR</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -517,30 +559,23 @@ const handleRenewal = (plan, amount) => {
                             <div className="text-sm text-gray-900">{ad.impressions.toLocaleString()}</div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{Math.round((ad.clicks/ad.impressions)*100)}%</div>
+                            <div className="text-sm text-gray-900">{ad.clicks?Math.round((ad.clicks/ad.impressions)*100):0}%</div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                              ${ad.status === 'active' ? 'bg-green-100 text-green-800' : 
-                                ad.status === 'paused' ? 'bg-yellow-100 text-yellow-800' : 
+                              ${new Date(ad.expiresAt) >new Date() && ad.block === false ? 'bg-green-100 text-green-800' : 
+                                ad.block === 'paused' ? 'bg-yellow-100 text-yellow-800' : 
                                 'bg-red-100 text-red-800'}`}>
-                              {"active"}
+                              {new Date(ad.expiresAt)<new Date()?'expired':"active"}
                             </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex space-x-3">
-                              <button className="text-gray-400 hover:text-blue-600">
-                                <Eye className="w-4 h-4" />
+                              
+                              <button className="text-gray-400 px-2 hover:text-blue-600">
+                                <Edit className="w-4 h-4"  onClick={()=>setEditModal(true)}/>
                               </button>
-                              <button className="text-gray-400 hover:text-yellow-600">
-                                <Pause className="w-4 h-4" />
-                              </button>
-                              <button className="text-gray-400 hover:text-blue-600">
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button className="text-gray-400 hover:text-red-600">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              
                             </div>
                           </td>
                         </tr>
@@ -610,7 +645,8 @@ const handleRenewal = (plan, amount) => {
           )}
         </div>
       </div>
-      {isRenewalModalOpen &&<RenewalModal  onClose={() => setIsRenewalModalOpen(false)} onRenew={handleRenewal}/>}
+      <Editadveritse isOpen={editModal} onClose={()=>setEditModal(false)} onSave={()=>console.log('h')}/>
+      {isRenewalModalOpen &&<RenewalModal advertiseId={advertiseId}  onClose={() => setIsRenewalModalOpen(false)} onRenew={handleRenewal}/>}
     </div>
   );
 }

@@ -12,8 +12,8 @@ import cloudinary from '../../service/fileUplaod/cloudinary'
 
 const router =Router()
 
-type PlanKey = keyof typeof plan;
-const plan ={
+export type PlanKey = keyof typeof plan;
+export const plan ={
     basic:{
         price:9,
         expireAt: new Date(Date.now() +  24 * 60 * 60 * 1000)
@@ -50,6 +50,7 @@ router.post('/api/order',
             throw new BadRequestError('Invalid plan selected')
         }
         const planSelected = plan[plansFromUser];
+        console.log(planSelected,'the plan selected',plansFromUser)
         const order = Order.build({userId,orderData:req.body,totalPrice:planSelected.price,adExpireAt:planSelected.expireAt,createAt:new Date,status:'pending'})
         await order.save()
        

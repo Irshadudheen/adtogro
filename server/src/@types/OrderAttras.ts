@@ -10,7 +10,8 @@ export interface OrderAttras{
         adDescription:string,
         adImage:string,
         targetAudience:string,
-        advertisPlan:string
+        advertisPlan:string,
+        orginalImage:string
     },
     totalPrice:number,
     createAt:Date,
@@ -30,7 +31,8 @@ export interface OrderDoc extends Document{
         adDescription:string,
         adImage:string,
         targetAudience:string,
-        advertisPlan:string
+        advertisPlan:string,
+        orginalImage:string
     },
     totalPrice:number,
     createAt:Date,

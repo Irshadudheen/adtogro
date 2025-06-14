@@ -8,5 +8,6 @@ const createAdValidate = [ body('companyName').notEmpty().withMessage('Company n
     body('contactPhone').notEmpty().withMessage('Contact phone is required'),
     body('adDescription').notEmpty().withMessage('Ad description is required'),
     body('adImage').notEmpty().withMessage('Ad image is required'),
+    body('orginalImage').notEmpty().withMessage('Ad orginal image is required'),
     body('advertisPlan').notEmpty().withMessage('Advertis plan is required')]
 export {createAdValidate}

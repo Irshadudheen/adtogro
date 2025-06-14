@@ -1,6 +1,7 @@
-import { creatAdvertise } from "../Api/advertise";
+import { creatAdvertise, renewAd } from "../Api/advertise";
 
-function razorpayPayment({order,razorpayOrder}) {
+function razorpayPayment({order,razorpayOrder},type,Idadvertise) {
+   
     return new Promise((resolve, reject) => {
         const options = {
             key: "rzp_test_E5WE0z0SgB6EwW",
@@ -13,7 +14,13 @@ function razorpayPayment({order,razorpayOrder}) {
                 console.log('Payment successful:', response);
 
                 // Call your API after successful payment
-                await creatAdvertise(order.id);
+                 if(type){
+                    await renewAd(order.id,Idadvertise)
+
+                 }else{
+
+                     await creatAdvertise(order.id);
+                 }
 
                 // Resolve promise after payment success
                 resolve(response);

@@ -29,8 +29,8 @@ router.post('/api/advertise',
         if(!order){
             throw new BadRequestError('Order not found')
         }
-       order.status = 'completed'
-         await order.save();
+    order.status = 'completed'
+        await order.save();
          const user = await User.findById(userId)
          if(!user){
              throw new BadRequestError('User not found')
@@ -45,8 +45,10 @@ router.post('/api/advertise',
             contactPhone:order.orderData.contactPhone,
             adDescription:order.orderData.adDescription,
             adImage:order.orderData.adImage,
+            orginalImage:order.orderData.orginalImage,
             targetAudience:order.orderData.targetAudience,
             advertisPlan:order.orderData.advertisPlan,
+
             clicks:0,
             createdAt:new Date,
             expiresAt: order.adExpireAt, 
