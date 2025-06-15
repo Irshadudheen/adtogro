@@ -237,7 +237,7 @@ const RoomPage = () => {
       const newMessage = {
         type: 'remote',
         sender: from,
-        user: userData.name,
+        user: 'user',
         content: message,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -651,32 +651,9 @@ const RoomPage = () => {
           {/* Remote Videos */}
           {Object.keys(remoteStreams).map(peerId => (
             <div key={peerId} className="relative bg-gray-200 rounded-lg overflow-hidden w-full md:w-80 h-60">
-              {remoteVideoStatus[peerId] ? (
-                <div className="w-full h-full object-cover">
-                  <img
-                    src={userMap[peerId]?.userImage}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/icone/person.png";
-                    }}
-                    alt="User Profile"
-                    className="w-full h-full object-cover blur-sm"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <img
-                      src={userMap[peerId]?.userImage}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/icone/person.png";
-                      }}
-                      alt="User Avatar"
-                      className="w-20 h-20 rounded-full border-2 border-white shadow-lg object-cover"
-                    />
-                  </div>
-                </div>
-              ) : (
+              
                 <RemoteVideo stream={remoteStreams[peerId]} user={userMap[peerId]} />
-              )}
+              
               <div className="absolute bottom-2 left-2 bg-gray-800 bg-opacity-60 text-white text-sm px-2 py-1 rounded">
                 {userMap[peerId]?.name ? userMap[peerId].name : `User ${peerId.substring(0, 5)}`}
               </div>

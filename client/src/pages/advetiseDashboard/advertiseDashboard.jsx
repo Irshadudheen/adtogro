@@ -41,6 +41,7 @@ import { advertisementsApiCall, fetchLatestPerformance, PerformanceCall } from '
 import Editadveritse from '../../components/editModal/editadveritse';
 import { useNavigate } from 'react-router-dom';
 import { renewOrderCreate } from '../../Api/order';
+import { renewAd } from '../../Api/advertise';
 
 // Sample data
 const analyticsData = [
@@ -116,6 +117,7 @@ export default function AdvertiserDashboard() {
       try {
         toTop()
         if(id){
+          console.log('latest '+id+'hi')
           setAdvertiseId(id)
           const performanceData = await PerformanceCall(id)
           setTitle('Performance - '+performanceData.latestPerformance.companyName)
@@ -144,10 +146,14 @@ const handleRenewal = async(plan, amount,Idadvertise) => {
     console.log(`Renewing with ${plan} plan for $${amount}`)
     console.log(advertiseId)
   const res= await renewOrderCreate(plan,Idadvertise)
-  const data= await razorpayPayment(res,'renew',Idadvertise)
-  console.log(res)
-    ApiCallFetchPerformance(Idadvertise)
-  console.log(data,'the response')
+  const {response,orderId}= await razorpayPayment(res,'renew',Idadvertise)
+ const newData= await renewAd(orderId,Idadvertise)
+ console.log(newData,'the res from renewal')
+ if(newData){
+
+   ApiCallFetchPerformance(Idadvertise)
+ }
+  
     // Add your renewal logic here
     // This could include API calls, payment processing, etc.
   }

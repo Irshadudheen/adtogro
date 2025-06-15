@@ -516,7 +516,7 @@ export default function Talkspace() {
                     <div 
                       key={`${room.id}-${index}`} // More unique key
                       ref={isLast ? lastRoomElementRef : null}
-                      onClick={handleNavigate(room.id, room.users.length)} 
+                      
                       className={`${room.created_by_premium ? "premium-room-container relative" : ""} border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all hover:border-gray-300 bg-white group cursor-pointer`}
                     >
                       {room.created_by_premium && (
@@ -591,6 +591,7 @@ export default function Talkspace() {
                       </div>
                       
                       <button 
+                      onClick={handleNavigate(room.id, room.users.length)} 
                         disabled={room.users.length >= 3}  
                         className={`w-full px-4 py-3 rounded-lg flex items-center justify-center text-sm font-medium transition-all shadow-sm
                           ${room.users.length === 0 && 'mt-21'}

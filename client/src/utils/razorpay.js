@@ -15,15 +15,19 @@ function razorpayPayment({order,razorpayOrder},type,Idadvertise) {
 
                 // Call your API after successful payment
                  if(type){
-                    await renewAd(order.id,Idadvertise)
 
+                   
+                   
+
+                       resolve({response,orderId:order.id});
+                   
                  }else{
 
                      await creatAdvertise(order.id);
+                     resolve(response);
                  }
 
                 // Resolve promise after payment success
-                resolve(response);
             },
             prefill: {
                 name: order.orderData.contactName,

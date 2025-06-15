@@ -12,7 +12,7 @@ const RemoteVideo = ({ stream }) => {
     
     setVideoStream();
     // Add a small delay to ensure the ref is connected
-    const timeoutId = setTimeout(setVideoStream, 100);
+    const timeoutId = setTimeout(setVideoStream, );
     
     return () => {
       clearTimeout(timeoutId);
