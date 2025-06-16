@@ -18,6 +18,7 @@ router.get(
       { $inc: { clicks: 1 } },
       { new: true }
     );
+    
     res.send({ advertise });
   }
 );
