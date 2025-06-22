@@ -125,8 +125,9 @@ export default function AdvertiserDashboard() {
         }else{
 
           const latestPerformanceData = await fetchLatestPerformance()
-          setAdvertiseId(latestPerformance?.latestPerformance.advertiseId)
+          setAdvertiseId(latestPerformanceData?.latestPerformance.id)
           setLatestPerformance(latestPerformanceData)
+         
           console.log(latestPerformanceData)
         }
       } catch (error) {

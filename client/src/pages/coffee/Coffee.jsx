@@ -7,7 +7,20 @@ function CoffeeSupport() {
   const [customAmount, setCustomAmount] = useState('');
   const [message, setMessage] = useState('');
   const [activeTab, setActiveTab] = useState('supporters');
+  const handlePayment = ()=>{
+    try {
+ 
+      if(customAmount){
 
+        if(customAmount>selectedAmount &&customAmount>=10){
+          console.log(customAmount,selectedAmount)
+         
+        }
+      }
+    } catch (error) {
+      
+    }
+  }
   // Mock data for supporters
   const supporters = [
     {
@@ -209,7 +222,7 @@ function CoffeeSupport() {
             )}
 
             {/* Support Button */}
-            <button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-4 px-6 rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all transform hover:scale-105 shadow-lg">
+            <button onClick={handlePayment} className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-4 px-6 rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all transform hover:scale-105 shadow-lg">
               <div className="flex items-center justify-center">
                 <Heart className="w-5 h-5 mr-2" />
                 Support with ${getCurrentAmount() || 0}

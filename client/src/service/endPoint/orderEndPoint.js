@@ -1,5 +1,6 @@
 const orderRoutes ={
     creatOrder:'/order',
-    renewOrder:'/order/renew'
+    renewOrder:'/order/renew',
+    orderCoffe:'/order/coffee'
 }
 export default orderRoutes;
