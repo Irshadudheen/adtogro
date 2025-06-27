@@ -12,7 +12,13 @@ import { sharePlatform } from './jobs/sharePaltform.job';
 
 const server = createServer(app);
 
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:5173', 'https://yourfrontend.com'],
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 initializeSocket(io);
 initializeGroupVideoCallSocket(io);
 export {io}

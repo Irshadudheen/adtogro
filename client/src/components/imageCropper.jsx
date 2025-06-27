@@ -61,13 +61,13 @@ const ImageCropper = ({ updateAvatarCallback }) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setLoadingImageUpload(true)
-    console.log('file image',file)
+   
 const formData = new FormData();
 formData.append('image', file);
 const uploadImageInCloudinary = await uploadImage(formData)
 setOrginalImageLink(uploadImageInCloudinary)
 setLoadingImageUpload(false)
-console.log(uploadImageInCloudinary,'the image link')
+
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       const imageElement = new Image();

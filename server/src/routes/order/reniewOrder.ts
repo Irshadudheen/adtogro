@@ -30,6 +30,7 @@ router.post('/api/order/renew/:id',[param('id').notEmpty().withMessage('advertis
         } 
         
         const planSelected = plan[planFromUser]
+        console.log(id,'the id of advertise')
     const advertise =await Advertise.findById(id)
     if(!advertise){
         throw new BadRequestError('advertise not found')

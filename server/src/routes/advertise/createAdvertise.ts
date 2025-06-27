@@ -11,13 +11,15 @@ import { User } from '../../models/user'
 import { currentUser } from '../../middlewares/current-user'
 import { body } from 'express-validator'
 import { Analytics } from '../../models/analytics'
+import { advertiseLogger } from '../../loggers/advertiseLogger'
 const router =Router()
 router.post('/api/advertise',
+   
     currentUser,
     [body('order_id').notEmpty().withMessage('Order id is required')],
     validateRequest,
     async (req:Request,res:Response)=>{
-       
+        advertiseLogger.info('GET /api/advertise')
         const userId = req.currentUser?.id as string
        
         const existingAdvertiseCount = await Advertise.countDocuments(); 

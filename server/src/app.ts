@@ -1,7 +1,9 @@
-import express,{json, urlencoded} from 'express'
+import express,{Errback, json, NextFunction, Request, Response, urlencoded} from 'express'
 import 'express-async-errors'
 import helmet from "helmet";
-// import { currentUserRouter,singoutRouter ,googleAuthRouter,createQrRouter,createUrlRouter,redirectUrlRouter,getURLAnalyticsRouter, getOverallAnalyticsRouter, topicAnalyticsRouter} from './routes/index'
+
+
+
 import { createAdvertiseRouter } from './routes/advertise/createAdvertise'
 import { errorhandler } from './middlewares/error-handler'
 import cors from 'cors'
@@ -31,9 +33,18 @@ import { uploadImageRouter } from './routes/uploadImage/uploadImage';
 import { getUserAdvertiseRouter } from './routes/analyticse/getUserAdvertise';
 import { RenewAdRouter } from './routes/order/reniewOrder';
 import { renewAdUpdateRouter } from './routes/advertise/renewAdvertise';
+import { logRequest } from './middlewares/loggerMiddleware';
+import { orderCoffeeRouter } from './routes/order/orderCoffee';
+import { ReportUserRouter } from './routes/userReport/reqReport';
 
 
 const app = express()
+
+// log request
+// app.use(logRequest)
+
+
+//  app.use(morgan('combined'));
 app.use(helmet())
 
 app.use(json())
@@ -56,6 +67,7 @@ app.use(cors({
 // app.use(signUpRouter)
 app.use(verifyEmailRouter)
 // app.use(loginRouter)
+app.use(orderCoffeeRouter)
 app.use(logoutRouter)
 app.use(createAdvertiseRouter)
 app.use(updateClicksRouter)
@@ -89,6 +101,8 @@ app.use(getUserAdvertiseRouter)
 app.use(RenewAdRouter)
 //renew ad update route
 app.use(renewAdUpdateRouter)
+//report user 
+app.use(ReportUserRouter)
 //not found route
 app.all('*',async()=>{
     throw new NotFoundError();

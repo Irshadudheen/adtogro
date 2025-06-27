@@ -22,15 +22,15 @@ export const fetchLogo = async ()=>{
 }
 export const countClick = async( id )=>{
     try {
-        const response = await Api.get(`${advertiseRoutes.updateClick}${id}`) 
-        return response.data 
+        const {data} = await Api.patch(`${advertiseRoutes.updateClick}${id}`) 
+        return {data}
     } catch (error) {
         throw error
     }
 }
 export const countImpression = async( id ) =>{
     try {
-        const { data } = await Api.post(`${advertiseRoutes.updateImpression}${id}`)
+        const { data } = await Api.patch(`${advertiseRoutes.updateImpression}${id}`)
         return data
     } catch (error) {
         throw error
@@ -44,5 +44,15 @@ export const renewAd = async (order_id,id)=>{
         return data
     } catch (error) {
         throw error
+    }
+}
+
+export const updateAdvertise = async (editData,id)=>{
+    try {
+        const {data} = await Api.put(`${advertiseRoutes.update}/${id}`,editData)
+        return data
+    } catch (error) {
+        throw error
+        
     }
 }

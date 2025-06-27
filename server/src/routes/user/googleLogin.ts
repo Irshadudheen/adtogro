@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken'
 import { createToken } from "../../service/jwt";
 import { userData } from "../../interface/userInterface";
 import sendMail from "../../service/mail";
+import { BadRequestError } from "../../errors/bad-request-error";
 
 
 const router = Router();
@@ -18,8 +19,11 @@ router.post('/api/user/googleLogin',[body('email').isEmail().withMessage('Must p
 
 
         const user = await User.findOne({email}) as userData;
-
+        
         if(user){
+            if(user.block){
+                throw new BadRequestError('Login is temporarily unavailable.')
+            }
              const userJWT =await createToken(user) 
              
             res.status(200).json({user:user,token:userJWT})

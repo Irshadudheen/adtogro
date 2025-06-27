@@ -1,21 +1,31 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { uploadImage } from "@/Api/upload";
+import '../animationloadinguploadImage/style.css'
+const defaultInitialData = {
+  companyName: "",
+  adImage: "",
+  companyWebsite: "",
+  contactEmail: "",
+  adDescription: "",
+  targetAudience: "",
+  orginalImage:""
+
+};
 
 const EditAdvertiseModal = ({
   isOpen = true,
-  onClose = () => {console.log('hi')},
-  onSave = () => {},
-  initialData = {
-    companyName: "",
-    image: "",
-    link: "",
-    contact: "",
-    description: "",
-    targetAudience: "",
-  },
+  onClose = () => {},
+  onSave  ,
+  
+  initialData =defaultInitialData
 }) => {
+  const [LoadingImageUpload,setLoadingImageUpload]= useState(false)
   const [formData, setFormData] = useState(initialData)
-  const [imagePreview, setImagePreview] = useState(initialData.image)
-
+  const [imagePreview, setImagePreview] = useState()
+  useEffect(()=>{
+    setFormData(initialData)
+    setImagePreview(initialData?.adImage)
+  },[initialData])
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -23,16 +33,18 @@ const EditAdvertiseModal = ({
     }))
   }
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async(event) => {
     const file = event.target.files?.[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const result = e.target?.result
-        setImagePreview(result)
-        handleInputChange("image", result)
-      }
-      reader.readAsDataURL(file)
+      setLoadingImageUpload(true)
+      const formData = new FormData();
+formData.append('image', file);
+      const uploadImageInCloudinary = await uploadImage(formData)
+   
+       handleInputChange("adImage", uploadImageInCloudinary)
+       handleInputChange("orginalImage",uploadImageInCloudinary)
+       setImagePreview(uploadImageInCloudinary)
+    setLoadingImageUpload(false)
     }
   }
 
@@ -85,9 +97,10 @@ const EditAdvertiseModal = ({
               {imagePreview ? (
                 <div className="space-y-4">
                   <img
-                    src={imagePreview || "/placeholder.svg"}
+                    src={imagePreview||formData.adImage || "/placeholder.svg"}
                     alt="Preview"
                     className="mx-auto max-h-48 rounded-lg object-cover"
+                    draggable={false}
                   />
                   <button
                     type="button"
@@ -146,14 +159,14 @@ const EditAdvertiseModal = ({
 
           {/* Website Link */}
           <div className="space-y-2">
-            <label htmlFor="link" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="companyWebsite" className="block text-sm font-medium text-gray-700">
               Website Link
             </label>
             <input
               id="link"
               type="url"
-              value={formData.link}
-              onChange={(e) => handleInputChange("link", e.target.value)}
+              value={formData.companyWebsite}
+              onChange={(e) => handleInputChange("companyWebsite", e.target.value)}
               placeholder="https://example.com"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
             />
@@ -165,10 +178,11 @@ const EditAdvertiseModal = ({
               Contact Information
             </label>
             <input
-              id="contact"
+              id="contactEmail
+"
               type="text"
-              value={formData.contact}
-              onChange={(e) => handleInputChange("contact", e.target.value)}
+              value={formData.contactEmail}
+              onChange={(e) => handleInputChange("contactEmail", e.target.value)}
               placeholder="Email or phone number"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
             />
@@ -181,8 +195,8 @@ const EditAdvertiseModal = ({
             </label>
             <textarea
               id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
+              value={formData.adDescription}
+              onChange={(e) => handleInputChange("adDescription", e.target.value)}
               placeholder="Describe your product or service..."
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
@@ -229,6 +243,7 @@ const EditAdvertiseModal = ({
           </button>
         </div>
       </div>
+      {LoadingImageUpload&& (<div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.75)] z-50"><span class="loader">Load&nbsp;ng</span></div>)}
     </div>
   )
 }

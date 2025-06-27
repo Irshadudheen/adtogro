@@ -1,24 +1,46 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heart, Coffee, MessageCircle, Users, DollarSign, Gift, Star, User } from 'lucide-react';
 import { Helmet } from 'react-helmet';
+import { coffeeBuyed, getAllCoffee, orderCoffee } from '../../Api/coffee';
+import razorpayPaymentCoffee from '../../utils/razorpaypaymentCoffee';
+import toast from 'react-hot-toast';
 
 function CoffeeSupport() {
   const [selectedAmount, setSelectedAmount] = useState(10);
   const [customAmount, setCustomAmount] = useState('');
   const [message, setMessage] = useState('');
   const [activeTab, setActiveTab] = useState('supporters');
-  const handlePayment = ()=>{
+  const [support,setSupport] = useState([])
+  useEffect(()=>{
+    const fetchSupports=async()=>{
+      try {
+      const res= await  getAllCoffee()
+      console.log(res,'the all coffee')
+      setSupport(res)
+      } catch (error) {
+        
+      }
+    }
+    fetchSupports()
+  },[])
+  const handlePayment =async ()=>{
     try {
  
-      if(customAmount){
-
-        if(customAmount>selectedAmount &&customAmount>=10){
-          console.log(customAmount,selectedAmount)
-         
-        }
+      const amount = getCurrentAmount()
+      console.log(amount)
+      if(amount>5000){
+        toast.error('Not allowed this much amount')
+        return
       }
+  const  {coffee,razorPayCofee} =  await orderCoffee(amount,message)
+ 
+const {response,coffeeId}= await razorpayPaymentCoffee({coffee,razorpayOrder:razorPayCofee})
+console.log(response,coffeeId)
+const res= await coffeeBuyed(coffeeId)
+console.log(res,'the updated coffee')
+      setSupport(prev=>[res,...prev])
     } catch (error) {
-      
+      console.error(error)
     }
   }
   // Mock data for supporters
@@ -206,7 +228,7 @@ function CoffeeSupport() {
             {getCurrentAmount() > 0 && (
               <div className="bg-orange-50 rounded-xl p-4 mb-6 border border-orange-200">
                 <div className="flex items-center justify-between">
-                  <span className="text-orange-700 font-medium">
+                  <span className="text-green-400 font-medium">
                     You're buying {getCoffeeCount()} coffee{getCoffeeCount() !== 1 ? 's' : ''}!
                   </span>
                   <div className="flex">
@@ -263,21 +285,21 @@ function CoffeeSupport() {
               </div>
             </div>
 
-            <div className="max-h-96 overflow-y-auto">
-              {supporters.map((supporter) => (
+            <div className="max-h-130 overflow-y-auto">
+              {support.map((supporter) => (
                 <div key={supporter.id} className="p-6 border-b border-gray-50 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                      {supporter.avatar}
+                      {supporter?.userId.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-semibold text-gray-800 truncate">
-                          {supporter.name}
+                          {supporter?.userId.name}
                         </h3>
                         <div className="flex items-center text-sm text-gray-500">
                           <Coffee className="w-4 h-4 mr-1 text-amber-500" />
-                          {supporter.coffees}
+                          {Math.round(supporter.amount/5)}
                         </div>
                       </div>
                       <div className="flex items-center justify-between mb-2">

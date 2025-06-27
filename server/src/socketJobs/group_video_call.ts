@@ -89,6 +89,11 @@ export class VideoCallSocketServer {
         console.log(`❌ Invalid room ID: ${roomId}`);
         return;
       }
+      if(!token){
+        socket.emit('room_not_found');
+        console.log(`❌ token not found ${token}`)
+        return
+      }
 
       // Verify user token
       const user = verifyToken(token) as userData;

@@ -6,9 +6,11 @@ import { setUser } from '../redux/userSlice';
 import { useLoginModal } from '../context/LoginModalContext';
 
 function LoginModal({onClose}) {
+  
     const {setIsLoginModalOpen} =useLoginModal() 
      const dispatch = useDispatch()
 const googlelogin = useGoogleLogin({
+  
     onSuccess:async (tokenResponse) => {
       try {
         console.log(tokenResponse);

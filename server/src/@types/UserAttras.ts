@@ -8,6 +8,7 @@ export interface UserAttrs {
     is_verified?:boolean,
     createdAt?:string,
     name:string
+    block?:boolean
 }
 export interface UserDoc extends Document{
     email:string,
@@ -16,7 +17,9 @@ export interface UserDoc extends Document{
     profileImage:string,
     is_verified:boolean,
     createdAt:string,
-    name:string
+    name:string,
+    block?:boolean
+
     
 }
 export interface UserModel extends Model<UserDoc>{

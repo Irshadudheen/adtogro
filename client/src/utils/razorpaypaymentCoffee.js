@@ -1,6 +1,6 @@
-import { creatAdvertise, renewAd } from "../Api/advertise";
 
-function razorpayPayment({order,razorpayOrder},type,Idadvertise) {
+
+function razorpayPaymentCoffee({coffee,razorpayOrder}) {
    
     return new Promise((resolve, reject) => {
         const options = {
@@ -8,32 +8,26 @@ function razorpayPayment({order,razorpayOrder},type,Idadvertise) {
             amount: razorpayOrder.amount * 100,
             currency: razorpayOrder.currency,
             name: 'AdToGro',
-            description: 'Purchase Description',
+            description: 'Membership by buying coffee',
             order_id: razorpayOrder.id,
             handler: async function (response) {
-                console.log('Payment successful:', response);
+                console.log('Payment successful:', response,coffee.id);
 
                 // Call your API after successful payment
                 
-                if(type=='renew'){
-
-                   
+             
                    
 
-                       resolve({response,orderId:order.id});
+                       resolve({response,coffeeId:coffee.id});
                    
-                 }else{
-
-                     await creatAdvertise(order.id);
-                     resolve(response);
-                 }
+              
 
                 // Resolve promise after payment success
             },
             prefill: {
-                name: order.orderData.contactName,
-                email: order.orderData.contactEmail,
-                contact: order.orderData.contactPhone
+                name: "name",
+                email: "email@gmail.com",
+                contact: "123456789"
             },
             notes: {
                 address: 'Customer Address'
@@ -54,4 +48,4 @@ function razorpayPayment({order,razorpayOrder},type,Idadvertise) {
     });
 }
 
-export default razorpayPayment;
+export default razorpayPaymentCoffee;

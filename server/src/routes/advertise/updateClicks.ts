@@ -7,8 +7,8 @@ import { param } from "express-validator";
 import { validateRequest } from "../../middlewares/validateRequest";
 
 const router = Router();
-router.get(
-  "/api/advertise/:id",
+router.patch(
+  "/api/advertise/click/:id",
   [param("id").isMongoId().withMessage("Invalid ID format")],
   validateRequest,
   trackEvent("click"), // Middleware injected here

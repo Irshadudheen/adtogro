@@ -24,6 +24,11 @@ const userSchema = new Schema({
     required:true
    }
   ,
+  block:{
+    type:Boolean,
+    required:true,
+    default:false
+  },
     
     is_premium:{
         type:Boolean,

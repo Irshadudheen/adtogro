@@ -5,7 +5,7 @@ import { trackEvent } from "../../middlewares/analyticsMiddleware";
 import { Advertise } from "../../models/advertise";
 
 const router = Router()
-router.post('/api/advertise/impression/:id',
+router.patch('/api/advertise/impression/:id',
     [param('id').isMongoId().withMessage('Invalid advertisement ID')],
     validateRequest,
     trackEvent('impression'),

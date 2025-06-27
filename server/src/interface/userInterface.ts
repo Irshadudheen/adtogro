@@ -3,4 +3,5 @@ export interface userData {
     email:string;
     name:string;
     profileImage:string;
+    block?:boolean;
 }
