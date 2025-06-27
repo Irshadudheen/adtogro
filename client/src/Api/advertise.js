@@ -3,9 +3,8 @@ import { advertiseRoutes } from "../service/endPoint/advertiseEndPoint"
 
 export const creatAdvertise = async (order_id)=>{
     try {
-        const response = await Api.post(advertiseRoutes.createAdvertise,{order_id})
-        console.log(response,'the response from creat advertise')
-        return response.data
+        const {data} = await Api.post(advertiseRoutes.createAdvertise,{order_id})
+        return data
         
     } catch (error) {
         throw error
@@ -13,8 +12,8 @@ export const creatAdvertise = async (order_id)=>{
 }
 export const fetchLogo = async ()=>{
     try {
-        const response = await Api.get(advertiseRoutes.getLogo)
-        return response.data.advertise
+        const {data} = await Api.get(advertiseRoutes.getLogo)
+        return data.advertise
         
     } catch (error) {
         throw error

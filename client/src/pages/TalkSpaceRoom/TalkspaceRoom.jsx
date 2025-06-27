@@ -49,12 +49,12 @@ const App = () => {
     // Connect to the signaling server with reconnection options
     socketRef.current = socket
     window.addEventListener('popstate',()=>{
-      console.log('hihi back histroy')
+     
     })
     // Get your socket ID
     socketRef.current.on('me', (id) => {
       setSocketId(id);
-      console.log("Connected with socket ID:", id);
+      
     });
     socketRef.current.on('room_not_found',leaveRoom)
     // Handle room full error
@@ -155,11 +155,11 @@ const App = () => {
       
       // Play notification sound
       const audio = new Audio('/message-notification.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
+      audio.play().catch();
     });
 
     return () => {
-      console.log('user leved ')
+      
       // Clean up socket connection
       if (socketRef.current) {
         socketRef.current.disconnect();

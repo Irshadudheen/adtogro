@@ -8,8 +8,7 @@ function EmailVerifyPage() {
 const {userId}=useParams()
   useEffect(() => {
     // Extract userId and token from URL parameters
- console.log(userId)
-    console.log(userId,'the userid')
+
 
 
     const verifyEmail = async () => {
@@ -22,7 +21,7 @@ const {userId}=useParams()
       try {
         // Make API call to backend for verification
      const data=   await verifyEmailApi(userId)
-        console.log(data,'the verified data')
+       
        
         setVerificationStatus('success');
        

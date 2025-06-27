@@ -43,7 +43,7 @@ function LoginPage() {
         return;
       }
      const response= await login(data)
-     console.log(response,'login response')
+     
      dispatch(setUser({
       name: response.user.name,
       email:response.user.email,
@@ -73,11 +73,9 @@ function LoginPage() {
     // Simulating API call
    
       setIsLoading(false);
-      console.log(`${activeTab === 'login' ? 'Login' : 'Signup'} successful`);
+      
    
   } catch (error) {
-    console.log(error.message)
-      console.log(error?.response?.data.errors[0].message||error.message)
    
       toast.error(error?.response?.data.errors[0].message||error.message)
       if(error.response?.data.errors[0].message=='Email not found') {

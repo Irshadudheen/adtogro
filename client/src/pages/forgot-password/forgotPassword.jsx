@@ -40,9 +40,8 @@ const navigate = useNavigate()
     toast.success('Password reset link sent to your email!')
       navigate('/')
   } catch (error) {
-    console.log(error.message)
-      console.log(error?.response?.data.errors[0].message||error.message)
    
+      
       toast.error(error?.response?.data.errors[0].message||error.message)
       if(error.response?.data.errors[0].message=='Email not found') {
         toast.error('Email not found')

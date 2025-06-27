@@ -87,7 +87,7 @@ export default function Talkspace() {
       pauseAudio()
       navigate(`/talkspaceroom/${data.roomId}`)
     } catch (error) {
-      console.log(error.response)
+     
       toast.error(error.response.data.errors[0].message||'something went wrong.')
       throw error
     }
@@ -126,7 +126,6 @@ export default function Talkspace() {
         limit: ITEMS_PER_PAGE
       });
       
-      console.log(newRooms, 'this is the new rooms')
       setRooms(prev => (page === 1 ? newRooms : [...prev, ...newRooms]));
       setHasMore(more);
       
@@ -163,7 +162,7 @@ export default function Talkspace() {
       setRooms(prev => [room, ...prev]);
     });
      socket.on("room:updated", (updatedRoom) => {
-      console.log(updatedRoom,'the updatedRoom')
+     
       setRooms(prev => prev.map(r => r.id === updatedRoom.id ? updatedRoom : r));
     });
     socket.on("room:deleted", (roomId) => {

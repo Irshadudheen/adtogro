@@ -48,9 +48,7 @@ export const roomLink= (usersInRoom,roomId)=>{
 
  const handleCopy = (text) => {
     navigator.clipboard.writeText(text)
-      .then(() => {
-        console.log('Copied to clipboard');
-      })
+      .then()
       .catch((err) => {
         console.error('Failed to copy: ', err);
       });

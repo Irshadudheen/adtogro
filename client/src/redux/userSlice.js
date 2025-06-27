@@ -30,8 +30,7 @@ const userSlice = createSlice({
         ,
         setUser:(state,action)=>{
             const {name,email,id,blocked,profileImage,token,is_advertiser}=action.payload;
-            console.log(action.payload,'action paylaod')
-           
+          
             state.name=name
             state.email=email
             state.id=id

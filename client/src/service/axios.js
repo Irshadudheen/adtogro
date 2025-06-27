@@ -32,16 +32,16 @@ Api.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.log(error)
+       
         if( error.status === 403) {
       
             store.dispatch(removeUser())
         }
         if (error.response) {
             const { data } = error.response;
-            console.log(data.message);
+            
         } else {
-            console.log(error);
+            console.error('Error', error.message);
         }
         return Promise.reject(error);
     },

@@ -11,7 +11,7 @@ function razorpayPayment({order,razorpayOrder},type,Idadvertise) {
             description: 'Purchase Description',
             order_id: razorpayOrder.id,
             handler: async function (response) {
-                console.log('Payment successful:', response);
+               
 
                 // Call your API after successful payment
                 

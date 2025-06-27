@@ -23,14 +23,14 @@ const {token}=useParams()
  const handleSubmit =async(e)=>{
 
 e.preventDefault();
-console.log('formData',formData)
+
 
 setVerificationStatus('verifying')
 try {
   await newPassword(token,formData.newPassword.password) 
   setVerificationStatus('success')
 } catch (error) {
-  // console.log(error.response.data.errors[0].message)
+  
   setError(error.response.data.message=='jwt expired'&& 'Please request one more forgot password due to token expired!'||error.response.data.errors[0].message||'Failed to create new password')
   setVerificationStatus('failed')
 }

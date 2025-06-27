@@ -11,7 +11,7 @@ const AdBanner = () => {
     const fetchData = async () => {
       try {
         const logs = await fetchLogo()
-        console.log("/logs fetch")
+        
         setAdData(logs)
       } catch (error) {
         console.error("Error fetching ad data:", error)
@@ -30,7 +30,7 @@ const AdBanner = () => {
       try {
         setImpressionsCounted((prev) => new Set([...prev, adId]))
         const res = await countImpression(adId)
-        console.log("Impression counted:", res)
+       
 
         // Mark this ad as having its impression counted
       } catch (error) {

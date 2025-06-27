@@ -18,7 +18,7 @@ function Layout({ children }) {
    const { playAudio, pauseAudio,isAudioEnabled } = useAudio();
    const [imageError, setImageError] = useState(false);
    const handlePlayAudio = (e)=>{
-    console.log(e.target.checked)
+    
 
     if(!e.target.checked){
       pauseAudio()
@@ -39,7 +39,7 @@ const googlelogin = useGoogleLogin({
       try {
     
     const userData = await decodedToken(tokenResponse.access_token)
-        console.log(userData,'userData')
+        
        dispatch(setUser({
              name: userData.user.name,
              email:userData.user.email,

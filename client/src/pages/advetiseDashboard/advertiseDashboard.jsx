@@ -11,6 +11,7 @@ import { renewOrderCreate } from '../../Api/order';
 import { renewAd, updateAdvertise } from '../../Api/advertise';
 import AnalyticsDashBoard from './analytics';
 import SettingsAdvertise from './settings';
+import toast from 'react-hot-toast';
 
 
 export default function AdvertiserDashboard() {
@@ -39,7 +40,7 @@ export default function AdvertiserDashboard() {
   const fetchAdvertisements = async () => {
       try {
         const advertisementsData = await advertisementsApiCall();
-        console.log(advertisementsData, 'the advertisements data');
+        
         setAdvertisements(advertisementsData);
       } catch (error) {
         console.error('Error fetching advertisements:', error);
@@ -49,7 +50,7 @@ export default function AdvertiserDashboard() {
       try {
         toTop()
         if(id){
-          console.log('latest '+id+'hi')
+         
           setAdvertiseId(id)
           const performanceData = await PerformanceCall(id)
           setTitle('Performance - '+performanceData.latestPerformance.companyName)
@@ -60,7 +61,7 @@ export default function AdvertiserDashboard() {
           setAdvertiseId(latestPerformanceData?.latestPerformance.id)
           setLatestPerformance(latestPerformanceData)
          
-          console.log(latestPerformanceData)
+          
         }
       } catch (error) {
         throw error
@@ -77,9 +78,9 @@ fetchAdvertisements();
   };
 const handleEdit = async (data)=>{
   try {
-    console.log(data,'to edit')
+    
    const res= await updateAdvertise(data,data.id)
-   console.log('edited advertise',res)
+  
    ApiCallFetchPerformance(res.advertise.id)
 
   } catch (error) {
@@ -87,12 +88,11 @@ const handleEdit = async (data)=>{
   }
 }
 const handleRenewal = async(plan, amount,Idadvertise) => {
-    console.log(`Renewing with ${plan} plan for $${amount}`)
-    console.log(advertiseId)
+    
   const res= await renewOrderCreate(plan,Idadvertise)
   const {response,orderId}= await razorpayPayment(res,'renew',Idadvertise)
  const newData= await renewAd(orderId,Idadvertise)
- console.log(newData,'the res from renewal')
+ 
  if(newData){
 
    ApiCallFetchPerformance(Idadvertise)
@@ -103,11 +103,11 @@ const handleRenewal = async(plan, amount,Idadvertise) => {
   }
   const  handleEditModal = (data)=>{
 try {
-  console.log(data,'hello')
+  
   setEditAdData(data)
   setEditModal(true)
 } catch (error) {
-  console.log(error)
+  toast.error('Something went wrong while opening edit modal')
 }
   }
   const closeSidebar = () => {

@@ -11,8 +11,7 @@ function razorpayPaymentCoffee({coffee,razorpayOrder}) {
             description: 'Membership by buying coffee',
             order_id: razorpayOrder.id,
             handler: async function (response) {
-                console.log('Payment successful:', response,coffee.id);
-
+              
                 // Call your API after successful payment
                 
              

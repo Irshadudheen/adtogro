@@ -5,11 +5,11 @@ import userRoutes from "../service/endPoint/userEndPoint";
 
 export const signup =async (userPayload)=>{
     try {
-        console.log(userPayload)
+       
      
-        const response = await Api.post(userRoutes.signup,userPayload)
-        console.log(response.data)
-        return response.data
+        const {data} = await Api.post(userRoutes.signup,userPayload)
+       
+        return data
     } catch (error) {
         throw error
     }
@@ -18,10 +18,10 @@ export const signup =async (userPayload)=>{
 export const login = async (loginData)=>{
     try {
         
-        const response = await Api.post(userRoutes.login,loginData)
-        console.log("after the login")
+        const {data} = await Api.post(userRoutes.login,loginData)
         
-        return response.data
+        
+        return data
     } catch (error) {
     
         throw error
@@ -29,34 +29,34 @@ export const login = async (loginData)=>{
 }
 export const forgotPassword = async(data)=>{
     try {
-        console.log(data)
-        const response = await Api.post(userRoutes.forgotPassword,data)
-        return response.data
+       
+        const {data} = await Api.post(userRoutes.forgotPassword,data)
+        return data
     } catch (error) {
         throw error
     }
 }
 export const userGoogleLogin = async (loginData)=>{
     try {
-        console.log(loginData,'this is the login data')
-        const response = await Api.post(userRoutes.googleLogin,loginData)
-        return response.data
+        
+        const {data} = await Api.post(userRoutes.googleLogin,loginData)
+        return data
     } catch (error) {
         throw error
     }
 }
 export const logout = async ()=>{
     try {
-        const response = await Api.post(userRoutes.logout)
-        return response.data
+        const {data} = await Api.post(userRoutes.logout)
+        return data
     } catch (error) {
         throw error
     }
 }
 export const verifyEmailApi = async (userId)=>{
     try {
-        const response = await Api.post(`${userRoutes.verifyEmail}/${userId}`)
-        return response.data
+        const {data} = await Api.post(`${userRoutes.verifyEmail}/${userId}`)
+        return data
     } catch (error) {
         throw error
     }
@@ -65,8 +65,8 @@ export const verifyEmailApi = async (userId)=>{
 
  export const newPassword = async (token,password)=>{
     try {
-        const response = await Api.patch(userRoutes.newPassword, {token, password})
-        return response.data
+        const {data} = await Api.patch(userRoutes.newPassword, {token, password})
+        return data
     } catch (error) {
         throw error
     }
@@ -107,7 +107,7 @@ export const commmunityCount = async ( )=>{
 }
 export const decodedToken = async (token)  =>{
     try {
-        const {data} = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+        const {data} = await axios.get(import.meta.env.VITE_GOOGLE_API, {
             headers: {
                 Authorization:'Bearer ' + token
             }}

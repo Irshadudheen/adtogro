@@ -20,10 +20,10 @@ function FooterRoom() {
         setIsAudioMuted(!isAudioMuted);
         if(!isAudioMuted){
           const audio = new Audio('/aud/mute_and_unmute.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
+      audio.play().catch( );
         }else{
            const audio = new Audio('/aud/unmute.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
+      audio.play().catch();
         }
         
       }
@@ -123,10 +123,10 @@ function FooterRoom() {
 
         if (!isVideoOff) {
           const audio = new Audio("/aud/mute_and_unmute.mp3");
-          audio.play().catch((err) => console.log("Audio play failed:", err));
+          audio.play().catch();
         } else {
           const audio = new Audio("/aud/unmute.mp3");
-          audio.play().catch((err) => console.log("Audio play failed:", err));
+          audio.play().catch();
         }
       }
     }

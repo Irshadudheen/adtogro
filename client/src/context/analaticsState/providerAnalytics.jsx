@@ -16,7 +16,7 @@ const callAnalytics = async () => {
 }
     callAnalytics();
   }, []);
-console.log(analyticsData, 'the analytics data from provider');
+
   return (
     <AnalyticsContext.Provider value={analyticsData}>
       {children}

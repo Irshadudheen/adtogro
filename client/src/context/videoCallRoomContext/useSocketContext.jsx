@@ -130,7 +130,7 @@ export const SocketProvider = ({ children }) => {
         if (userVideoRef.current) {
           userVideoRef.current.srcObject = stream;
            const audio = new Audio('/aud/join_call_6a6a67d6bcc7a4e373ed40fdeff3930a.ogg');
-      audio.play().catch(err => console.log('Audio play failed:', err));
+      audio.play().catch();
           
         } else {
           console.error("Video element not found after timeout");
@@ -162,13 +162,13 @@ export const SocketProvider = ({ children }) => {
 
   const cleanupResources = () => {
    try {
-     console.log("Cleaning up resources and stopping all media tracks");
+    
     
     // Stop all media tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => {
         track.stop();
-        console.log(`Stopped track: ${track.kind}`);
+        
       });
       streamRef.current = null;
     }
@@ -177,7 +177,7 @@ export const SocketProvider = ({ children }) => {
     if (screenStreamRef.current) {
       screenStreamRef.current.getTracks().forEach(track => {
         track.stop();
-        console.log(`Stopped screen sharing track: ${track.kind}`);
+       
       });
       screenStreamRef.current = null;
     }
@@ -187,7 +187,7 @@ export const SocketProvider = ({ children }) => {
       const connection = peerConnectionsRef.current[peerId];
       if (connection) {
         connection.close();
-        console.log(`Closed peer connection with: ${peerId}`);
+    
       }
     });
     peerConnectionsRef.current = {};
@@ -195,7 +195,7 @@ export const SocketProvider = ({ children }) => {
     // Clean up socket connection
     if (socketRef.current) {
       socketRef.current.emit('leave_room');
-      console.log("Emitted leave_room event");
+     
     }
    } catch (error) {
     console.error(error)
@@ -208,7 +208,7 @@ export const SocketProvider = ({ children }) => {
 
     socketRef.current.on('me', (id) => {
       setSocketId(id);
-      console.log("Connected with socket ID:", id);
+      
     });
 
     socketRef.current.on('already_in_room', () => {
@@ -312,7 +312,7 @@ export const SocketProvider = ({ children }) => {
       }
 
       const audio = new Audio('/aud/group_chat_received_25c22bd649cdf2538dcc3a39ba7a616b.mp3');
-      audio.play().catch(err => console.log('Audio play failed:', err));
+      audio.play().catch();
     });
 
     setupVideoCall();

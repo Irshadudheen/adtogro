@@ -15,7 +15,7 @@ function CoffeeSupport() {
     const fetchSupports=async()=>{
       try {
       const res= await  getAllCoffee()
-      console.log(res,'the all coffee')
+     
       setSupport(res)
       } catch (error) {
         
@@ -27,7 +27,7 @@ function CoffeeSupport() {
     try {
  
       const amount = getCurrentAmount()
-      console.log(amount)
+      
       if(amount>5000){
         toast.error('Not allowed this much amount')
         return
@@ -35,9 +35,9 @@ function CoffeeSupport() {
   const  {coffee,razorPayCofee} =  await orderCoffee(amount,message)
  
 const {response,coffeeId}= await razorpayPaymentCoffee({coffee,razorpayOrder:razorPayCofee})
-console.log(response,coffeeId)
+
 const res= await coffeeBuyed(coffeeId)
-console.log(res,'the updated coffee')
+
       setSupport(prev=>[res,...prev])
     } catch (error) {
       console.error(error)

@@ -11,7 +11,7 @@ export const RoomDetailsProvider = ({ children }) => {
     try {
       const data = await roomDetailsApi(roomId);
       setRoomDetails(data);
-      console.log("Room details:", data);
+     
     } catch (error) {
         navigate('/talkspace')
       console.error("Failed to fetch room details:", error);
