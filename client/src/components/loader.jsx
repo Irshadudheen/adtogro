@@ -5,7 +5,7 @@ function loader() {
   return (
     <div className='flex items-center justify-center min-h-screen bg-white'>
       {/* Mobile: Show only logo */}
-      <div className='block sm:hidden'>
+      <div className='block sm:hidden -mt-16'>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 95.69" className='w-20 h-20'>
           <defs></defs>
           <g id="Layer_2" data-name="Layer 2">
