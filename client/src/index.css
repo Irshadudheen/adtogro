@@ -35,3 +35,6 @@
   background: #facc15; /* color of the scrollbar handle */
   border-radius: 5px; /* rounded corners */
 }
+body{
+  margin: 0;
+}
