@@ -3,14 +3,14 @@ import './loaderStyle.css'
 function loader() {
   return (
     <div className='flex items-center justify-center min-h-screen bg-white '>
-     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333.2 95.69" className='w-64 h-64'>
+     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333.2 95.69" className='w-full max-w-xs sm:max-w-sm md:max-w-md h-auto'>
   <defs>
     
   </defs>
   
   <g id="Layer_2" data-name="Layer 2">
     <g id="Layer_1-2" data-name="Layer 1">
-      <text className="cls-1" transform="translate(79.4 77.1)">dtogro</text>
+      <text className="cls-1 " transform="translate(79.4 77.1)">dtogro</text>
       <line className="cls-2" x1="196.08" y1="41.06" x2="196.08" y2="26.74"/>
       
       <path className="cls-3" d="M13,52.46A25,25,0,0,1,18.09,37l-6.9-3.07-4-1.79A35.83,35.83,0,0,0,1,52.46C1,72.79,16.67,88.18,37.39,88.21V77.1C23.36,77.06,13,66.49,13,52.46Zm4.11-30,1.63,3.66,3.13,7a24.62,24.62,0,0,1,15.57-5.34V16.7A37.54,37.54,0,0,0,17.06,22.49Z"/>
