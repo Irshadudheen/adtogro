@@ -51,7 +51,7 @@ app.use(json())
 app.use(urlencoded({extended:true}))
 //cookie parser
 //cors
-const CLIENT_URL = 'http://localhost:5173'
+const CLIENT_URL = 'adtogro.com'
 app.use(cors({
    origin: CLIENT_URL,
    
