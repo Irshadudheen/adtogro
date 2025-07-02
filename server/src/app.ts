@@ -51,11 +51,12 @@ app.use(json())
 app.use(urlencoded({extended:true}))
 //cookie parser
 //cors
+
 const CLIENT_URL = process.env.CLIENT_URL;
 app.use(cors({
    origin: CLIENT_URL,
    
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','PATCH'],
 
   
   credentials: true,
