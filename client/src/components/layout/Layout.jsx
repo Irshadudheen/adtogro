@@ -11,23 +11,23 @@ import { decodedToken } from '@/Api/user';
 import LoginModal from '@/components/loginModal';
 import { useLoginModal } from '@/context/LoginModalContext';
 import toast from 'react-hot-toast';
-import { useAudio } from '@/context/backgroundAudio/AudioContext';
+// import { useAudio } from '@/context/backgroundAudio/AudioContext';
  
 
 function Layout({ children }) {
-   const { playAudio, pauseAudio,isAudioEnabled } = useAudio();
+  //  const { playAudio, pauseAudio,isAudioEnabled } = useAudio();
    const [imageError, setImageError] = useState(false);
-   const handlePlayAudio = (e)=>{
+  //  const handlePlayAudio = (e)=>{
     
 
-    if(!e.target.checked){
-      pauseAudio()
+  //   if(!e.target.checked){
+  //     pauseAudio()
     
-    }else{
-      playAudio()
+  //   }else{
+  //     playAudio()
     
-    }
-   }
+  //   }
+  //  }
 const { isLoginModalOpen, setIsLoginModalOpen} = useLoginModal()
 const dispatch = useDispatch()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -200,9 +200,9 @@ const handleModalClose = ()=>{
                       >
                        My Ads
                       </Link>
-                       <div className="px-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-600">Music</span>
+                       {/* <div className="px-2">
+                        <div className="flex items-center justify-between"> */}
+                          {/* <span className="text-sm font-medium text-gray-600">Music</span>
                           <label className="relative inline-flex items-center cursor-pointer ">
                             <input type="checkbox" defaultChecked={isAudioEnabled} className="sr-only peer" onChange={handlePlayAudio} />
                             <div className="w-11 h-6 mt-2 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 rounded-full 
@@ -211,9 +211,23 @@ const handleModalClose = ()=>{
                                             after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
                                             peer-checked:bg-black relative">
                             </div>
-                          </label>
-                        </div>
-                      </div>
+                          </label> */}
+                        {/* </div>
+                      </div> */}
+                      <Link 
+                        to="/coffee" 
+                        className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={(e) => setIsDropdownOpen(false)}
+                      >
+                       Buy Coffee
+                      </Link>
+                      <Link 
+                        to="/pricing" 
+                        className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={(e) => setIsDropdownOpen(false)}
+                      >
+                       Boost Brand
+                      </Link>
                       <button 
                         
                         className="block font-medium px-2 w-full py-2 text-sm  text-red-700 hover:bg-red-100 text-left"

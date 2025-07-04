@@ -13,7 +13,7 @@ import { validateRoom } from '@/utils/validateCreatRoom';
 import { Helmet } from 'react-helmet';
 import socket from '@/utils/socket';
 import './coffestyle.css'
-import { useAudio } from '../../context/backgroundAudio/AudioContext';
+// import { useAudio } from '../../context/backgroundAudio/AudioContext';
 import FooterTalkspace from '../../components/talkspace/Footer';
 
 export default function Talkspace() {
@@ -23,7 +23,7 @@ export default function Talkspace() {
     behavior: 'smooth',
   });
 }, []);
-   const { playAudio, pauseAudio } = useAudio();
+  //  const { playAudio, pauseAudio } = useAudio();
     const allLanguages = ["Arabic",
   "English", "Spanish", "French", "German","Gen Z", "Japanese", "Vietnamese",
   "Sinhala", "Hindi", "Bengali", "Telugu", "Marathi", "Tamil", "Gujarati",
@@ -84,7 +84,7 @@ export default function Talkspace() {
     validateRoom(roomData)
       
       const data = await createRoom(roomData)
-      pauseAudio()
+      // pauseAudio()
       navigate(`/talkspaceroom/${data.roomId}`)
     } catch (error) {
      
@@ -100,7 +100,7 @@ export default function Talkspace() {
         return
       }
       if(participants < 3){
-        pauseAudio()
+        // pauseAudio()
         navigate(`/talkspaceroom/${roomId}`)
       } else {
         toast.error('Room is full you can create a new room or join another room')

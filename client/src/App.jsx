@@ -32,7 +32,7 @@ import { LoginModalProvider } from './context/LoginModalContext'
 import { RoomDetailsProvider } from './context/videoCallRoomContext/RoomDetailsContext'
 import { useOnlineStatus } from './hooks/useOnlineStatus'
 import { useTranslation } from 'react-i18next'
-import { AudioProvider } from '@/context/backgroundAudio/AudioContext'
+// import { AudioProvider } from '@/context/backgroundAudio/AudioContext'
 const Termscondition = lazyWithLoader(()=>import('./pages/terms&condition'))
 
 
@@ -51,7 +51,7 @@ const user =useGetUserData()
   return (
 
     <>
-    <AudioProvider>
+   
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_AUTH_CLIENT_ID}>
      <LiveCountProvider>
       <JoinRoomProvider>
@@ -84,7 +84,7 @@ const user =useGetUserData()
       </JoinRoomProvider>
       </LiveCountProvider>
       </GoogleOAuthProvider>
-      </AudioProvider>
+     
     </>
   )
 }
