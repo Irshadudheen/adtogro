@@ -266,7 +266,7 @@ export default function Talkspace() {
               </div>
             </div>
             {!isLoading && (
-              <div className="absolute -top-2 -right-16 bg-yellow-400 text-xs text-yellow-900 px-2 py-1 rounded-full transform rotate-12 shadow-sm font-medium">
+              <div className="absolute -top-2 -right-0.5 bg-yellow-400 text-xs text-yellow-900 px-2 py-1 rounded-full transform rotate-12 shadow-sm font-medium">
                 {liveCount||0}+ online now
               </div>
             )}
@@ -390,27 +390,27 @@ export default function Talkspace() {
         
         {/* Introduction section */}
         <div className="mb-8 bg-gradient-to-r from-gray-600 to-black text-white p-6 rounded-xl shadow-md">
-          <h3 className="text-2xl font-bold mb-2">Join  conversation space</h3>
-          <p className="text-blue-50 mb-3">Practice languages with native speakers, discuss interesting topics, and make new friends from around the world.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <h3 className=" sm:text-2xl font-bold mb-2">Join  conversation space</h3>
+          <p className="text-sm sm:text-base text-blue-50 mb-3">Practice languages with native speakers, discuss interesting topics, and make new friends from around the world.</p>
+          <div className="grid grid-cols-3 md:grid-cols-3  mt-4">
              <div className="flex  items-center" onClick={navigateTocoffee}>
               <div className="bg-white/20 cursor-pointer p-2 rounded-lg mr-3">
                 <img  src='/icone/coffee.png' width={20} />
                
               </div>
-              <span className='coffee-text cursor-pointer'>Keep Me Caffeinated</span>
+              <span className='hidden sm:inline coffee-text cursor-pointer'>Keep Me Caffeinated</span>
             </div>
             <div className="flex items-center">
               <div className="bg-white/20 p-2 rounded-lg mr-3">
                 <Users size={18} />
               </div>
-              <span>Join friendly communities</span>
+              <span className='hidden sm:inline'>Join friendly communities</span>
             </div>
             <div className="flex items-center">
               <div className="bg-white/20 p-2 rounded-lg mr-3">
                 <MessageCircle size={18} />
               </div>
-              <span>Practice real conversations</span>
+              <span className='hidden sm:inline'>Practice real conversations</span>
             </div>
           </div>
         </div>

@@ -260,28 +260,7 @@ const res= await coffeeBuyed(coffeeId)
                   <Users className="w-6 h-6 mr-2 text-orange-500" />
                   Recent Supporters
                 </h2>
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setActiveTab('supporters')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                      activeTab === 'supporters'
-                        ? 'bg-white text-orange-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-800'
-                    }`}
-                  >
-                    Supporters
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('comments')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                      activeTab === 'comments'
-                        ? 'bg-white text-orange-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-800'
-                    }`}
-                  >
-                    Comments
-                  </button>
-                </div>
+                
               </div>
             </div>
 

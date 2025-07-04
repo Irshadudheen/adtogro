@@ -246,14 +246,20 @@ const handleModalClose = ()=>{
       {/* Mobile Navigation - shown/hidden based on state */}
       <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-md">
-          <Link 
-            to="/advertisers" 
+          
+          {user?.name && (<><Link 
+            to="/advertiser-dashboard" 
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={() => {setIsMobileMenuOpen(false)
+              if(!user.is_advertiser){
+                            e.preventDefault();
+                            toast.error('You need to purchase an ad plan to access this page.');
+                          }
+            }}
+            
           >
             My Ads
-          </Link>
-          
+          </Link></>)}
             
           <Link 
             to="/pricing" 
@@ -262,30 +268,12 @@ const handleModalClose = ()=>{
           >
             Pricing
           </Link>
-          <Link 
-            to="/contact" 
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Contact
-          </Link>
           
-          {user?.name ? (
+          
+          {user?.name && (
             <>
-              <Link 
-                to="/profile" 
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Profile
-              </Link>
-              <Link 
-                to="/advertiser-dashboard" 
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Your Advertiser Dashboard
-              </Link>
+              
+              
               <button 
            
                 className="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-500 hover:bg-gray-50"
@@ -297,14 +285,6 @@ const handleModalClose = ()=>{
                 Logout
               </button>
             </>
-          ) : (
-            <Link
-              to="/login"
-              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:cursor-pointer text-white bg-blue-500 hover:bg-blue-600"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Log In
-            </Link>
           )}
         </div>
       </div>
