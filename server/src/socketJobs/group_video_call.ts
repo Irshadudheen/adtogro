@@ -220,14 +220,14 @@ export class VideoCallSocketServer {
       // New user joining the room
       socket.to(room._id.toString()).emit('chat_message', {
         from: 'system',
-        message: `User ${user.name} joined the room`,
+        message: `${user.name} joined the room`,
         userData: user
       });
     } else {
       // User switching tabs
       socket.to(room._id.toString()).emit('chat_message', {
         from: 'system',
-        message: `User ${user.name} switched to another tab/device`,
+        message: `${user.name} switched to another tab/device`,
       });
     }
   }
@@ -327,7 +327,7 @@ export class VideoCallSocketServer {
 
       // Broadcast message to other users in the room
       socket.to(roomId).emit('chat_message', {
-        from: socket.id,
+        from: userData?.name||socket.id,
         message,
         userData
       });

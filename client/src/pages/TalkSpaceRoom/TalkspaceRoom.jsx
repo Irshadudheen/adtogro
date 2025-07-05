@@ -1,5 +1,5 @@
 // src/App.jsx - With fixed chat feature
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import io from 'socket.io-client';
 import { Video, Mic, MicOff, Monitor, VideoOff, X, MessageSquare, Send, Users } from 'lucide-react';
 import socket from '../../utils/socket';
@@ -55,7 +55,7 @@ const App = () => {
       }
     }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Connect to the signaling server with reconnection options
     socketRef.current = socket
     window.addEventListener('popstate',()=>{
@@ -151,8 +151,8 @@ const App = () => {
     // Handle chat messages
     socketRef.current.on('chat_message', ({ from, message }) => {
       const newMessage = {
-        type: 'remote',
-        sender: from.substring(0, 5),
+        type: from=='system'?from:'remote',
+        sender: from,
         content: message,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -205,6 +205,12 @@ const App = () => {
       setUnreadMessages(0);
     }
   }, [isChatOpen]);
+  useEffect(()=>{
+    fetchRoomDetails()
+    return ()=>{
+      setRoomDetails({})
+    }
+  },[roomId])
 
   // Auto scroll chat to bottom when new messages arrive
   useEffect(() => {
@@ -581,10 +587,10 @@ const App = () => {
                           {msg.content}
                         </div>
                       ) : (
-                        <div className={`p-3 rounded-lg ${msg.type === 'local' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+                        <div className={`p-3 rounded-lg ${msg.type === 'local' ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}>
                           {msg.type === 'remote' && (
                             <div className="text-xs font-medium text-gray-700 mb-1">
-                              User {msg.sender}
+                               {msg.sender}
                             </div>
                           )}
                           <div>{msg.content}</div>
@@ -600,21 +606,21 @@ const App = () => {
                 {/* Message input */}
                 <div className="p-3 border-t border-gray-300">
                   <div className="flex">
-                    <textarea
-                      value={messageInput}
-                      onChange={(e) => setMessageInput(e.target.value)}
-                      onKeyDown={handleKeyPress}
-                      placeholder="Type a message..."
-                      className="flex-1 p-2 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
-                      rows="2"
-                    />
+                     <textarea
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  placeholder="Type a message..."
+                  className="flex-1 p-2 border border-gray-900 rounded-l focus:outline-none focus:ring-1 focus:ring-gray-500 resize-none"
+                  rows="1"
+                />
                     <button
-                      onClick={sendMessage}
-                      disabled={!messageInput.trim()}
-                      className={`p-2 rounded-r flex items-center justify-center ${!messageInput.trim() ? 'bg-gray-300' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
-                    >
-                      <Send size={20} />
-                    </button>
+                  onClick={sendMessage}
+                  disabled={!messageInput.trim()}
+                  className={`p-2 mx-0.5 rounded-r flex items-center justify-center ${!messageInput.trim() ? 'bg-gray-500' : 'bg-gray-500 hover:bg-gray-600 text-white'}`}
+                >
+                  <Send size={20} />
+                </button>
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
                     Press Enter to send, Shift+Enter for new line
