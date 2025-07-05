@@ -61,7 +61,7 @@ const App = () => {
     window.addEventListener('popstate',()=>{
      
     })
-   fetchRoomDetails()
+   
     // Get your socket ID
     socketRef.current.on('me', (id) => {
       setSocketId(id);
@@ -147,7 +147,7 @@ const App = () => {
         console.error("Error handling user disconnect:", err);
       }
     });
-
+   
     // Handle chat messages
     socketRef.current.on('chat_message', ({ from, message }) => {
       const newMessage = {
