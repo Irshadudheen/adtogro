@@ -114,7 +114,7 @@ const roomSchema = new Schema({
   ,
   roomName: {
     type: String,
-    required: true,
+    
     trim: true
   },
   roomLanguage: {

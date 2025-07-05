@@ -6,9 +6,8 @@ import { Room } from "../../models/room";
 import { User } from "../../models/user";
 import { io } from "../..";
 const router =Router();
-router.post('/api/room',[body('roomName').notEmpty().isString().withMessage('Group name is required'),
+router.post('/api/room',[
 body('roomLanguage').notEmpty().isString().trim().withMessage('Group Language is required'),
-body('roomDescription').notEmpty().isString().withMessage('Group Description is required'),
 body('roomLevel').notEmpty().withMessage('Proffiency level is required')],validateRequest,
 currentUser,
 async(req:Request,res:Response)=>{

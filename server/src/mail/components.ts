@@ -29,7 +29,7 @@ const footer = `
     <a href="https://www.linkedin.com/irshadudheenp" style="margin: 0 10px;"><img src="https://cdn-icons-png.flaticon.com/24/145/145807.png" alt="LinkedIn"/></a>
   </div>
   <p style="margin-top: 15px;">
-    <img src="https://res.cloudinary.com/dspi0sqap/image/upload/v1748599770/logo_1_lkgwru.jpg" width=24 height=24 alt="logo" />
+    <img src="https://res.cloudinary.com/dspi0sqap/image/upload/v1751701163/Adtogro_logo_1_hh49uy.jpg" width=24 height=24 alt="logo" />
     <strong style="margin-left: 5px;"></strong>
   </p>
   <p>&copy; ${new Date().getFullYear()} adtogro. All rights reserved.</p>
