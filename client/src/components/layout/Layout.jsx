@@ -264,7 +264,7 @@ const handleModalClose = ()=>{
           {user?.name && (<><Link 
             to="/advertiser-dashboard" 
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-            onClick={() => {setIsMobileMenuOpen(false)
+            onClick={(e) => {setIsMobileMenuOpen(false)
               if(!user.is_advertiser){
                             e.preventDefault();
                             toast.error('You need to purchase an ad plan to access this page.');

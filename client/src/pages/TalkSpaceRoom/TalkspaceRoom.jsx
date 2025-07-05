@@ -6,6 +6,7 @@ import socket from '../../utils/socket';
 import { useNavigate, useParams } from 'react-router-dom';
 import useGetUserData from '../../hooks/useGetUser';
 import RemoteVideo from './RemoteVideo';
+import { roomDetailsApi } from '../../Api/user';
 
 
 const App = () => {
@@ -44,6 +45,15 @@ const App = () => {
       
     ]
   };
+   const fetchRoomDetails = async ()=>{
+      try {
+        const response = await roomDetailsApi(roomId)
+        setRoomDetails(response)
+        
+      } catch (error) {
+        console.log("Error fetching room details:", error);
+      }
+    }
 
   useEffect(() => {
     // Connect to the signaling server with reconnection options
@@ -51,6 +61,7 @@ const App = () => {
     window.addEventListener('popstate',()=>{
      
     })
+   fetchRoomDetails()
     // Get your socket ID
     socketRef.current.on('me', (id) => {
       setSocketId(id);
@@ -516,7 +527,7 @@ const App = () => {
       ) : (
         <div className="flex flex-col h-full">
           <div className="bg-gray-700 text-white p-4 flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Room: {roomDetails&&roomDetails.roomName||'Group name'}</h2>
+            <h2 className="text-xl font-semibold">Room: {roomDetails&&roomDetails.roomName||roomDetails&& roomDetails.roomLanguage||'Group name'}</h2>
             <div className="flex items-center text-sm text-gray-300 bg-gray-800 px-3 py-1 rounded-full shadow-sm">Connected Users:  <Users size={14} className="mr-2 text-blue-400" /> {usersInRoom.length}/3</div>
           </div>
           
@@ -630,7 +641,7 @@ const App = () => {
             </button>
             <button 
               onClick={shareScreen}
-              className={`p-3 rounded-full ${isScreenSharing ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+              className={`p-3 rounded-full hidden sm:inline ${isScreenSharing ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
               title={isScreenSharing ? "Stop screen sharing" : "Share screen"}
             >
               <Monitor size={24} />

@@ -285,7 +285,7 @@ export default function Talkspace() {
           <div className="p-6 rounded-xl mb-8 border border-gray-100 shadow-inner animate-fadeIn">
             <h2 className="text-xl font-semibold text-gray-600 mb-4 flex items-center">
               <PlusCircle className="mr-2 text-black" size={20} />
-              Create a New Group
+              Create a new group
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -297,7 +297,7 @@ export default function Talkspace() {
                   onChange={handleChange}
                   value={roomData.roomName}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
-                  placeholder="Enter group name"
+                  placeholder="English Learners (optional)"
                 />
               </div>
               <div>
@@ -309,7 +309,7 @@ export default function Talkspace() {
                   onChange={handleChange}
                   value={roomData.roomDescription}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
-                  placeholder="Brief description of your Group"
+                  placeholder="Talk in English (optional)"
                 />
               </div>
                  <div className="w-full relative">
@@ -377,11 +377,11 @@ export default function Talkspace() {
             <div className="mt-6 flex justify-end">
               <button 
                 onClick={() => setShowCreateRoom(false)}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg transition-all mr-3"
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-2  sm:px-6 sm:py-3 rounded-lg transition-all mr-3"
               >
                 Cancel
               </button>
-              <button onClick={handleCreateRoom} className="bg-gradient-to-r from-gray-600 to-black hover:from-gray-700 hover:to-black text-white px-6 py-3 rounded-lg transition-all shadow-md hover:shadow-lg">
+              <button onClick={handleCreateRoom} className="bg-gradient-to-r  whitespace-nowrap from-gray-600 to-black hover:from-gray-700 hover:to-black text-white px-6 py-3 rounded-lg transition-all shadow-md hover:shadow-lg">
                 Create Group
               </button>
             </div>

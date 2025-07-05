@@ -1,15 +1,9 @@
 import { toast } from 'react-hot-toast';
 
 export const validateRoom = (roomData) => {
-  if (!roomData?.roomName?.trim()) {
-    toast.error('Please add a Name');
-    throw false;
-  }
+ 
 
-  if (!roomData?.roomDescription?.trim()) {
-    toast.error('Please add a Description');
-    throw false;
-  }
+  
 
   if (!roomData?.roomLevel?.trim()) {
     toast.error('Please select  Level');
