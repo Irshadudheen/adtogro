@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet';
 import { useContext } from "react"
 import AdBanner from "@/components/AdBanner"
 import Layout from "@/components/layout/Layout"
