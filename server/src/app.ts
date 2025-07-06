@@ -54,7 +54,7 @@ app.use(urlencoded({extended:true}))
 
 const CLIENT_URL = process.env.CLIENT_URL;
 app.use(cors({
-   origin: CLIENT_URL,
+   origin: [CLIENT_URL!,process.env.CLIENT_URL_WWW!],
    
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','PATCH'],
 
