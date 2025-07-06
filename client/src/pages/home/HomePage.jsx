@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useContext } from "react"
 import AdBanner from "@/components/AdBanner"
 import Layout from "@/components/layout/Layout"
@@ -16,7 +16,21 @@ export default function HomePage() {
     <>
     <Helmet>
        <title>{t('AdToGro')}</title>
-        <meta name="description" content={t('description')} />
+       <link rel="icon" type="image/png" href="/logo/logo_text_black.png" />
+       <meta name="robots" content="index, follow" />
+        <meta name="description" content={t('Connect, collaborate, and communicate with ease using AdToGro!')} />
+        {/* <!-- ✅ Open Graph Tags --> */}
+        <meta property="og:title" content="AdToGro - Smart Communication Platform" />
+        <meta property="og:description" content="Connect, collaborate, and communicate with ease using AdToGro!" />
+        <meta property="og:image" content="https://www.adtogro.com/logo/logo_1.jpg" />
+        <meta property="og:url" content="https://www.adtogro.com" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="AdToGro" />
+          {/* <!-- Optional: Twitter card (ignored by WhatsApp but useful elsewhere) --> */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="AdToGro – Communication Made Simple" />
+        <meta name="twitter:description" content="Connect, call, and collaborate instantly on AdToGro – the smart communication platform." />
+        <meta name="twitter:image" content="https://www.adtogro.com/logo/logo_1.jpg" />
     </Helmet>
     <Layout>
       <div className="min-h-screen py-8 px-4">
