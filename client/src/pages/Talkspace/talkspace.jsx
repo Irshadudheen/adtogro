@@ -266,7 +266,7 @@ export default function Talkspace() {
               </div>
             </div>
             {!isLoading && (
-              <div className="absolute -top-2 -right-0.5 sm:right-13 bg-yellow-400 text-xs text-yellow-900 px-2 py-1 rounded-full transform rotate-12 shadow-sm font-medium">
+              <div className="absolute -top-2  -right-13   bg-yellow-400 text-xs text-yellow-900 px-2 py-1 rounded-full transform rotate-12 shadow-sm font-medium">
                 {liveCount||0}+ online now
               </div>
             )}
